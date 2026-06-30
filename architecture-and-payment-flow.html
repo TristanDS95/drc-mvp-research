@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DRC Pay — Architecture & Payment Flow</title>
+<style>
+  :root{
+    --coral:#FF6B5B; --coral-dark:#E2553F; --coral-tint:#FFF1EF;
+    --charcoal:#1A1A1A; --muted:#5A5A57; --cream:#FFFCF8; --border:#ECE8E1; --surface:#FFFFFF;
+    --teal:#0F8A6A; --teal-tint:#E7F6EF;
+    --amber:#9A6B2F; --amber-tint:#FFF4E0; --amber-border:#F1D9A8;
+    --ink:#1f2933; --ink-soft:#9aa6b2;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#F4EFE8;color:var(--charcoal);line-height:1.55;
+    font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .page{max-width:1020px;margin:0 auto;padding:28px 22px 60px;}
+
+  /* header */
+  header.hero{background:linear-gradient(135deg,var(--coral),var(--coral-dark));color:#fff;
+    border-radius:20px;padding:30px 32px;box-shadow:0 16px 44px rgba(226,85,63,.28);}
+  header.hero .brand{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.9;}
+  header.hero h1{margin:6px 0 10px;font-size:30px;font-weight:800;letter-spacing:-.01em;}
+  header.hero p{margin:0;font-size:15.5px;max-width:760px;opacity:.96;}
+  header.hero .meta{margin-top:14px;font-size:12px;opacity:.82;}
+
+  section.panel{background:var(--surface);border-radius:20px;padding:26px 28px;margin-top:24px;
+    box-shadow:0 10px 34px rgba(0,0,0,.07);border:1px solid var(--border);}
+  .panel > h2{margin:0;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--coral-dark);}
+  .panel > .title{margin:3px 0 4px;font-size:22px;font-weight:800;}
+  .panel > .lede{margin:0 0 22px;font-size:14px;color:var(--muted);max-width:780px;}
+
+  /* generic tier label + card */
+  .tierlabel{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 9px;}
+  .cards{display:grid;gap:12px;}
+  .cards.c3{grid-template-columns:repeat(3,1fr);}
+  .cards.c2{grid-template-columns:repeat(2,1fr);}
+  @media (max-width:720px){ .cards.c3,.cards.c2{grid-template-columns:1fr;} }
+  .card{border:1px solid var(--border);border-radius:14px;padding:13px 15px;background:var(--surface);}
+  .card .h{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .card .tech{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11.5px;color:var(--coral-dark);margin:4px 0 5px;word-break:break-word;}
+  .card .cap{font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;background:var(--coral);}
+
+  /* flow arrow between tiers */
+  .flow{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);
+    font-size:11.5px;font-weight:600;margin:11px 0;}
+  .flow .arr{font-size:18px;line-height:1;color:var(--coral);}
+
+  /* backend container */
+  .backend{border:1.5px dashed var(--coral);border-radius:18px;padding:16px;background:var(--coral-tint);}
+  .backend > .bh{font-size:13px;font-weight:800;color:var(--coral-dark);margin:0 0 4px;}
+  .backend > .bsub{font-size:12px;color:var(--muted);margin:0 0 14px;}
+  .layer{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:12px 15px;}
+  .layer + .layer{margin-top:0;}
+  .layer .h{font-size:14px;font-weight:700;}
+  .layer .tech{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11.5px;color:var(--coral-dark);margin:3px 0 4px;}
+  .layer .cap{font-size:12.5px;color:var(--muted);}
+  .layer.core{border:1.5px solid var(--teal);background:var(--teal-tint);}
+  .layer.core .h{color:#0b5e48;}
+  .layer.core .tech{color:#0b5e48;}
+  .ldown{text-align:center;color:var(--coral);font-size:15px;line-height:1;margin:6px 0;}
+  .innernote{font-size:11.5px;color:var(--muted);font-style:italic;margin:12px 2px 0;}
+
+  /* infra row tints */
+  .card.db{background:#f3f6fb;border-color:#d9e3f1;}
+  .card.db .h .dot{background:#3a6ea5;} .card.db .tech{color:#2c5683;}
+  .card.rail{background:#f1f8f4;border-color:#cfe6d7;}
+  .card.rail .h .dot{background:var(--teal);} .card.rail .tech{color:#0b5e48;}
+
+  /* deploy band */
+  .deploy{background:var(--ink);color:#e7edf2;border-radius:14px;padding:14px 18px;margin-top:14px;
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .deploy .dh{font-weight:700;font-size:14px;}
+  .deploy .dt{font-family:"SF Mono",Menlo,monospace;font-size:11.5px;color:#8fd0ff;}
+  .deploy .dc{font-size:12.5px;color:var(--ink-soft);}
+
+  /* payment-flow timeline */
+  .timeline{position:relative;margin:6px 0 0;padding-left:46px;}
+  .timeline::before{content:"";position:absolute;left:17px;top:8px;bottom:30px;width:2px;background:var(--border);}
+  .step{position:relative;margin-bottom:14px;}
+  .step .num{position:absolute;left:-46px;top:0;width:34px;height:34px;border-radius:50%;
+    background:var(--coral);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 12px rgba(226,85,63,.32);}
+  .step .body{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 15px;}
+  .step .h{font-size:15px;font-weight:700;}
+  .step .tech{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11.5px;color:var(--coral-dark);margin:3px 0 5px;}
+  .step .cap{font-size:13px;color:var(--muted);}
+  .step.money .body{border-color:var(--teal);background:var(--teal-tint);}
+  .step.money .tech{color:#0b5e48;}
+  .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;}
+  .tag.flight{background:var(--amber-tint);color:var(--amber);}
+  .tag.book{background:var(--teal-tint);color:#0b5e48;}
+
+  .callout{margin:8px 0 0 46px;border:1.5px solid var(--amber-border);background:var(--amber-tint);
+    border-radius:14px;padding:13px 16px;}
+  .callout .h{font-weight:800;font-size:13.5px;color:var(--amber);display:flex;align-items:center;gap:8px;}
+  .callout .cap{font-size:12.5px;color:#6f5326;margin-top:4px;}
+
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;font-size:12px;color:var(--muted);}
+  .legend span{display:flex;align-items:center;gap:7px;}
+  .sw{width:13px;height:13px;border-radius:4px;flex:none;}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.9em;background:rgba(0,0,0,.05);padding:1px 5px;border-radius:5px;}
+
+  /* infographic 3 — money / ledger */
+  .payin{display:inline-flex;align-items:center;gap:10px;background:var(--coral);color:#fff;
+    border-radius:30px;padding:9px 20px;font-weight:800;font-size:16px;box-shadow:0 6px 16px rgba(226,85,63,.3);}
+  .split{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px;}
+  @media (max-width:720px){ .split{grid-template-columns:1fr;} }
+  .dest{border:1px solid var(--border);border-radius:14px;padding:14px 16px;background:var(--surface);}
+  .dest .amt{font-size:27px;font-weight:800;letter-spacing:-.01em;line-height:1;}
+  .dest .who{font-size:13.5px;font-weight:700;margin-top:6px;}
+  .dest .tech{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11px;color:var(--muted);margin:2px 0 5px;}
+  .dest .cap{font-size:12px;color:var(--muted);line-height:1.45;}
+  .dest.merchant{border-color:#cfe6d7;background:#f1f8f4;} .dest.merchant .amt{color:#0b5e48;}
+  .dest.cost{border-color:var(--amber-border);background:var(--amber-tint);} .dest.cost .amt{color:var(--amber);}
+  .dest.keep{border-color:var(--border);background:#f6f5f2;} .dest.keep .amt{color:var(--muted);}
+  .bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin:16px 0 6px;border:1px solid var(--border);}
+  .bar .seg{display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:#fff;white-space:nowrap;}
+  .barkey{font-size:12px;color:var(--muted);}
+  .postings{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px;}
+  @media (max-width:720px){ .postings{grid-template-columns:1fr;} }
+  .posting{border:1px solid var(--border);border-radius:14px;padding:13px 16px;background:var(--surface);}
+  .posting .ph{font-size:13px;font-weight:800;margin-bottom:6px;}
+  table.led{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.led td{padding:5px 4px;border-bottom:1px solid var(--border);}
+  table.led td.acct{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:11.5px;}
+  table.led td.dir{font-weight:700;} table.led td.dr{color:var(--coral-dark);} table.led td.cr{color:var(--teal);}
+  table.led td.num{text-align:right;font-weight:700;}
+  table.led tr.bal td{border-bottom:none;border-top:2px solid var(--charcoal);font-weight:800;color:var(--charcoal);padding-top:6px;font-size:11.5px;}
+
+  /* print / PDF */
+  @media print{
+    @page{ size:A4 landscape; margin:10mm; }
+    body{ -webkit-print-color-adjust:exact; print-color-adjust:exact; background:#fff; }
+    .page{ padding:4px; }
+    header.hero,.card,.step,.posting,.callout,.dest,.layer,.backend,.deploy,.split,.bar,.timeline{ break-inside:avoid; }
+  }
+
+  footer{margin-top:26px;text-align:center;font-size:12px;color:var(--muted);}
+  footer b{color:var(--charcoal);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="brand">DRC Pay</div>
+    <h1>How the system is built &amp; how a payment flows</h1>
+    <p>A Python/FastAPI backend runs the payment logic against a double-entry ledger in PostgreSQL and
+       answers requests over a REST API, while <b>pawaPay</b> actually moves the mobile money — we stay a
+       pure pass-through and never hold funds. The screens are plain web pages; the whole thing ships as a
+       Docker container on Railway.</p>
+    <div class="meta">Two infographics · technical components, plain-English captions · 2026-06-19</div>
+  </header>
+
+  <!-- ============ INFOGRAPHIC 1 — ARCHITECTURE ============ -->
+  <section class="panel">
+    <h2>Infographic 1</h2>
+    <div class="title">Application architecture</div>
+    <p class="lede">Top to bottom: the screens people use, the backend that holds the logic, the systems it
+      depends on, and where it runs. A request travels down; the answer travels back up.</p>
+
+    <!-- front-end -->
+    <div class="tierlabel">Front-end — what people use (no app to install)</div>
+    <div class="cards c3">
+      <div class="card">
+        <div class="h"><span class="dot"></span>Merchant Console</div>
+        <div class="tech">static HTML / CSS / JS</div>
+        <div class="cap">The shopkeeper's dashboard: create a charge QR, watch payments confirm live, drill into the ledger.</div>
+      </div>
+      <div class="card">
+        <div class="h"><span class="dot"></span>Customer Pay Page</div>
+        <div class="tech">static HTML / CSS / JS</div>
+        <div class="cap">Opens when a customer scans the QR — shows the locked amount, pick a network, pay. No login.</div>
+      </div>
+      <div class="card">
+        <div class="h"><span class="dot"></span>USSD channel</div>
+        <div class="tech">/ussd · provider-neutral</div>
+        <div class="cap">Feature phones with no internet dial a code — the same backend, a different door.</div>
+      </div>
+    </div>
+
+    <div class="flow"><span class="arr">&#8595;</span><span>HTTP · JSON over the internet</span><span class="arr">&#8595;</span></div>
+
+    <!-- backend -->
+    <div class="backend">
+      <div class="bh">Back-end — Python · FastAPI · REST API</div>
+      <div class="bsub">Layered so the money rules sit in a pure core that knows nothing about the web or the database.</div>
+
+      <div class="layer">
+        <div class="h">Channels — the "doors"</div>
+        <div class="tech">http/ · merchant_api · public · webhook · ussd · demo</div>
+        <div class="cap">Translate each incoming request into Python, check it, and hand it off. No money logic here.</div>
+      </div>
+      <div class="ldown">&#8595;</div>
+      <div class="layer">
+        <div class="h">Application services</div>
+        <div class="tech">start_merchant_payment · apply_outcome</div>
+        <div class="cap">One shared entry point every channel calls — resolves operators, computes the fee, starts the work.</div>
+      </div>
+      <div class="ldown">&#8595;</div>
+      <div class="layer core">
+        <div class="h">Domain — the money brain (pure)</div>
+        <div class="tech">Orchestrator · double-entry ledger · state machine · pricing</div>
+        <div class="cap">The rules of money: collect &rarr; settle &rarr; auto-refund, every posting balanced. No HTTP, no SQL — this is what the tests cover most.</div>
+      </div>
+      <div class="ldown">&#8595;</div>
+      <div class="layer">
+        <div class="h">Adapters — ports to real infrastructure</div>
+        <div class="tech">SQLAlchemy stores · pawaPay rail / simulator</div>
+        <div class="cap">Swappable plugs: real Postgres &amp; pawaPay in production; in-memory store &amp; a simulator in tests (so they run offline).</div>
+      </div>
+      <div class="innernote">Dependencies point inward — swap the adapters (simulator &harr; pawaPay, memory &harr; Postgres) without touching the core.</div>
+    </div>
+
+    <div class="flow"><span class="arr">&#8595;</span><span>reads &amp; writes</span><span class="arr">&#8595;</span></div>
+
+    <!-- infra -->
+    <div class="tierlabel">The systems the backend depends on</div>
+    <div class="cards c2">
+      <div class="card db">
+        <div class="h"><span class="dot"></span>PostgreSQL — the books &amp; state</div>
+        <div class="tech">SQLAlchemy + Alembic migrations</div>
+        <div class="cap">Stores the transactions and the double-entry ledger — the real source of truth for money. (In-memory stand-in for dev &amp; tests.)</div>
+      </div>
+      <div class="card rail">
+        <div class="h"><span class="dot"></span>pawaPay — mobile-money aggregator</div>
+        <div class="tech">Vodacom M-Pesa · Airtel · Orange</div>
+        <div class="cap">Actually moves the funds at the operators; we never hold money (pure pass-through). Confirms each step with a signed (RFC-9421) webhook.</div>
+      </div>
+    </div>
+
+    <div class="deploy">
+      <span class="dh">&#9729; Runs as</span>
+      <span class="dt">one Docker container on Railway</span>
+      <span class="dc">— a single image serves the API + both web pages; eventual home is AWS (af-south-1).</span>
+    </div>
+
+    <div class="legend">
+      <span><span class="sw" style="background:var(--coral)"></span>front-end &amp; backend (our code)</span>
+      <span><span class="sw" style="background:var(--teal)"></span>the pure money core</span>
+      <span><span class="sw" style="background:#3a6ea5"></span>database</span>
+      <span><span class="sw" style="background:var(--ink)"></span>where it runs</span>
+    </div>
+  </section>
+
+  <!-- ============ INFOGRAPHIC 2 — PAYMENT FLOW ============ -->
+  <section class="panel">
+    <h2>Infographic 2</h2>
+    <div class="title">Payment flow — scan to paid</div>
+    <p class="lede">One successful payment, end to end. The customer needs no app — they just scan the
+      merchant's charge QR. Steps in <span style="color:#0b5e48;font-weight:700;">green</span> are where money
+      actually moves and the books are written.</p>
+
+    <div class="timeline">
+      <div class="step">
+        <div class="num">1</div>
+        <div class="body">
+          <div class="h">Customer scans the charge QR</div>
+          <div class="tech">QR &rarr; /customer/?charge=&lt;id&gt;</div>
+          <div class="cap">The QR encodes a link to the pay page for this exact charge. Their phone's browser opens it — nothing to install.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">2</div>
+        <div class="body">
+          <div class="h">The pay page loads the charge</div>
+          <div class="tech">GET /public/charge/{id}</div>
+          <div class="cap">Shows the locked amount and the merchant. The amount is set by the server from the charge — never typed by the customer.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">3</div>
+        <div class="body">
+          <div class="h">Customer picks their network &amp; taps Pay</div>
+          <div class="tech">POST /pay</div>
+          <div class="cap">Their mobile-money operator (Vodacom / Airtel / Orange) plus the charge's amount go to the backend.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">4</div>
+        <div class="body">
+          <div class="h">The backend starts the payment</div>
+          <div class="tech">start_merchant_payment &rarr; Orchestrator</div>
+          <div class="cap">Computes the fee from the network pair, creates the transaction, and kicks off the state machine.</div>
+        </div>
+      </div>
+
+      <div class="step money">
+        <div class="num">5</div>
+        <div class="body">
+          <div class="h">Collect <span class="tag flight">money in flight</span></div>
+          <div class="tech">pawaPay deposit</div>
+          <div class="cap">pawaPay debits the customer; the funds sit at pawaPay (a "clearing" holding spot). Nothing is settled yet.</div>
+        </div>
+      </div>
+
+      <div class="step money">
+        <div class="num">6</div>
+        <div class="body">
+          <div class="h">Settle to the merchant <span class="tag book">books written</span></div>
+          <div class="tech">pawaPay payout · ledger postings</div>
+          <div class="cap">The merchant receives <b>amount &minus; fee</b>; pawaPay's cost is booked to <b>expense</b>, our margin to <b>revenue</b>. Every posting balances.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="num">7</div>
+        <div class="body">
+          <div class="h">Confirm — both screens go "Paid"</div>
+          <div class="tech">signed webhook (RFC-9421)</div>
+          <div class="cap">pawaPay confirms each leg with a signed callback; the Merchant Console and the customer's page both flip to <b>Paid</b> in real time.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="h">&#8617; If the payout fails after collection — the auto-refund branch</div>
+      <div class="cap">The customer is automatically refunded the <b>full amount</b>. pawaPay already took its collection
+        fee, so that is booked as a <b>real loss</b> (<code>expense:pawapay</code>) — visible on the books, never hidden.
+        A refund that itself fails is escalated to <code>manual_review</code>. If the customer's callback never arrives,
+        a reconciliation sweep polls pawaPay and heals it.</div>
+    </div>
+  </section>
+
+  <!-- ============ INFOGRAPHIC 3 — MONEY / LEDGER ============ -->
+  <section class="panel">
+    <h2>Infographic 3</h2>
+    <div class="title">Where the money goes — the ledger</div>
+    <p class="lede">Every payment is recorded as balanced double-entry postings — the real source of truth for
+      money. Here's one $10 payment (customer on Vodacom, merchant settles to Airtel), dollar by dollar.</p>
+
+    <div style="text-align:center;margin:4px 0 2px;"><span class="payin">Customer pays&nbsp; $10.00</span></div>
+    <div class="flow"><span class="arr">&#8595;</span><span>splits three ways</span><span class="arr">&#8595;</span></div>
+
+    <div class="split">
+      <div class="dest merchant">
+        <div class="amt">$9.55</div>
+        <div class="who">Merchant receives</div>
+        <div class="tech">merchant:external</div>
+        <div class="cap">The sticker amount minus the fee — paid out to their mobile money.</div>
+      </div>
+      <div class="dest cost">
+        <div class="amt">$0.45</div>
+        <div class="who">pawaPay's cost</div>
+        <div class="tech">expense:pawapay</div>
+        <div class="cap">The rails fee — collect 0.25 (Vodacom) + payout 0.20 (Airtel) — booked as an expense.</div>
+      </div>
+      <div class="dest keep">
+        <div class="amt">$0.00</div>
+        <div class="who">We keep</div>
+        <div class="tech">revenue:fees</div>
+        <div class="cap">Our margin — zero today, because the fee only covers cost (no markup yet).</div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <div class="seg" style="width:95.5%;background:var(--teal)">merchant &mdash; $9.55</div>
+      <div class="seg" style="width:4.5%;background:var(--amber)"></div>
+    </div>
+    <div class="barkey">
+      <span style="color:var(--teal);font-weight:800;">&#9608;</span> merchant 9.55 &nbsp;&nbsp;
+      <span style="color:var(--amber);font-weight:800;">&#9608;</span> pawaPay cost 0.45 &nbsp;&nbsp;
+      <span style="color:var(--muted);font-weight:800;">&#9608;</span> our margin 0.00
+    </div>
+
+    <div class="tierlabel" style="margin-top:20px;">The actual double-entry postings — every one balances (debits = credits)</div>
+    <div class="postings">
+      <div class="posting">
+        <div class="ph">1 · Collection succeeds</div>
+        <table class="led">
+          <tr><td class="dir dr">debit</td><td class="acct">customer:external</td><td class="num">10.00</td></tr>
+          <tr><td class="dir cr">credit</td><td class="acct">pawapay:clearing</td><td class="num">9.75</td></tr>
+          <tr><td class="dir cr">credit</td><td class="acct">expense:pawapay</td><td class="num">0.25</td></tr>
+          <tr class="bal"><td colspan="2">&#10003;&nbsp; balanced</td><td class="num">10.00 = 10.00</td></tr>
+        </table>
+      </div>
+      <div class="posting">
+        <div class="ph">2 · Settlement to the merchant</div>
+        <table class="led">
+          <tr><td class="dir dr">debit</td><td class="acct">pawapay:clearing</td><td class="num">9.75</td></tr>
+          <tr><td class="dir cr">credit</td><td class="acct">merchant:external</td><td class="num">9.55</td></tr>
+          <tr><td class="dir cr">credit</td><td class="acct">expense:pawapay</td><td class="num">0.20</td></tr>
+          <tr class="bal"><td colspan="2">&#10003;&nbsp; balanced</td><td class="num">9.75 = 9.75</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-left:0;border-color:var(--teal);background:var(--teal-tint);">
+      <div class="h" style="color:#0b5e48;">&#43; The seam where profit appears</div>
+      <div class="cap" style="color:#0b5e48;">Today the fee (MDR) equals pawaPay's cost, so <code>revenue:fees</code> is $0.
+        Mark the MDR up — say to 6% = $0.60 — and the merchant nets $9.40, pawaPay still costs $0.45, and the extra
+        <b>$0.15 lands in revenue automatically</b>. That one number is the pricing decision.</div>
+    </div>
+
+    <div class="callout" style="margin-left:0;margin-top:10px;">
+      <div class="h">&#8617; What a refund looks like on the books</div>
+      <div class="cap">If the payout fails after collection, the customer is refunded the full <b>$10.00</b> — but pawaPay
+        already took its <b>$0.25</b> collection fee, so that stays in <code>expense:pawapay</code> as a booked loss.
+        The books always show exactly where every dollar went.</div>
+    </div>
+  </section>
+
+  <footer>
+    <b>DRC Pay</b> · merchant-facing mobile-money acceptance on rented rails · pure pass-through (no fund custody)
+    <br/>Self-contained — open this file in any browser. Brand-coloured to match the Merchant Console.
+  </footer>
+
+</div>
+</body>
+</html>

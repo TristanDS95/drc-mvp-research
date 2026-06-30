@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC Payment App — Product Spec Summary</title>
+<style>
+  :root{--bg:#fff;--bg-alt:#f7f7f5;--text:#1a1a1a;--soft:#555;--border:#e0e0dc;--accent:#1d3557;--accent-soft:#457b9d;--link:#0a4f8c;--coral:#FF6B5B;--cream:#FFFCF8;--good:#166534;--mid:#92400e;--low:#991b1b;--warn:#b45309;--code:#f1ede2;}
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);margin:0;line-height:1.55;font-size:15px;}
+  .layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+  nav.side{background:var(--bg-alt);border-right:1px solid var(--border);padding:28px 22px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:13.5px;}
+  nav.side .t{font-weight:700;font-size:15px;color:var(--accent);}
+  nav.side .s{font-size:12px;color:var(--soft);margin-bottom:16px;}
+  nav.side h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:18px 0 6px;font-weight:600;}
+  nav.side a{display:block;padding:4px 0;color:var(--accent);text-decoration:none;}
+  nav.side a:hover{text-decoration:underline;}
+  main{padding:38px 56px 90px;max-width:1000px;}
+  h1{font-size:28px;margin:0 0 6px;color:var(--accent);}
+  h2{font-size:21px;color:var(--accent);margin:40px 0 8px;padding-top:12px;border-top:2px solid var(--border);}
+  h3{font-size:16px;color:var(--accent);margin:18px 0 6px;}
+  p{margin:6px 0 12px;}
+  a{color:var(--link);text-decoration:none;border-bottom:1px solid #b3cce6;} a:hover{background:#eef4fa;}
+  code,.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 5px;border-radius:3px;}
+  ul{margin:4px 0 10px;padding-left:20px;} li{margin:4px 0;}
+  table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border:1px solid var(--border);vertical-align:top;} th{background:var(--bg-alt);font-weight:600;} tr:nth-child(even) td{background:#fafaf7;}
+  .meta{font-size:13px;color:var(--soft);margin:4px 0 16px;}
+  .lead{font-size:16px;background:#eef4fa;border-left:4px solid var(--accent-soft);padding:14px 18px;margin:14px 0 20px;border-radius:0 4px 4px 0;}
+  .note{background:#fff8e6;border-left:4px solid var(--warn);padding:11px 15px;margin:14px 0;font-size:14px;border-radius:0 4px 4px 0;}
+  .pending{background:#f3e8ff;border-left:4px solid #7c3aed;padding:11px 15px;margin:14px 0;font-size:14px;border-radius:0 4px 4px 0;}
+  .chips span{display:inline-block;background:var(--accent-soft);color:#fff;border-radius:12px;padding:2px 10px;font-size:12px;margin:3px 4px 3px 0;}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid #0002;vertical-align:middle;margin-right:6px;}
+  .flow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0;font-size:13px;}
+  .flow .step{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:8px 12px;}
+  .flow .ar{color:var(--accent-soft);font-weight:700;}
+  .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+  .b-good{background:#dcfce7;color:var(--good);} .b-tbd{background:#f3e8ff;color:#6b21a8;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}main{padding:24px;}.flow{flex-direction:column;align-items:stretch;}}
+  @media print{nav.side{display:none;}main{padding:0;max-width:100%;}.layout{grid-template-columns:1fr;}a{border-bottom:none;color:var(--text);}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side">
+    <div class="t">DRC Payment App</div>
+    <div class="s">Product spec summary</div>
+    <h2>Top</h2>
+    <a href="#top">What it is</a>
+    <a href="#flow">The core flow</a>
+    <h2>Spec</h2>
+    <a href="#functionality">Functionality</a>
+    <a href="#ui">UI &amp; UX</a>
+    <a href="#screens">Screens</a>
+    <a href="#tech">Tech stack</a>
+    <a href="#data">Data model</a>
+    <a href="#api">API</a>
+    <a href="#nonfunc">Performance &amp; security</a>
+    <h2>Also</h2>
+    <a href="#scope">In / out of scope</a>
+    <a href="#open">Open decisions</a>
+    <a href="reports.html">→ Reports summary</a>
+    <a href="05-product-spec/README.md">→ Full spec (MD)</a>
+  </nav>
+  <main>
+    <h1 id="top">Product spec — summary</h1>
+    <div class="meta">Updated 2026-06-09 · A human-readable digest of <a href="05-product-spec/README.md">05-product-spec/</a> (functionality, UI, screens, data model, API, tech stack).</div>
+
+    <div class="lead">
+      A <strong>merchant-acceptance</strong> app for the DRC: a merchant accepts payment from a customer on <strong>any mobile-money network</strong> (Vodacom M-Pesa, Airtel, Orange), with cross-network bridging handled behind the scenes. The customer pays the <strong>exact sticker price</strong> and needs <strong>no app</strong> — they pay by <strong>USSD / QR</strong> from any phone. It's a <strong>pass-through</strong> — we never hold the money; funds flow straight from the customer, through our payments partner (pawaPay), and settle instantly to the merchant's mobile-money account (net of our fee).
+    </div>
+
+    <div class="note"><strong>Subject to revision when the team grows.</strong> This reflects current decisions with the existing small team. New engineers will shape specifics (especially the backend language and framework choices). The durable parts: the merchant-acceptance flow, the customer-USSD / QR channel, merchant onboarding, the pass-through model, the coral-minimal design, and the data/API shape.</div>
+
+    <!-- CORE FLOW -->
+    <h2 id="flow">The core flow</h2>
+    <p><strong>Primary flow — customer-initiated USSD (no customer app):</strong></p>
+    <div class="flow">
+      <span class="step">Merchant sets the amount</span><span class="ar">→</span>
+      <span class="step">Customer <strong>scans the QR</strong> (a <code>tel:</code> USSD dial-through) or dials the till <code>*123*1001#</code></span><span class="ar">→</span>
+      <span class="step">Customer enters their <strong>operator PIN</strong> on their own phone's prompt</span><span class="ar">→</span>
+      <span class="step">Collect + settle</span><span class="ar">→</span>
+      <span class="step">Merchant sees the payment + receipt</span>
+    </div>
+    <p><strong>Fallback — merchant-initiated "charge by customer number":</strong> the merchant keys the customer's number to push a collection prompt to that customer's phone.</p>
+    <p>Behind the scenes it's two legs: <strong>collect</strong> from the customer's wallet, then <strong>settle</strong> (pay out) to the merchant's wallet — bridging networks when they differ. The customer pays the exact sticker price; the <strong>merchant absorbs our fee.</strong> If the settlement fails, the customer is <strong>automatically refunded.</strong></p>
+
+    <!-- FUNCTIONALITY -->
+    <h2 id="functionality">Functionality</h2>
+    <table>
+      <tr><th>Area</th><th>Decision</th></tr>
+      <tr><td>Use case</td><td>One <strong>merchant-acceptance</strong> flow — a customer pays a registered merchant. Primary path is <strong>customer-initiated USSD</strong> (scan the merchant's QR / dial the till); fallback is <strong>merchant-initiated "charge by customer number"</strong>.</td></tr>
+      <tr><td>Pricing (MDR)</td><td>The customer pays the <strong>exact sticker price</strong>; the <strong>merchant absorbs our fee (MDR)</strong> and nets price − fee. 1% is a placeholder; the pawaPay round-trip costs ~3.5–5%, so the real MDR (likely ~5–7%+) is an <strong>open pricing decision</strong>.</td></tr>
+      <tr><td>Settlement / wallet model</td><td><strong>Pure pass-through, instant settlement</strong> — no held balance, no custody, funds never rest with us (keeps us out of e-money licensing in v1).</td></tr>
+      <tr><td>Merchant sign-up &amp; onboarding</td><td>Phone number + one-time SMS code; then onboarding sets the <strong>settlement account</strong> and a <strong>till / short code</strong>, and generates the merchant's QR. Fuller business KYC is flagged for later.</td></tr>
+      <tr><td>Customer authorisation</td><td>The customer approves on <strong>their own operator's PIN prompt</strong> — no app, no PIN inside our product. The merchant unlocks the merchant app with a passcode.</td></tr>
+      <tr><td>Currency</td><td>USD default + one-tap switch to CDF; preference remembered.</td></tr>
+      <tr><td>Addressing</td><td>Merchant till / short code (encoded in the QR). For the fallback, the merchant keys the customer's number. No phone-contacts integration in v1.</td></tr>
+      <tr><td>Receipts</td><td>In-app merchant history (gross / fee / net) + one-tap <strong>WhatsApp share</strong>.</td></tr>
+      <tr><td>Notifications</td><td>Transaction outcomes + settlement confirmation only (no promo).</td></tr>
+      <tr><td>Limits</td><td>Conservative for new merchants, then relax to operator caps; always a velocity cap.</td></tr>
+      <tr><td>Failure UX</td><td>"Refund issued to the customer" + the merchant sees the failure clearly; resume pending transactions from the backend on reopen.</td></tr>
+      <tr><td>Operator outage</td><td>Status banner + warning, but don't block (the merchant may know better).</td></tr>
+      <tr><td>Feature-phone / USSD</td><td><strong>MVP-critical channel</strong> — it <em>is</em> the customer's primary way to pay (no smartphone needed). Built in the MVP, not phased after; its per-operator shortcode lead time is planned deliberately.</td></tr>
+    </table>
+
+    <!-- UI -->
+    <h2 id="ui">UI &amp; UX</h2>
+    <p><strong>Direction:</strong> Wave-style minimal (one primary action per screen, lots of whitespace) with a <strong>distinctive coral accent</strong> — warm and human, deliberately different from every operator's brand. The app is the <strong>merchant's</strong> tool; the customer never sees it.</p>
+    <p><strong>Palette:</strong>
+      <span class="swatch" style="background:#FF6B5B;"></span>Coral <code>#FF6B5B</code>
+      <span class="swatch" style="background:#FFFCF8;"></span>Cream <code>#FFFCF8</code>
+      <span class="swatch" style="background:#1A1A1A;"></span>Charcoal <code>#1A1A1A</code>
+      — plus green/red/amber for success/failure/warning. Light + dark mode (follows the phone setting).</p>
+    <ul>
+      <li><strong>Type:</strong> Inter (clean geometric sans; renders French accents well).</li>
+      <li><strong>Components:</strong> soft + flat — 12px rounded corners, no shadows (cleaner + faster on low-cost Android).</li>
+      <li><strong>Navigation:</strong> 3 tabs — <strong>Encaisser</strong> (Accept / get paid) · <strong>Historique</strong> (History) · <strong>Profil</strong> (Profile).</li>
+      <li><strong>Language:</strong> French only in v1 (structured so Lingala/Swahili can be added later).</li>
+      <li><strong>Tone:</strong> functional + warm; never blame the user; verbs on buttons.</li>
+    </ul>
+
+    <!-- SCREENS -->
+    <h2 id="screens">Screens</h2>
+    <p>The merchant app's primary screens + pop-ups/overlays. The accept flow is the core:</p>
+    <div class="chips">
+      <span>Welcome</span><span>Merchant phone entry</span><span>OTP</span><span>Set app passcode</span><span>Onboarding: settlement account + till</span>
+      <span>Home / Encaisser</span><span>Amount + currency</span><span>Show QR / till (customer scans or dials)</span><span>Charge by customer number (fallback)</span><span>Pending</span><span>Success / receipt</span><span>Failure / refund</span>
+      <span>History list + daily totals</span><span>Transaction detail (gross / fee / net)</span><span>Profile</span><span>Change passcode</span><span>Preferred currency</span><span>Sign-out</span>
+    </div>
+    <p>Overlays: operator-status banner · offline banner · forgot-passcode flow · force-update sheet. Full per-screen detail: <a href="05-product-spec/screens.md">screens.md</a>.</p>
+
+    <!-- TECH -->
+    <h2 id="tech">Tech stack</h2>
+    <table>
+      <tr><th>Layer</th><th>Choice</th><th>Status</th></tr>
+      <tr><td>Merchant app</td><td>React Native + Expo (one codebase, iPhone + Android)</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>Backend language</td><td><strong>Python (FastAPI) or Node (TypeScript)</strong> — recommendation leans Python (matches Wave; better for future fraud/ML), but deferred to the hired backend engineer</td><td><span class="badge b-tbd">open</span></td></tr>
+      <tr><td>Cloud</td><td>AWS Cape Town (af-south-1); <strong>ECS Fargate</strong> for compute (App Runner isn't available in this region)</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>Database / cache</td><td>Postgres (RDS) for the ledger; Redis (ElastiCache) for sessions/limits</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>SMS / OTP</td><td>Africa's Talking (DRC coverage, cheaper than Twilio for African numbers)</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>KYC (when added)</td><td>Smile ID (DRC ID support) — not used in v1</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>Errors / analytics</td><td>Sentry + PostHog</td><td><span class="badge b-good">set</span></td></tr>
+      <tr><td>Payments partner</td><td>pawaPay (collect + pay out + refunds + status)</td><td><span class="badge b-good">set</span></td></tr>
+    </table>
+
+    <!-- DATA -->
+    <h2 id="data">Data model</h2>
+    <p>Postgres. The core entities are <strong>Merchant, Transaction, LedgerEntry</strong>, with a banking-grade <strong>double-entry ledger</strong> (every movement recorded twice so the books always balance). The ledger accounts are <code>customer:external</code>, <code>merchant:external</code>, <code>pawapay:clearing</code>, and <code>revenue:fees</code>.</p>
+    <p class="chips">
+      <span>merchant</span><span>session</span><span>otp_attempt</span><span>payment_code / till</span><span>transaction</span><span>ledger_entry</span><span>operator_event</span><span>operator_status</span><span>audit_log</span>
+    </p>
+    <p style="font-size:13px;color:var(--soft);">Planned additions: merchant auth, a webhook receiver (Phase D), and reconciliation. There is no consumer User / Recipient model.</p>
+    <h3>The transaction's life</h3>
+    <div class="flow" style="font-size:12.5px;">
+      <span class="step">initiated</span><span class="ar">→</span>
+      <span class="step">collection_pending</span><span class="ar">→</span>
+      <span class="step">collection_succeeded</span><span class="ar">→</span>
+      <span class="step">settlement_pending</span><span class="ar">→</span>
+      <span class="step">settlement_succeeded ✓</span>
+    </div>
+    <p style="font-size:13px;color:var(--soft);">…with branches for <code>collection_failed</code>, <code>settlement_failed → refund_pending → refunded</code> (refund to the customer), and <code>manual_review</code> (the only state needing a human). Anything stuck self-heals via a reconciliation job. Detail: <a href="05-product-spec/data-model.md">data-model.md</a>.</p>
+
+    <!-- API -->
+    <h2 id="api">API</h2>
+    <p>REST + a USSD channel, JSON, JWT sessions, idempotency keys on every money-moving request. Endpoints span Merchant auth, Merchants, Payment codes / till, Transactions, System, plus a webhook receiver. Organised as domains/(ledger, merchants, transactions) → application/(start_merchant_payment, payment_codes) → channels(http/, ussd/).</p>
+    <ul>
+      <li><strong>Key endpoints:</strong> <code>POST /transactions/preview</code> (amount + MDR fee breakdown), <code>POST /transactions</code> (start a merchant payment), <code>GET /transactions/{id}</code> (status), <code>GET /transactions</code> (history), <code>/merchants/*</code> (onboarding, settlement, till / QR), <code>/auth/otp/*</code>.</li>
+      <li><strong>USSD channel</strong> drives the customer-initiated dial-through (QR encodes a <code>tel:*123*1001%23</code> string; the till is <code>*123*1001#</code>).</li>
+      <li><strong>Webhooks from pawaPay</strong> are verified with <strong>RFC-9421 public-key signatures (ECDSA-P256)</strong> — <em>not</em> HMAC — by fetching pawaPay's public key. (This was a corrected assumption.)</li>
+    </ul>
+    <p style="font-size:13px;color:var(--soft);">Full contracts: <a href="05-product-spec/api-contracts.md">api-contracts.md</a>.</p>
+
+    <!-- NONFUNC -->
+    <h2 id="nonfunc">Performance &amp; security targets</h2>
+    <ul>
+      <li>Mobile cold-start under 2s on a mid-range Android (Tecno/Infinix-class); crash-free sessions &gt; 99.5%.</li>
+      <li>API p95 under 300ms (non-pawaPay endpoints); reconciliation lag under 1 hour at steady state.</li>
+      <li>Merchant app passcode hashed with Argon2id; secrets in AWS Secrets Manager; daily DB backups with tested restore.</li>
+      <li>Accessibility: WCAG AA contrast, 48dp touch targets, screen-reader labels.</li>
+    </ul>
+
+    <!-- SCOPE -->
+    <h2 id="scope">In / out of scope (v1)</h2>
+    <table>
+      <tr><th>In v1</th><th>Out of v1 (later)</th></tr>
+      <tr><td>Merchant acceptance across M-Pesa / Airtel / Orange; <strong>merchant onboarding</strong> (settlement + till); <strong>QR</strong>; <strong>customer-initiated USSD</strong> + charge-by-number fallback; pass-through / instant settlement; merchant phone+OTP; history + WhatsApp receipts; French; light KYC via SIM (merchant KYC flagged)</td><td>Afrimoney (via MOKO); bank-account settlement; rewards; bill pay; a separate consumer app; cards; direct operator integration; Lingala/Swahili</td></tr>
+    </table>
+    <p>Feature-phone/USSD is <strong>in the MVP</strong> — it's the customer's primary, no-app way to pay, not a later phase. A separate <strong>consumer app</strong> is the much-later item.</p>
+
+    <!-- OPEN -->
+    <h2 id="open">Open decisions</h2>
+    <ul>
+      <li><strong>MDR level</strong> — the merchant fee. 1% is a placeholder and is <em>below</em> the ~3.5–5% pawaPay round-trip cost; a viable MDR is likely ~5–7%+. This pricing decision is open and must be settled before the pilot.</li>
+      <li><strong>Backend language</strong> — Python (FastAPI, as built) vs Node; the final call sits with the backend engineer.</li>
+      <li><strong>Monetisation levers</strong> (from the comparables research) to fold in: MDR on acceptance (the core earner here), <strong>CDF↔USD FX spread</strong>, capital-light partner-bank lending later.</li>
+      <li><strong>Legal/licensing posture</strong> (BCC) — the standing flag.</li>
+    </ul>
+
+    <p class="meta" style="margin-top:30px;">Product spec summary · generated 2026-06-09 · full detail in <a href="05-product-spec/README.md">05-product-spec/</a>.</p>
+  </main>
+</div>
+</body>
+</html>

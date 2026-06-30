@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC Payment App — Research &amp; Reports Summary</title>
+<style>
+  :root{--bg:#fff;--bg-alt:#f7f7f5;--text:#1a1a1a;--soft:#555;--border:#e0e0dc;--accent:#1d3557;--accent-soft:#457b9d;--link:#0a4f8c;--coral:#FF6B5B;--good:#166534;--mid:#92400e;--low:#991b1b;--warn:#b45309;--code:#f1ede2;}
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);margin:0;line-height:1.55;font-size:15px;}
+  .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
+  nav.side{background:var(--bg-alt);border-right:1px solid var(--border);padding:28px 22px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:13.5px;}
+  nav.side .t{font-weight:700;font-size:15px;color:var(--accent);}
+  nav.side .s{font-size:12px;color:var(--soft);margin-bottom:16px;}
+  nav.side h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:18px 0 6px;font-weight:600;}
+  nav.side a{display:block;padding:4px 0;color:var(--accent);text-decoration:none;}
+  nav.side a:hover{text-decoration:underline;}
+  nav.side .ph{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;margin-right:7px;}
+  main{padding:38px 56px 90px;max-width:1000px;}
+  h1{font-size:28px;margin:0 0 6px;color:var(--accent);}
+  h2{font-size:21px;color:var(--accent);margin:0;}
+  h3{font-size:15px;color:var(--accent);margin:14px 0 4px;text-transform:uppercase;letter-spacing:.04em;font-size:12px;color:var(--soft);font-weight:700;}
+  p{margin:6px 0 12px;}
+  a{color:var(--link);text-decoration:none;border-bottom:1px solid #b3cce6;}
+  a:hover{background:#eef4fa;}
+  code,.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 5px;border-radius:3px;}
+  ul{margin:4px 0 10px;padding-left:20px;} li{margin:3px 0;}
+  .meta{font-size:13px;color:var(--soft);margin:4px 0 18px;}
+  .lead{font-size:16px;background:#eef4fa;border-left:4px solid var(--accent-soft);padding:14px 18px;margin:14px 0 22px;border-radius:0 4px 4px 0;}
+  .how{background:var(--bg-alt);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin:0 0 26px;font-size:14px;}
+  .phase{border:1px solid var(--border);border-radius:8px;margin:0 0 18px;background:#fff;overflow:hidden;}
+  .phase .head{padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--border);background:var(--bg-alt);}
+  .phase .num{flex:none;width:34px;height:34px;line-height:34px;text-align:center;border-radius:50%;color:#fff;font-weight:700;font-size:16px;}
+  .phase .ttl{flex:1;}
+  .phase .ttl .q{font-size:18px;font-weight:700;color:var(--accent);}
+  .phase .ttl .when{font-size:12px;color:var(--soft);}
+  .phase .body{padding:14px 20px 18px;}
+  .decision{background:#f0fdf4;border-left:3px solid var(--good);padding:8px 12px;margin:10px 0 6px;border-radius:0 4px 4px 0;font-size:14px;}
+  .decision strong{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--good);}
+  .docs{font-size:13px;color:var(--soft);margin-top:10px;}
+  .badge{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+  .b-done{background:#dcfce7;color:var(--good);} .b-now{background:#fef3c7;color:var(--mid);} .b-next{background:#e0e7ff;color:#3730a3;}
+  .arrow{text-align:center;color:var(--accent-soft);font-size:20px;margin:-6px 0 8px;}
+  .c0{background:#64748b;} .c1{background:#2563eb;} .c2{background:#7c3aed;} .c3{background:#0891b2;} .c4{background:#0d9488;} .c5{background:#ca8a04;} .c6{background:var(--coral);}
+  .callout{background:#fff8e6;border-left:4px solid var(--warn);padding:10px 14px;margin:10px 0;font-size:13.5px;border-radius:0 4px 4px 0;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}main{padding:24px;}}
+  @media print{nav.side{display:none;}main{padding:0;max-width:100%;}.layout{grid-template-columns:1fr;}a{border-bottom:none;color:var(--text);}.phase{page-break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side">
+    <div class="t">DRC Payment App</div>
+    <div class="s">Research &amp; reports summary</div>
+    <h2>Top</h2>
+    <a href="#top">Overview</a>
+    <a href="#how">How to read this</a>
+    <h2>Research journey (oldest → newest)</h2>
+    <a href="#p1"><span class="ph c1">1</span>Feasibility</a>
+    <a href="#p2"><span class="ph c2">2</span>Build vs rent</a>
+    <a href="#p3"><span class="ph c3">3</span>Product spec</a>
+    <a href="#p4"><span class="ph c4">4</span>Offline / USSD</a>
+    <a href="#p5"><span class="ph c5">5</span>Architecture comparison</a>
+    <a href="#p6"><span class="ph c6">6</span>Comparative research</a>
+    <h2>Also</h2>
+    <a href="#whatsnext">What's next</a>
+    <a href="report.html">→ Full research report</a>
+    <a href="product-spec.html">→ Product spec summary</a>
+  </nav>
+  <main>
+    <h1 id="top">Research &amp; reports — summary</h1>
+    <div class="meta">Updated 2026-06-09 · A plain-English digest of every research phase, newest at the bottom. Each section links to the full write-up. Sources for every claim live in the linked files and <a href="04-sources/sources.md">04-sources/sources.md</a>.</div>
+
+    <div class="lead">
+      This project set out to answer one question — <strong>can we build a DRC cross-network payment app on rented rails, and how?</strong> — and the answer became <strong>yes, on pawaPay.</strong> Along the way the work widened into product design, an architecture bake-off, and a study of other fintechs — and the product itself <strong>pivoted to a merchant-acquiring app</strong> (a customer pays a merchant; USSD is a first-class channel). This page is the running summary of that journey.
+    </div>
+
+    <div class="how" id="how">
+      <strong>How to read this:</strong> sections are ordered <strong>oldest first, newest last</strong> — scroll to the <strong>bottom for the most recent research</strong> (the architecture comparison and the comparative-fintech study). Each phase shows the question it answered, the key findings, the decision it produced, and links to the detail.
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="phase" id="p1">
+      <div class="head"><div class="num c1">1</div><div class="ttl"><div class="q">Can we even build it, and how?</div><div class="when">Feasibility research · the original question</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we found</h3>
+        <ul>
+          <li><strong>Operators:</strong> Airtel has the most developer-friendly API (self-serve sandbox, OAuth); M-Pesa is full-featured but partner-gated; Orange's public API is collection-only; Afrimoney has &lt;1% share and no public developer portal. <strong>None publish their API fees.</strong></li>
+          <li><strong>Aggregators ("rented rails"):</strong> <strong>pawaPay</strong> covers 3 of the 4 operators (M-Pesa, Airtel, Orange) with <em>published</em> per-leg pricing and a self-serve sandbox. MOKO is the only one covering all 4 (incl. Afrimoney); DPO is cards-first; Onafriq is a PSP-to-PSP hub.</li>
+          <li><strong>Cost:</strong> ~3.5–5% per round-trip via pawaPay (before currency exchange).</li>
+          <li><strong>Paying someone:</strong> by phone number (MSISDN) — there is <strong>no national QR standard</strong> in the DRC. <strong>KYC</strong> rides the user's existing SIM registration.</li>
+        </ul>
+        <div class="decision"><strong>Decision</strong> Build the MVP on <strong>pawaPay</strong>, covering M-Pesa + Airtel + Orange (~99% of users). <em>(Direction since updated — see the pivot below: the MVP is now a <strong>merchant-acquiring</strong> app, so <strong>merchant onboarding is in scope</strong> and addressing is by merchant till / QR, with a charge-by-customer-number fallback.)</em> Open a separate legal/licensing track.</div>
+        <div class="docs">Detail: <a href="03-reports/recommendation.md">recommendation.md</a> · <a href="03-reports/feasibility-summary.md">feasibility-summary.md</a> · <a href="03-reports/operator-api-comparison.md">operator-api-comparison.md</a> · <a href="03-reports/aggregator-comparison.md">aggregator-comparison.md</a> · <a href="report.html">report.html</a></div>
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+
+    <!-- PHASE 2 -->
+    <div class="phase" id="p2">
+      <div class="head"><div class="num c2">2</div><div class="ttl"><div class="q">Should we build our own rails instead of renting?</div><div class="when">Build-vs-rent + Hub2 check</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we found</h3>
+        <ul>
+          <li>Building our own aggregator is <strong>technically feasible but strategically wrong for v1</strong>: it needs four separate operator contracts (commercially hard), a <strong>BCC licence with US$2.5M minimum capital</strong> (regulatory gate), and it only saves pawaPay's ~1% margin — <strong>not</strong> the operator fees we'd still pay.</li>
+          <li><strong>Hub2</strong> (a Francophone-Africa aggregator) is <strong>not live in the DRC</strong> — worth re-checking in 12–24 months, not now.</li>
+        </ul>
+        <div class="decision"><strong>Decision</strong> Rent now (pawaPay); consider owning rails only much later (hybrid v3+), once volume justifies it.</div>
+        <div class="docs">Detail: <a href="02-findings/cross-cutting/own-aggregator.md">own-aggregator.md</a> · <a href="02-findings/aggregators/hub2.md">hub2.md (removed — not in DRC)</a></div>
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+
+    <!-- PHASE 3 -->
+    <div class="phase" id="p3">
+      <div class="head"><div class="num c3">3</div><div class="ttl"><div class="q">How will the app actually work?</div><div class="when">Product spec</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we decided</h3>
+        <ul>
+          <li><strong>One merchant-acceptance flow</strong> — a customer pays a registered merchant; primary path is <strong>customer-initiated USSD</strong> (scan the merchant's QR / dial the till), with a <strong>charge-by-customer-number</strong> fallback. <strong>Pure pass-through, instant settlement</strong> (we never hold funds). The customer pays the <strong>exact sticker price</strong>; the <strong>merchant absorbs our fee (MDR)</strong> and approves on their own operator PIN prompt (no customer app). <strong>Merchant onboarding</strong> (settlement + till) is in scope.</li>
+          <li><strong>Stack:</strong> React Native + Expo (merchant app), AWS Cape Town, Postgres + Redis, Africa's Talking (SMS) + Smile ID (KYC, later) + Sentry + PostHog. Backend built in Python / FastAPI; the final language call was left to the hired engineer.</li>
+        </ul>
+        <div class="decision"><strong>Output</strong> A full spec: functionality, UI, screens, data model (Merchant / Transaction / LedgerEntry), API + USSD contracts.</div>
+        <div class="docs">Detail: <a href="05-product-spec/README.md">05-product-spec/</a> · summary: <a href="product-spec.html">product-spec.html</a></div>
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+
+    <!-- PHASE 4 -->
+    <div class="phase" id="p4">
+      <div class="head"><div class="num c4">4</div><div class="ttl"><div class="q">Can it work without internet?</div><div class="when">Offline / feature-phone (USSD) feasibility</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we found</h3>
+        <ul>
+          <li>A phone <strong>cannot "be pawaPay"</strong> — bridging networks needs a server that briefly holds funds. But the operators already do cross-network sends over USSD, so an offline app could <strong>drive those existing menus</strong> (Android-only, fragile, no fee capture).</li>
+          <li>It's a convenience layer, not a payments business on its own — best as a phased channel.</li>
+        </ul>
+        <div class="decision"><strong>Decision (later updated)</strong> Originally "v2 wedge." Now <strong>MVP-critical</strong>: in the merchant-acquiring pivot, customer-initiated USSD <em>is</em> the customer's primary way to pay (no app), built in the MVP — not a later phase. The audience is no longer limited to urban smartphone users.</div>
+        <div class="docs">Detail: <a href="02-findings/cross-cutting/offline-ussd-feasibility.md">offline-ussd-feasibility.md</a></div>
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+
+    <!-- PHASE 5 -->
+    <div class="phase" id="p5">
+      <div class="head"><div class="num c5">5</div><div class="ttl"><div class="q">Our design vs the merchant-QR brief</div><div class="when">Architecture comparison — verdict since reversed</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we found</h3>
+        <ul>
+          <li>The two were <strong>different products</strong>: the design at the time was a <strong>consumer cross-network pass-through</strong> (collect + pay out, no merchant sign-up); the brief was a <strong>merchant-acquiring QR</strong> system (collection into a merchant, merchants onboard). The original write-up scored the dimensions in favour of the consumer model.</li>
+          <li><strong>This verdict has since been reversed.</strong> The product pivoted to the <strong>merchant-acquiring</strong> model: merchant onboarding, a QR / till the customer scans or dials, and customer-initiated USSD are now exactly what we build. The plumbing both designs share (collect → settle on pawaPay, double-entry ledger, reconciliation) carried over unchanged.</li>
+          <li><strong>Adopted from the merchant brief:</strong> a separate webhook service, an operator status-code lookup table, and a 5-question aggregator-vetting checklist.</li>
+        </ul>
+        <div class="callout"><strong>It also caught real bugs in the spec</strong> (now fixed): pawaPay signs callbacks with <strong>RFC-9421 public-key signatures, not HMAC</strong>; <strong>AWS App Runner isn't available in Cape Town</strong> (use Fargate); and our latency figure was optimistic. Also: <strong>Flutterwave doesn't actually serve DRC mobile money</strong> (the brief's claim was wrong).</div>
+        <div class="decision"><strong>Decision (updated)</strong> Adopt the <strong>merchant-acquiring / QR</strong> product model — it is the MVP. Keep the shared pass-through plumbing and the borrowed webhook / status-code / vetting ideas.</div>
+        <div class="docs">Detail: <a href="03-reports/architecture-comparison.md">architecture-comparison.md</a></div>
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+
+    <!-- PHASE 6 -->
+    <div class="phase" id="p6">
+      <div class="head"><div class="num c6">6</div><div class="ttl"><div class="q">What can we learn from other fintechs?</div><div class="when">Comparative research · most recent</div></div><span class="badge b-done">done</span></div>
+      <div class="body">
+        <h3>What we found (8 companies: M-Pesa, Wave, OPay/PalmPay, MTN/Airtel, Chipper/Flutterwave, Onafriq, bKash, global super-apps)</h3>
+        <ul>
+          <li><strong>The big lesson:</strong> moving money earns almost nothing — it wins customers and gathers data. The money is in what comes after: <strong>merchant acceptance → lending → wealth/insurance.</strong> The pivot puts us at that first earner — <strong>merchant acceptance — from day one.</strong></li>
+          <li><strong>Our gap:</strong> pass-through forgoes the other usual earners (float, cash-out fees, agent networks). The earner we <em>do</em> have on day one is the <strong>MDR</strong> charged to merchants on each accepted payment.</li>
+          <li><strong>Our realistic levers:</strong> the <strong>MDR on merchant acceptance</strong> (the core earner, and now the MVP itself), the <strong>US$↔CDF currency-exchange margin</strong> (the one adjacency we uniquely have), and <strong>capital-light lending later via a partner bank</strong> (M-Pesa/bKash pattern).</li>
+          <li><strong>Feature-phone/USSD is proven first-class:</strong> M-Pesa ran 14 years before its app and is still mostly USSD; bKash ran USSD-only for ~7 years. Our customers pay by USSD with no app — it's the MVP's primary customer channel.</li>
+          <li><strong>Biggest risk:</strong> we depend on the very operators we compete with — when Wave undercut Orange, Orange blocked Wave from selling its airtime for a year.</li>
+        </ul>
+        <div class="decision"><strong>Scope change</strong> The MVP is <strong>merchant-acquiring</strong>; <strong>merchant acquisition (the ~40 gas stations + pop-up stores) is the go-to-market</strong>; <strong>customer-initiated USSD is an MVP-critical channel</strong>; the audience is not limited to urban smartphone users; comparative product-strategy research is in scope.</div>
+        <div class="docs">Detail (plain English): <a href="03-reports/comparables-synthesis.md">comparables-synthesis.md</a> · profiles: <a href="02-findings/comparables/">02-findings/comparables/</a></div>
+      </div>
+    </div>
+
+    <!-- WHAT'S NEXT -->
+    <h2 id="whatsnext" style="margin-top:40px;border-top:2px solid var(--border);padding-top:18px;">What's next <span class="badge b-next" style="vertical-align:middle;">upcoming</span></h2>
+    <p>Research and the product spec are in good shape, and the build of the merchant app has begun (Python/FastAPI backend with the ledger / merchants / transactions domains and HTTP + USSD channels). Open questions worth resolving in parallel: the <strong>MDR pricing decision</strong> (1% placeholder is below the ~3.5–5% pawaPay cost), the legal/licensing posture (BCC), a real per-leg price check with pawaPay, and the per-operator USSD shortcode lead times for the ~40-gas-station rollout.</p>
+    <p class="meta" style="margin-top:30px;">Reports summary · generated 2026-06-09 · detail in <code>03-reports/</code> and <code>02-findings/</code> · sources in <a href="04-sources/sources.md">04-sources/sources.md</a>.</p>
+  </main>
+</div>
+</body>
+</html>

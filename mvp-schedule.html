@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC payment app — MVP build schedule (Phase 0 + 1)</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f7f7f5;
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --border: #e0e0dc;
+    --accent: #1d3557;
+    --accent-soft: #457b9d;
+    --link: #0a4f8c;
+    --good: #166534;
+    --mid: #92400e;
+    --low: #991b1b;
+    --warn: #b45309;
+    --code-bg: #f1ede2;
+    --p0: #6366f1;
+    --p1: #2563eb;
+    --buffer: #94a3b8;
+    --role-f: #a21caf;
+    --role-b: #2563eb;
+    --role-m: #16a34a;
+    --role-d: #ea580c;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  nav.sidebar {
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border);
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    font-size: 13px;
+  }
+  nav.sidebar h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-soft);
+    margin: 18px 0 6px;
+    font-weight: 600;
+  }
+  nav.sidebar h2:first-of-type { margin-top: 0; }
+  nav.sidebar a {
+    display: block;
+    padding: 3px 0;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  nav.sidebar a:hover { text-decoration: underline; }
+  nav.sidebar .nav-title { font-weight: 700; font-size: 15px; color: var(--accent); margin-bottom: 4px; }
+  nav.sidebar .nav-sub { font-size: 12px; color: var(--text-soft); margin-bottom: 16px; }
+  nav.sidebar .nav-week {
+    display: inline-block;
+    min-width: 28px;
+    font-weight: 600;
+    color: var(--text-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  nav.sidebar .phase-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  main {
+    padding: 36px 56px 80px;
+    max-width: 1100px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 6px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 22px;
+    color: var(--accent);
+    margin: 44px 0 8px;
+    padding-top: 12px;
+    border-top: 2px solid var(--border);
+  }
+  h3 { font-size: 17px; color: var(--accent); margin: 20px 0 6px; }
+  h4 { font-size: 14px; color: var(--text); margin: 12px 0 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-soft); }
+  p { margin: 6px 0 12px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid #b3cce6; }
+  a:hover { background: #eef4fa; }
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  ul, ol { margin: 4px 0 8px; padding-left: 18px; }
+  li { margin: 2px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 13.5px;
+  }
+  th, td { text-align: left; padding: 8px 10px; border: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-alt); font-weight: 600; }
+  tr:nth-child(even) td { background: #fafaf7; }
+  .meta { font-size: 13px; color: var(--text-soft); margin: 4px 0 16px; }
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+    line-height: 1.6;
+  }
+  .b-p0 { background: #ede9fe; color: #4338ca; }
+  .b-p1 { background: #dbeafe; color: #1e40af; }
+  .b-buffer { background: #f1f5f9; color: #475569; }
+  .lead {
+    font-size: 16px;
+    background: #eef4fa;
+    border-left: 4px solid var(--accent-soft);
+    padding: 14px 18px;
+    margin: 14px 0 24px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout {
+    background: #fff8e6;
+    border-left: 4px solid var(--warn);
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 14px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-good { background: #f0fdf4; border-left-color: var(--good); }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 14px 0 24px;
+  }
+  .stat-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .stat-box strong { color: var(--accent); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-box .v { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 4px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 24px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .strip {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 14px 0 24px;
+    overflow-x: auto;
+  }
+  .strip-bars { display: grid; grid-template-columns: 220px repeat(19, 1fr); gap: 1px; align-items: center; font-size: 11.5px; }
+  .strip-bars .week-h { text-align: center; color: var(--text-soft); font-weight: 600; }
+  .strip-bars .row-l { font-size: 12px; padding: 4px 6px 4px 0; color: var(--text-soft); }
+  .seg { height: 16px; border-radius: 2px; }
+  .seg.p0 { background: var(--p0); }
+  .seg.p1 { background: var(--p1); }
+  .seg.buf { background: var(--buffer); opacity: 0.6; }
+  .seg.dot { background: transparent; position: relative; }
+  .seg.dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; background: var(--low); border-radius: 50%; transform: translate(-50%, -50%); }
+  .week-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 14px 0;
+    background: #fff;
+    overflow: hidden;
+  }
+  .week-card .wk-head {
+    padding: 10px 18px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .week-card .wk-num {
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.22);
+    padding: 3px 10px;
+    border-radius: 12px;
+  }
+  .week-card .wk-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .week-card .wk-phase { font-size: 11.5px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em; }
+  .week-card.p0 .wk-head { background: var(--p0); }
+  .week-card.p1 .wk-head { background: var(--p1); }
+  .week-card.buf .wk-head { background: var(--buffer); }
+  .week-card .wk-body { padding: 12px 18px 16px; font-size: 13.5px; }
+  .week-card .wk-goal {
+    background: var(--bg-alt);
+    border-left: 3px solid var(--accent-soft);
+    padding: 8px 12px;
+    margin: 6px 0 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+  }
+  .role-line {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 10px;
+    padding: 5px 0;
+    border-top: 1px dashed var(--border);
+    font-size: 13px;
+  }
+  .role-line:first-of-type { border-top: none; }
+  .role-tag {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 3px;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: center;
+    align-self: start;
+  }
+  .role-tag.f { background: var(--role-f); }
+  .role-tag.b { background: var(--role-b); }
+  .role-tag.m { background: var(--role-m); }
+  .role-tag.d { background: var(--role-d); }
+  .deliverable {
+    background: #f0fdf4;
+    border-left: 3px solid var(--good);
+    padding: 6px 10px;
+    margin: 8px 0 4px;
+    font-size: 12.5px;
+    border-radius: 0 3px 3px 0;
+  }
+  .watch {
+    background: #fff8e6;
+    border-left: 3px solid var(--warn);
+    padding: 6px 10px;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    border-radius: 0 3px 3px 0;
+  }
+  .slack {
+    background: #f1f5f9;
+    border-left: 3px solid var(--buffer);
+    padding: 6px 10px;
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    border-radius: 0 3px 3px 0;
+  }
+  .deliverable strong, .watch strong, .slack strong { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .milestone-banner {
+    background: linear-gradient(90deg, #fef3c7, #fefcb1);
+    border: 1px solid #f0c674;
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 14px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mid);
+  }
+  .milestone-banner::before {
+    content: "★";
+    margin-right: 8px;
+    color: var(--warn);
+  }
+  @media print {
+    nav.sidebar { display: none; }
+    main { padding: 0; max-width: 100%; }
+    .layout { grid-template-columns: 1fr; }
+    a { color: var(--text); border-bottom: none; }
+    .week-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-title">DRC payment app</div>
+    <div class="nav-sub">MVP build schedule · 19 weeks</div>
+
+    <h2>Top</h2>
+    <a href="#summary">Overview</a>
+    <a href="#strip">Timeline strip</a>
+    <a href="#critical-path">Critical path</a>
+    <a href="#wiggle">Wiggle-room philosophy</a>
+
+    <h2>Phase 0 · Foundation (W1-5)</h2>
+    <a href="#w1"><span class="nav-week">W1</span> <span class="phase-dot" style="background:var(--p0);"></span>Kickoff</a>
+    <a href="#w2"><span class="nav-week">W2</span> <span class="phase-dot" style="background:var(--p0);"></span>Architecture &amp; vendors</a>
+    <a href="#w3"><span class="nav-week">W3</span> <span class="phase-dot" style="background:var(--p0);"></span>Design system &amp; wireframes</a>
+    <a href="#w4"><span class="nav-week">W4</span> <span class="phase-dot" style="background:var(--p0);"></span>Merchant auth scaffolding</a>
+    <a href="#w5"><span class="nav-week">W5</span> <span class="phase-dot" style="background:var(--buffer);"></span>Hello-world tx + catch-up</a>
+
+    <h2>Phase 1 · Build (W6-19)</h2>
+    <a href="#w6"><span class="nav-week">W6</span> <span class="phase-dot" style="background:var(--p1);"></span>Ledger v1</a>
+    <a href="#w7"><span class="nav-week">W7</span> <span class="phase-dot" style="background:var(--p1);"></span>Customer collection + USSD</a>
+    <a href="#w8"><span class="nav-week">W8</span> <span class="phase-dot" style="background:var(--p1);"></span>Merchant settlement</a>
+    <a href="#w9"><span class="nav-week">W9</span> <span class="phase-dot" style="background:var(--p1);"></span>End-to-end round-trip</a>
+    <a href="#w10"><span class="nav-week">W10</span> <span class="phase-dot" style="background:var(--buffer);"></span>Mid-phase catch-up</a>
+    <a href="#w11"><span class="nav-week">W11</span> <span class="phase-dot" style="background:var(--p1);"></span>History &amp; receipts</a>
+    <a href="#w12"><span class="nav-week">W12</span> <span class="phase-dot" style="background:var(--p1);"></span>Reconciliation</a>
+    <a href="#w13"><span class="nav-week">W13</span> <span class="phase-dot" style="background:var(--p1);"></span>Admin &amp; support tools</a>
+    <a href="#w14"><span class="nav-week">W14</span> <span class="phase-dot" style="background:var(--p1);"></span>Edge cases</a>
+    <a href="#w15"><span class="nav-week">W15</span> <span class="phase-dot" style="background:var(--p1);"></span>Localisation</a>
+    <a href="#w16"><span class="nav-week">W16</span> <span class="phase-dot" style="background:var(--p1);"></span>Load &amp; reliability</a>
+    <a href="#w17"><span class="nav-week">W17</span> <span class="phase-dot" style="background:var(--p1);"></span>Internal dogfood</a>
+    <a href="#w18"><span class="nav-week">W18</span> <span class="phase-dot" style="background:var(--p1);"></span>Bug bash &amp; polish</a>
+    <a href="#w19"><span class="nav-week">W19</span> <span class="phase-dot" style="background:var(--p1);"></span>Code freeze &amp; review</a>
+
+    <h2>Reference</h2>
+    <a href="#costs">Costs &amp; resourcing</a>
+    <a href="#risks">Risk watch</a>
+    <a href="#next">What's next (Phase 2)</a>
+    <a href="roadmap.html">→ Full roadmap</a>
+    <a href="report.html">→ Research report</a>
+    <a href="05-product-spec/">→ Product spec</a>
+  </nav>
+
+  <main>
+    <h1>MVP build schedule — Phase 0 + Phase 1</h1>
+    <div class="meta">Date: 2026-06-04 · Team: 4 (Founder/PM + Backend + Mobile + Designer/4th eng) · Stack: React Native + Expo (merchant app), Python / FastAPI backend (as built; Node remains an option) · Cloud: AWS Cape Town · Endpoint: merchant-acceptance MVP feature-complete on pawaPay sandbox, code-frozen, ready for production cutover · Spec basis: <a href="05-product-spec/">05-product-spec/</a></div>
+
+    <div class="lead">
+      <strong>This schedule is spec-informed.</strong> Every week's deliverables tie back to concrete items in the product spec (merchant onboarding + accept screens, the core <strong>Merchant / Transaction / LedgerEntry</strong> model with a double-entry ledger, and the REST + USSD channels in <a href="05-product-spec/api-contracts.md">api-contracts.md</a>). The 19-week structure is unchanged from the prior version; the detail per week is tighter. A <a href="#costs">costs section</a> is added at the end.
+    </div>
+
+    <!-- ===== SUMMARY ===== -->
+    <h2 id="summary">Overview</h2>
+
+    <div class="stat-grid">
+      <div class="stat-box"><strong>Total weeks</strong><div class="v">19</div>To code freeze (was 16; +3 weeks wiggle)</div>
+      <div class="stat-box"><strong>Phase 0</strong><div class="v">W1–5</div>Foundation (was 4 wk; +1 catch-up)</div>
+      <div class="stat-box"><strong>Phase 1</strong><div class="v">W6–19</div>Build (was 12 wk; +2 catch-up)</div>
+      <div class="stat-box"><strong>What's next</strong><div class="v">Phase 2</div>Production cutover + closed beta + store launch (separate plan)</div>
+    </div>
+
+    <div class="lead">
+      <strong>19 weeks (~4.5 months) from kickoff to a feature-complete, code-frozen MVP on the pawaPay sandbox.</strong> The endpoint is "ready for production cutover" — Phase 2 (production deploy, closed beta, App Store + Play Store launch) is intentionally out of scope here and handled separately. The schedule front-loads slow external dependencies (legal counsel, pawaPay production KYC) so they're complete well before they could block Phase 2.
+    </div>
+
+    <h3 id="wiggle">Wiggle-room philosophy</h3>
+    <p>Schedules look fastest on paper and slowest in reality. This plan bakes in <strong>~19% slack vs. the aggressive baseline</strong> (16 → 19 weeks) by:</p>
+    <ul>
+      <li><strong>Adding one explicit catch-up week at the end of Phase 0</strong> (W5) — for anything that didn't quite land in W1–4 plus the first hello-world transaction.</li>
+      <li><strong>Adding one explicit mid-phase catch-up week</strong> (W10, right after end-to-end round-trip works) — for whatever the first half of Phase 1 revealed.</li>
+      <li><strong>Right-sizing per-week deliverables</strong> — every week has a single clear primary outcome, not a list of 5 things that all have to land Friday.</li>
+      <li><strong>Calling out "slack to use" explicitly</strong> in catch-up weeks — they're not buffer to absorb later, they're work weeks with the team's own backlog as input.</li>
+      <li><strong>Under-promising on milestones</strong> — the mid-MVP round-trip lands in W9, not W6, and code freeze is W19, not W13.</li>
+    </ul>
+
+    <h3>Team key</h3>
+    <div style="margin: 10px 0 16px;">
+      <span class="role-tag f">F</span> Founder / PM &nbsp;
+      <span class="role-tag b">B</span> Backend engineer (Python / FastAPI as built) &nbsp;
+      <span class="role-tag m">M</span> Mobile engineer (React Native + Expo merchant app) &nbsp;
+      <span class="role-tag d">D</span> Designer / 4th engineer
+    </div>
+
+    <h3>Scope locked at start</h3>
+    <ul>
+      <li><strong>In:</strong> a merchant app (onboarding + accept flow); <strong>merchant onboarding</strong> (settlement account + till / short code; KYC flagged); <strong>customer-initiated USSD payment</strong> (scan the merchant's <strong>QR</strong> — a <code>tel:</code> USSD dial-through — or dial the till) with a <strong>charge-by-customer-number fallback</strong>; pawaPay-backed collect→bridge→settle; M-Pesa + Airtel + Orange (3 of 4 DRC operators); CDF + USD; French primary UI; MSISDN-based addressing; merchant auth.</li>
+      <li><strong>Out:</strong> Afrimoney, bank-account settlement, rewards, bill pay, a separate consumer app, cards, direct operator integrations, Lingala/Swahili.</li>
+      <li><strong>Out of THIS schedule (handled by Phase 2):</strong> production cutover, closed merchant beta, App Store + Play Store submission, public launch.</li>
+    </ul>
+
+    <!-- ===== TIMELINE STRIP ===== -->
+    <h2 id="strip">Timeline strip</h2>
+    <p>Visual overview of all 19 weeks with major milestones marked. Catch-up weeks (W5 and W10) are slightly faded to indicate their flexible nature.</p>
+
+    <div class="strip">
+      <div class="strip-bars">
+        <div class="row-l"></div>
+        <div class="week-h">W1</div><div class="week-h">2</div><div class="week-h">3</div><div class="week-h">4</div>
+        <div class="week-h">5</div><div class="week-h">6</div><div class="week-h">7</div><div class="week-h">8</div>
+        <div class="week-h">9</div><div class="week-h">10</div><div class="week-h">11</div><div class="week-h">12</div>
+        <div class="week-h">13</div><div class="week-h">14</div><div class="week-h">15</div><div class="week-h">16</div>
+        <div class="week-h">17</div><div class="week-h">18</div><div class="week-h">19</div>
+
+        <div class="row-l">Foundation</div>
+        <div class="seg p0"></div><div class="seg p0"></div><div class="seg p0"></div><div class="seg p0"></div>
+        <div class="seg buf"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+
+        <div class="row-l">MVP build (sandbox)</div>
+        <div></div><div></div><div></div><div></div><div></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+        <div class="seg buf"></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+        <div class="seg p1"></div>
+
+        <div class="row-l">Major milestones</div>
+        <div></div>
+        <div class="seg dot" title="pawaPay sandbox + production KYC submitted"></div>
+        <div></div><div></div>
+        <div class="seg dot" title="First sandbox transaction"></div>
+        <div></div><div></div><div></div>
+        <div class="seg dot" title="End-to-end round-trip working"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        <div class="seg dot" title="Internal dogfood begins"></div>
+        <div></div>
+        <div class="seg dot" title="Code freeze; MVP complete"></div>
+      </div>
+    </div>
+
+    <!-- ===== CRITICAL PATH ===== -->
+    <h2 id="critical-path">Critical path</h2>
+    <p>Two external dependencies can slip the timeline. Both are front-loaded so the buffer absorbs any delay <em>before</em> they could block Phase 2.</p>
+
+    <table>
+      <thead><tr><th>Dependency</th><th>Started in</th><th>Needed by</th><th>Typical duration</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Legal / counsel opinion</strong> on partner-PSP question</td>
+          <td>Week 1</td>
+          <td>Week 5 (architecture lock-in latest)</td>
+          <td>2–4 weeks</td>
+          <td>Engage Day 1; have backup firm on standby; default to "operate under pawaPay's regulatory cover" pending counsel.</td>
+        </tr>
+        <tr>
+          <td><strong>pawaPay production KYC</strong></td>
+          <td>Week 2</td>
+          <td>Week 19 (Phase 2 entry, with margin)</td>
+          <td>2–4 weeks (questionnaire + 3-business-day doc turnaround + Compliance review)</td>
+          <td>Submit in W2; respond to info requests within 24h. Should complete by W6–W8 — well ahead of need.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- ===== PHASE 0 ===== -->
+    <h2>Phase 0 — Foundation (Weeks 1-5)</h2>
+
+    <!-- WEEK 1 -->
+    <div class="week-card p0" id="w1">
+      <div class="wk-head"><span class="wk-num">Week 1</span><div class="wk-title">Kickoff &amp; legal engagement</div><span class="wk-phase">Phase 0</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> team is set up; counsel is engaged; every key external dependency has its clock started. Low-pressure first week — establish rhythm.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Engage DRC-registered fintech / banking counsel. Submit the partner-PSP question (per <a href="report.html#kyc">KYC research</a>). Provisional name + domain. Set up Linear/Notion + Slack + GitHub org. Start identifying 5–10 design partners for later user testing.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Bootstrap the backend repo (Python / FastAPI, Postgres, Redis). CI baseline (lint, type-check, test). Pick hosting (recommend AWS Cape Town or GCP Europe). Stand up dev environment.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Bootstrap Expo project (managed workflow — recommended for team velocity). Set up TypeScript, ESLint, Prettier. Add navigation skeleton (Expo Router or React Navigation). Configure EAS Build.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Audit competitor apps (Wave, Vodacom M-Pesa app, Orange Money app, Afrimoney). DRC-specific UX patterns. Moodboard. Start brand exploration (logo, palette, type).</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Empty Expo app builds on both platforms; backend "hello world" endpoint responds; CI green; counsel retainer signed.</div>
+        <div class="watch"><strong>Watch:</strong> Apple's legal-entity rule for fintech apps — confirm with counsel which entity owns the eventual submission. Decide now to avoid rework in Phase 2.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 2 -->
+    <div class="week-card p0" id="w2">
+      <div class="wk-head"><span class="wk-num">Week 2</span><div class="wk-title">Architecture &amp; vendor signups</div><span class="wk-phase">Phase 0</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> architecture doc drafted; pawaPay sandbox active and production KYC submitted; Apple + Google developer accounts enrolled.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Sign up at <a href="https://dashboard.sandbox.pawapay.io/">pawaPay sandbox</a>. Start production KYC questionnaire — submit by end of week to begin the 2–4 week clock. Apple Developer Program + Google Play Console enrolment (Apple 1–2 days; Play 1 day).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Confirm architecture against the core <strong>Merchant / Transaction / LedgerEntry</strong> model (<a href="05-product-spec/data-model.md">data-model.md</a>) and the REST + USSD contracts (<a href="05-product-spec/api-contracts.md">api-contracts.md</a>), organised as domains/(ledger, merchants, transactions) → application/(start_merchant_payment, payment_codes) → channels(http/, ussd/). Set up AWS Cape Town account (af-south-1); provision dev + staging environments (ECS Fargate + RDS Postgres + ElastiCache Redis). Confirm backend language (built in Python / FastAPI — see <a href="05-product-spec/tech-stack.md">tech-stack.md</a>).</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Design system foundation in code: typography scale, color tokens, spacing, primary components (Button, Input, Card, ListItem). Tab navigation. Splash + loading skeletons.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Wireframes for the merchant-app screens + modals from <a href="05-product-spec/screens.md">screens.md</a>: merchant onboarding, accept / request-payment (with the displayable QR), charge-by-customer-number fallback, transaction history, and the daily-totals dashboard. Component-library Figma file v0.1 using the coral / cream / charcoal tokens from <a href="05-product-spec/ui-spec.md">ui-spec.md</a>.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Architecture doc drafted (team review next week). pawaPay sandbox dashboard accessible. Production KYC submitted. Wireframes shared.</div>
+        <div class="watch"><strong>Watch:</strong> pawaPay may request docs within 3 business days — assign a single owner (founder) for fast turnaround.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 3 -->
+    <div class="week-card p0" id="w3">
+      <div class="wk-head"><span class="wk-num">Week 3</span><div class="wk-title">Design system &amp; high-fidelity wireframes</div><span class="wk-phase">Phase 0</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> architecture signed off by team; high-fidelity Figma mockups complete in French; backend has first endpoints in place.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Architecture review with team (30-min synchronous; 1 day async comments). Settle the 10 open decisions from the <a href="roadmap.html#decisions">roadmap</a> (currency default, beachhead city, customer-support channel, etc.). Draft AML/CFT policy outline.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Backend scaffolding: FastAPI app, database connection, first migrations (Merchant, Session tables). Health-check endpoint. SMS provider evaluation (Twilio vs Africa's Talking).</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Build out the design-system components in code (Button variants, Input states, alerts, modals). Wire navigation graph end-to-end with empty screens.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>High-fidelity Figma for the core merchant screens in French (onboarding, accept / request-payment with QR, history, dashboard). Empty / loading / error states. Microcopy. Iconography (Phosphor / Lucide or custom).</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Architecture doc signed; high-fidelity designs handed off; navigation skeleton clickable in app.</div>
+        <div class="watch"><strong>Watch:</strong> French copy will be materially longer than English placeholders — verify button labels visually as designs come in.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 4 -->
+    <div class="week-card p0" id="w4">
+      <div class="wk-head"><span class="wk-num">Week 4</span><div class="wk-title">Merchant auth scaffolding</div><span class="wk-phase">Phase 0</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> a merchant can sign up via phone-OTP on a real device against the dev backend; auth state persists across app restarts.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Check pawaPay KYC progress — Compliance may have first questions by now. Confirm legal-entity that will own Apple / Google submissions. Begin sandbox-test scenario matrix (which test MSISDNs map to which outcomes).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Merchant-auth endpoints (phone-OTP send, verify, JWT issue + refresh). Merchant model + DB migrations. SMS provider integration. Rate-limit OTP requests. Test with real DRC numbers.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Phone-input UI (auto-prefixes <span class="mono">+243</span>, validates length). OTP screen with auto-fill. Auth-state management (Redux Toolkit or Zustand). Navigation guard: signed-in → merchant home, signed-out → onboarding.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Merchant-onboarding screen polish: welcome, privacy, terms (linked to legal pages). Empty merchant-home illustration. Error-state library finalised.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Real DRC SIM can OTP-sign-up a merchant against dev backend; lands on (empty) merchant home; persists across app restart.</div>
+        <div class="watch"><strong>Watch:</strong> test SMS deliverability with at least 2 real DRC SIMs (Vodacom + Airtel) — don't trust the provider's marketing without verification.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 5 -->
+    <div class="week-card buf" id="w5">
+      <div class="wk-head"><span class="wk-num">Week 5</span><div class="wk-title">Hello-world transaction + Phase 0 catch-up</div><span class="wk-phase">Phase 0 · buffer</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> trigger a pawaPay sandbox deposit from the backend end-to-end; absorb anything that slipped in W1–4; enter Phase 1 with confidence (not panic).</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Receive counsel's written opinion on partner-PSP question. Confirm AML policy outline reviewed. Catch up on any vendor / legal / partner conversations that slipped.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Implement pawaPay SDK wrapper (internal abstraction so swapping aggregators later is easy — relevant to <a href="roadmap.html#phase-5">long-term roadmap</a>). First sandbox deposit (collection) call. Webhook receiver with signature verification (placeholder for ngrok in dev). Catch up on any architecture items.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Operator inference from MSISDN prefix (configurable table). Merchant "request payment" entry screen (amount + currency) and the displayable <strong>QR</strong> (a <code>tel:</code> USSD dial-through). Catch up on any onboarding polish.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Accept-flow microinteractions and motion. Error states for invalid amounts, network failures. "Ask the customer to dial / scan, then approve on their phone" instruction screen (verbatim French copy). Visual QA on the merchant onboarding flow.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Trigger sandbox deposit from a Postman call → see status update via webhook → query final state. Phase 0 retro held; any blockers escalated.</div>
+        <div class="slack"><strong>Slack to use:</strong> if W1–4 went smoothly, this week's deliverable lands by Wed and the rest goes to early Phase 1 work (pulling W6 forward) or genuine breathing room.</div>
+        <div class="watch"><strong>Watch:</strong> pawaPay sandbox phone numbers are reserved test MSISDNs — keep a doc of which test numbers represent which success/failure scenarios.</div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">Phase 0 complete — foundation locked, external clocks ticking, team aligned.</div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PHASE 1 ===== -->
+    <h2>Phase 1 — MVP build on sandbox (Weeks 6-19)</h2>
+
+    <!-- WEEK 6 -->
+    <div class="week-card p1" id="w6">
+      <div class="wk-head"><span class="wk-num">Week 6</span><div class="wk-title">Ledger v1 foundation</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> double-entry ledger in place; transaction state machine modelled and unit-tested; the financial backbone is real before any flow touches it.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Track pawaPay KYC requests (expect Compliance back-and-forth this week). Customer-support tooling decision (WhatsApp Business + phone vs in-app chat). Continue sandbox test scenario doc.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Implement the core entities from <a href="05-product-spec/data-model.md">data-model.md</a>: <span class="mono">merchant</span>, <span class="mono">session</span>, <span class="mono">transaction</span>, <span class="mono">ledger_entry</span>, <span class="mono">operator_event</span>, <span class="mono">audit_log</span>. Wire the double-entry accounts (<span class="mono">customer:external</span>, <span class="mono">merchant:external</span>, <span class="mono">pawapay:clearing</span>, <span class="mono">revenue:fees</span>). Implement the transaction state machine. Unit-test every transition including the settlement-failed and manual-review branches.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Polish merchant-OTP UX with real SMS provider. Merchant home / dashboard UI (greeting, today's totals stub, primary "request payment" CTA). Push notification permission flow (request now, use later).</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Merchant receipt / transaction-detail design (transaction ID, gross / MDR fee / net-to-merchant breakdown, timestamp, share button). Onboarding-screen polish based on Week 4–5 feedback.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Ledger unit tests pass for: simple collection, simple settlement to merchant, failed settlement (refund to customer), double-debit attempt rejected.</div>
+        <div class="watch"><strong>Watch:</strong> idempotency keys must be generated on the client and replayed verbatim by the server — design this in now, not later.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 7 -->
+    <div class="week-card p1" id="w7">
+      <div class="wk-head"><span class="wk-num">Week 7</span><div class="wk-title">Customer collection + USSD channel</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> a customer can pay a registered merchant via the <strong>customer-initiated USSD</strong> path (scan the merchant's QR / dial the till) against the sandbox — operator prompt shown on the customer's phone, status converged.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Watch sandbox tests live with B; document every error path the team finds. Confirm pawaPay KYC completion status (likely approved by end of week).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Implement <span class="mono">start_merchant_payment</span> + <span class="mono">payment_codes</span> (generate the per-merchant <code>tel:</code> USSD code / till routing) and the USSD channel (<span class="mono">channels/ussd/</span>) plus the merchant-facing <span class="mono">POST /transactions</span> (create + collection trigger) per <a href="05-product-spec/api-contracts.md">api-contracts.md</a>. Webhook receiver scaffold for pawaPay deposit callbacks. Currency precision rules (Vodacom CDF no decimals).</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Build the merchant home / dashboard, the request-payment screen (amount + currency → displayable QR), and the "ask the customer to scan / dial" waiting screen per <a href="05-product-spec/screens.md">screens.md</a>. Wire the create endpoint; show the pending-collection waiting state.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Customer-prompt instruction copy ("Ask your customer to dial / scan and enter their M-Pesa PIN in the next 60 seconds"). Success animation. Failure-with-reason patterns.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> 10 successful sandbox collections via the customer-USSD / QR path across all three operators; all reach terminal state within 90s.</div>
+        <div class="watch"><strong>Watch:</strong> the PIN prompt happens on the <em>customer's</em> own phone via the operator, not in the merchant app — design the merchant's waiting UX to manage that expectation explicitly.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 8 -->
+    <div class="week-card p1" id="w8">
+      <div class="wk-head"><span class="wk-num">Week 8</span><div class="wk-title">Merchant settlement + charge-by-number fallback</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the settlement leg (pass-through to the merchant) works end-to-end against sandbox, and the merchant-initiated fallback works; the full round-trip is one step away.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Test the settlement flow yourself with sandbox test numbers; document UX rough edges. Begin compiling FAQ / merchant-support runbook.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Settlement: deduct from the clearing account, call pawaPay Disbursement API to pay the merchant's settlement MSISDN (net of MDR), await callback, post final ledger entries (fee → <span class="mono">revenue:fees</span>; or refund the customer on failure). Failure-handling rules: when to retry vs refund vs require manual intervention.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Charge-by-customer-number fallback screen (merchant keys the customer's number to push a collection prompt to that customer's phone). Operator-inferred badge ("Charging an Airtel Money customer"). Request → pending → settled screens; net-of-fee shown to the merchant.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Merchant receipt / detail final implementation. Edge-case copy: customer number invalid, off-net failure messages, customer-refund messages.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> 10 successful sandbox settlements to merchant test wallets across all 3 operators; merchant receipts generated and shareable; charge-by-number fallback verified.</div>
+        <div class="watch"><strong>Watch:</strong> a successful collection followed by a failed settlement must refund the <em>customer</em> — this path is easy to forget and confusing if it breaks.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 9 -->
+    <div class="week-card p1" id="w9">
+      <div class="wk-head"><span class="wk-num">Week 9</span><div class="wk-title">End-to-end round-trip</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> first real customer-to-merchant cross-network round-trip works in sandbox (collect from the customer → bridge → settle to the merchant). This is the technical mid-MVP milestone.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Run end-to-end demos with 5–10 stakeholders (advisors, pilot merchants). Capture confusion points. Update sandbox scenario doc.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Orchestrate the two-leg flow (customer collection → merchant settlement) as a single transaction with sub-states. Telemetry on per-leg latency. Failure pathway: collection succeeds but settlement fails → automatic refund to the customer.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>The "request payment" CTA on the merchant home triggers the full flow; the customer pays the exact sticker price via USSD / QR. Progress indicator showing 2 legs. Polish: pull-to-refresh, optimistic UI, haptics on success.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>End-to-end flow walkthrough video for the team. Iterate on confusion points found in demos. Polish merchant receipt screen.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> 15 customer-to-merchant round-trips covering the 9 operator-pair combinations complete with terminal state in &lt; 2 minutes each.</div>
+        <div class="watch"><strong>Watch:</strong> celebrate, but don't ship yet — every demo from here will reveal real-world edge cases. The next week is explicitly for absorbing them.</div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">Mid-MVP milestone — end-to-end sandbox round-trip working.</div>
+
+    <!-- WEEK 10 -->
+    <div class="week-card buf" id="w10">
+      <div class="wk-head"><span class="wk-num">Week 10</span><div class="wk-title">Mid-phase catch-up</div><span class="wk-phase">Phase 1 · buffer</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> absorb whatever the first half of Phase 1 revealed — failing edge cases, design refinements, performance issues. Don't add features. Don't pull forward W11. Just clean.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Run a half-day team retro on Weeks 5–9. Triage bugs and rough edges into "must fix now" vs "Phase 3 backlog." Confirm pawaPay production credentials issued.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Burn down the backlog from W5–9. Tighten state machine transitions exposed during demos. Improve error messages from operator API failures.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>UX rough edges found in demos. Polish micro-interactions. Reduce visual / interaction debt before it compounds.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Synthesise demo feedback into a one-page UX wins/pains list. Adjust upcoming designs accordingly.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Phase 1A backlog (W5–9) cleared down to "polish only." No new features added.</div>
+        <div class="slack"><strong>Slack to use:</strong> if the backlog is small, the team gets actual breathing room — code reading, documentation, light experimentation. Resist the urge to start W11 early.</div>
+        <div class="watch"><strong>Watch:</strong> the temptation to "just add one small thing" during a catch-up week is the leading cause of catch-up weeks needing their own catch-up.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 11 -->
+    <div class="week-card p1" id="w11">
+      <div class="wk-head"><span class="wk-num">Week 11</span><div class="wk-title">History &amp; receipts</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the merchant can browse past transactions, see daily totals, and share receipts; this completes the merchant-visible core.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Test the history flow on different network conditions (3G, intermittent). Schedule internal dogfood week (W17).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Implement <span class="mono">GET /transactions</span> (cursor-paginated; status filter), <span class="mono">GET /transactions/{id}</span>, a daily-totals summary, and <span class="mono">POST /transactions/{id}/retry</span>. Server-rendered receipt share page (under <span class="mono">receipt_share_url</span>) with WhatsApp-friendly OG metadata.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Build the merchant history list and transaction-detail screens per <a href="05-product-spec/screens.md">screens.md</a>. Day-grouped list with status chips and net-of-fee amounts. Receipt share via system share sheet.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Empty state, loading skeletons, list density. Status iconography. Date grouping ("Today", "Yesterday", weekday). Merchant receipt visual design final.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Merchant can see, filter, and share receipts for 25+ historical transactions, with correct daily totals.</div>
+        <div class="watch"><strong>Watch:</strong> WhatsApp is the de-facto receipt-sharing channel in DRC — receipts must look good in the WhatsApp message preview.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 12 -->
+    <div class="week-card p1" id="w12">
+      <div class="wk-head"><span class="wk-num">Week 12</span><div class="wk-title">Reconciliation &amp; observability</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> when something goes wrong, the team can see it. When the ledger drifts, a job catches it.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Design merchant-support runbook v1: top-10 likely issues and resolution steps. Choose support tooling (WhatsApp Business API or basic Intercom-style).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Daily reconciliation job: compare our ledger against pawaPay's transaction feed; flag mismatches and any settlement that didn't reach the merchant. Structured logging shipped to a queryable store. Sentry for errors.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Client-side error tracking (Sentry Native). Funnel telemetry (Mixpanel or Amplitude or self-rolled PostHog): merchant signup → onboarded → first-accepted-payment → repeat acceptance.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Status page mockups (for the case where one operator is down). User-facing error copy library — never blame the user.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Inject a fake mismatch into the ledger and see the reconciliation job alert. View live transaction stream in observability dashboard.</div>
+        <div class="watch"><strong>Watch:</strong> webhook callbacks WILL get dropped in production — the reconciliation job is the safety net, not an afterthought.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 13 -->
+    <div class="week-card p1" id="w13">
+      <div class="wk-head"><span class="wk-num">Week 13</span><div class="wk-title">Admin &amp; support tools</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the team can look up a merchant, inspect their transactions, manually retry / refund, and answer support tickets without SSHing into the database.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Use the admin tool to walk through 10 historical sandbox transactions; identify missing UI affordances. Document support-team workflows.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Internal admin web app: merchant search, transaction list, transaction detail, manual retry, manual refund, suspend/reinstate merchant. Audit log of all admin actions.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>"Report a problem" button on transaction detail (opens email/WhatsApp with transaction ID prefilled). App-version + device-info appended to support messages.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Admin tool styling (simple, dense, no fluff). Support-message templates in French. Status badge clarity.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Founder can independently resolve a simulated support ticket (lookup → diagnose → action → confirm) in &lt; 5 minutes.</div>
+        <div class="watch"><strong>Watch:</strong> SSH-into-prod-DB is a common shortcut in startup ops; design it OUT now by making the admin tool capable enough to never need that.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 14 -->
+    <div class="week-card p1" id="w14">
+      <div class="wk-head"><span class="wk-num">Week 14</span><div class="wk-title">Edge cases &amp; failure modes</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the long tail of "weird things that happen in production" is enumerated and handled.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Drive a "chaos demo" session — every team member tries to break the app for 2 hours. Bug-bash report. Settle: refund policy, dispute policy.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Handle: collection succeeds + settlement reversed by operator (refund the customer); collection reversed after settlement to the merchant (we eat the cost — alert + manual intervention); double-spend protection on idempotency; expired-OTP recovery.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Offline mode: queue write actions, show offline banner. Recovery flow when network returns. Background app state (don't lose in-flight transaction). Force-update flag in case we need to push an emergency fix.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>"What went wrong" screens for every conceivable failure: no signal, wrong PIN, timeout, blocked card, insufficient float on the system side.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Bug-bash backlog cleared down to "polish only" (no correctness bugs). Edge-case matrix documented.</div>
+        <div class="watch"><strong>Watch:</strong> the "we eat the cost" branch is where the ledger gets confused fastest — model it carefully.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 15 -->
+    <div class="week-card p1" id="w15">
+      <div class="wk-head"><span class="wk-num">Week 15</span><div class="wk-title">Localisation &amp; copy</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> every string is in French, reviewed by a DRC-French native, and the language framework is ready for Lingala / Swahili in Phase 3.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Hire / engage a DRC-French copy reviewer (could be a design partner). Walk every screen with them; iterate. Privacy policy + terms of service in French (lawyer-reviewed).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Backend error messages routed through translation layer (or returned as enum codes for client to localise). SMS templates in French. Server-rendered receipt PDFs in French.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>i18next + react-i18next setup. All strings extracted to <span class="mono">fr.json</span>. Date/number/currency formatters for fr-CD. Auto-detect device locale but allow override.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Co-review every screen with copy reviewer. Tone calibration (warm but precise; not robotic). Pixel-fitting where French strings are longer than English placeholders.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Zero hardcoded English strings in the app; all flows in DRC-French; legal pages in French.</div>
+        <div class="watch"><strong>Watch:</strong> French copy is materially longer than English on small screens — re-check every button label visually.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 16 -->
+    <div class="week-card p1" id="w16">
+      <div class="wk-head"><span class="wk-num">Week 16</span><div class="wk-title">Load testing &amp; reliability</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the system holds up under realistic and 10x-realistic load; idempotency proven; webhook redundancy in place.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Plan post-MVP rollout (closed beta logistics will happen in Phase 2). Confirm pawaPay production setup ready.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Load test: 10 concurrent users running round-trips, then 100. Profile bottlenecks. Webhook redundancy (retry queue with dead-letter). Database indexing pass. Connection pool tuning.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>App performance pass: bundle-size analysis, image optimisation, lazy-loading non-critical screens, removing render-thrash. Cold-start time &lt; 2s target.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Final visual QA across screens and states. Accessibility pass: contrast, touch targets, screen-reader labels.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Load test report: 100 concurrent users, &lt; 5% failure rate, p95 transaction time &lt; 90s. Cold-start &lt; 2s on a mid-range Android device.</div>
+        <div class="watch"><strong>Watch:</strong> DRC mobile networks are intermittent — test failure recovery under simulated network drops, not only ideal conditions.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 17 -->
+    <div class="week-card p1" id="w17">
+      <div class="wk-head"><span class="wk-num">Week 17</span><div class="wk-title">Internal dogfood week</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> the whole team uses the app every day on real devices via TestFlight / Internal Testing; bugs surface and are fixed.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Run "use the app exclusively this week" challenge with the team. Daily standup-of-bugs. Track gut-feel scores (would I recommend to my sister? 1–10).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Triage and fix bugs surfaced. Performance regressions chased. Tighten reconciliation alerting thresholds.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Triage and fix bugs surfaced. TestFlight / Internal Testing build cycle every 24h. Polish micro-interactions found rough in real use.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Observe team using app; collect UX friction list. Quick design tweaks landed daily.</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> 4 team members complete &gt; 50 sandbox transactions each across the week; bug-list ranked and burned down.</div>
+        <div class="watch"><strong>Watch:</strong> bugs that surface in dogfood are usually the same ones that will surface in real-world beta — fix categories, not just instances.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 18 -->
+    <div class="week-card p1" id="w18">
+      <div class="wk-head"><span class="wk-num">Week 18</span><div class="wk-title">Bug bash &amp; polish</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> burn down the dogfood backlog; final polish pass; everything green for code freeze next week.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Final review of all key flows. Confirm legal entity ready for eventual store submissions (Phase 2). Customer-support intake channel confirmed (WhatsApp Business number live).</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Burn down dogfood-week bugs. Security pass: dependency audit, secret rotation tested, rate-limit thresholds confirmed. Database backup verified by restoring to staging. Runbook for production incidents drafted.</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Burn down dogfood-week mobile bugs. Final UI polish. Prepare release build for Phase 2 (privacy strings, version bumps, screenshots).</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Marketing assets prep for Phase 2: App Store + Play Store screenshots in French. Feature graphic. Privacy policy page (web).</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> Bug backlog at zero correctness-bugs, &lt; 10 polish items. Team feels comfortable freezing next week.</div>
+        <div class="watch"><strong>Watch:</strong> resist scope creep this week — the temptation to "add just one thing" before freeze is universal and almost always a mistake.</div>
+      </div>
+    </div>
+
+    <!-- WEEK 19 -->
+    <div class="week-card p1" id="w19">
+      <div class="wk-head"><span class="wk-num">Week 19</span><div class="wk-title">Code freeze &amp; MVP review</div><span class="wk-phase">Phase 1</span></div>
+      <div class="wk-body">
+        <div class="wk-goal"><strong>Goal:</strong> code freeze; final review; document the build; team is ready for Phase 2 cutover whenever the business says go.</div>
+        <div class="role-line"><span class="role-tag f">F</span><div>Code freeze declared (no new features; correctness-only fixes). Phase 1 retro. Phase 2 plan reviewed and resourced. Stakeholder demo with advisors / investors.</div></div>
+        <div class="role-line"><span class="role-tag b">B</span><div>Documentation pass: architecture diagrams, runbooks, on-call procedures. Final security review. Production deployment dry-run on staging (without traffic).</div></div>
+        <div class="role-line"><span class="role-tag m">M</span><div>Documentation pass: release build process, EAS configuration, store-submission checklist. Final TestFlight / Internal Testing build labelled <span class="mono">v1.0.0-rc1</span>.</div></div>
+        <div class="role-line"><span class="role-tag d">D</span><div>Design system documentation. Marketing/launch asset library complete. Hand off Phase 3 backlog seeds (Lingala / Swahili, Afrimoney via MOKO, merchant referrals).</div></div>
+        <div class="deliverable"><strong>Deliverable:</strong> MVP feature-complete on sandbox; code-frozen; documented; team aligned on Phase 2. Stakeholder demo runs without intervention.</div>
+        <div class="slack"><strong>Slack to use:</strong> Phase 2 doesn't have to start immediately. Use any extra time for documentation, team rest, or kicking off the legal/operator conversations from <a href="roadmap.html#phase-4">long-term roadmap Phase 4</a>.</div>
+        <div class="watch"><strong>Watch:</strong> Phase 2 (production launch) introduces a whole new set of risks (real money, real users, app store reviews) — do NOT rush into it. Wait until counsel and pawaPay confirm production-ready.</div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">Phase 1 complete — MVP feature-complete on sandbox, code-frozen, ready for Phase 2 production cutover.</div>
+
+    <!-- ============================================================ -->
+    <!-- ===== NEXT ===== -->
+    <h2 id="next">What's next: Phase 2</h2>
+
+    <p>This schedule ends at the natural code-freeze point. Phase 2 (production cutover → closed beta → store submission → public beta) is a 4–6 week effort handled in its own plan, picking up wherever the Phase 1 team and pawaPay production-readiness happen to converge. See the <a href="roadmap.html#phase-2">roadmap Phase 2 section</a> for the high-level shape.</p>
+
+    <div class="callout-good callout">
+      <strong>The advantage of stopping at code freeze:</strong> Phase 2 is gate-able. If pawaPay production isn't quite ready, if counsel needs another week, if the team needs a breather — Phase 2 can start when conditions are favourable, not when the calendar says so.
+    </div>
+
+    <!-- ===== COSTS ===== -->
+    <h2 id="costs">Costs &amp; resourcing</h2>
+
+    <p>Cost projection for the 19-week Phase 0 + Phase 1 build (kickoff to code freeze). All figures are <strong>planning estimates with explicit uncertainty</strong>, not commitments. Engineering team cost is the largest variable and depends heavily on team geography — three scenarios shown.</p>
+
+    <div class="callout">
+      <strong>Confidence framing:</strong> per-vendor fees (Apple, Google, AWS, Africa's Talking, pawaPay) are <strong>verified</strong> from primary sources. Engineering team rates are <strong>market-range estimates</strong> that vary widely by location and experience. Legal counsel rates are <strong>rough planning anchors</strong> — DRC fintech counsel quotes are not publicly indexed. Always re-quote before committing.
+    </div>
+
+    <h3>Engineering team — the largest variable</h3>
+
+    <p>Four people, 19 weeks (~4.4 months). Total person-months: ~17.5.</p>
+
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Team mix</th><th>Per-person/month range</th><th>Total team cost (19 wk)</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Lean — DRC-local team</strong></td>
+          <td>Founder/PM (equity), 3 mid-level engineers based in DRC / francophone Africa</td>
+          <td>$2.5k–$5k per engineer</td>
+          <td><strong>~$33k–$66k</strong> (engineers only; founder via equity)</td>
+        </tr>
+        <tr>
+          <td><strong>Mid — mixed African team</strong></td>
+          <td>Founder/PM (equity or partial salary), 3 senior engineers across Lagos / Nairobi / Cape Town / Kinshasa</td>
+          <td>$4k–$8k per engineer</td>
+          <td><strong>~$53k–$106k</strong> (engineers); +$20–35k if founder takes salary</td>
+        </tr>
+        <tr>
+          <td><strong>Premium — US/EU contractors</strong></td>
+          <td>Founder/PM, 3 senior contractors at North-American or Western European rates</td>
+          <td>$12k–$25k per engineer</td>
+          <td><strong>~$160k–$330k</strong> (engineers only)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Strong recommendation:</strong> the Mid scenario. Senior engineers in Lagos, Nairobi, Cape Town, or Kinshasa cost a fraction of US rates while offering deep on-the-ground knowledge of the African mobile money landscape — which is exactly the muscle this MVP needs. Also fits the Francophone-Africa hireability advantage of Python (per <a href="05-product-spec/tech-stack.md">tech-stack.md</a>).</p>
+
+    <h3>Infrastructure (during build only — 19 weeks)</h3>
+
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Estimate</th><th>Confidence</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AWS Cape Town — dev + staging (ECS Fargate small + RDS Postgres t4g.small + ElastiCache Redis t4g.micro + S3 + CloudWatch)</td>
+          <td>$250–$500 / month → <strong>$1.1k–$2.3k total</strong></td>
+          <td>Medium (based on typical small workload pricing; actuals vary)</td>
+        </tr>
+        <tr>
+          <td>Domain + DNS</td>
+          <td>$20–$80 / year (Route 53 + .cd domain)</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td>Backup storage + DR replication</td>
+          <td>~$50 / month → <strong>~$230 total</strong></td>
+          <td>Medium</td>
+        </tr>
+        <tr>
+          <td><strong>Infrastructure subtotal</strong></td>
+          <td><strong>~$1.4k–$2.6k</strong></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Post-launch infra scales with traffic — out of scope for this Phase 0+1 estimate.</p>
+
+    <h3>Vendor & service fees (during build)</h3>
+
+    <table>
+      <thead>
+        <tr><th>Vendor</th><th>Estimate</th><th>Confidence / source</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Apple Developer Program</td>
+          <td><strong>$99 / year</strong></td>
+          <td>High (Apple primary)</td>
+        </tr>
+        <tr>
+          <td>Google Play Console</td>
+          <td><strong>$25 one-time</strong></td>
+          <td>High (Google primary)</td>
+        </tr>
+        <tr>
+          <td>pawaPay onboarding + sandbox</td>
+          <td><strong>Free</strong> (Standard plan, no setup or monthly fees)</td>
+          <td>High (verified in <a href="03-reports/aggregator-comparison.md">aggregator comparison</a>)</td>
+        </tr>
+        <tr>
+          <td>Africa's Talking SMS (dev/test usage)</td>
+          <td>~$20–$100 across the build (test OTPs)</td>
+          <td>Medium (pricing primary; usage estimated)</td>
+        </tr>
+        <tr>
+          <td>Sentry (errors)</td>
+          <td>Free tier likely sufficient for dev; ~$26 / month if upgrade needed</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td>PostHog (analytics)</td>
+          <td>Free tier (cloud) or self-hosted (~$30 / month VM)</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td>Smile ID</td>
+          <td><strong>Not used in v1</strong> (deferred to v2 per <a href="05-product-spec/functionality.md">functionality.md</a>)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Figma (design)</td>
+          <td>~$15 / editor / month → ~$130 total for 2 editors over 19 weeks</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td>GitHub Team or Org</td>
+          <td>$4 / user / month → ~$340 for 4 users over 19 weeks</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td>EAS Build (Expo)</td>
+          <td>Production plan ~$99 / month → ~$430 total</td>
+          <td>High</td>
+        </tr>
+        <tr>
+          <td><strong>Vendor subtotal</strong></td>
+          <td><strong>~$1.3k–$2k</strong></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Legal &amp; compliance</h3>
+
+    <table>
+      <thead>
+        <tr><th>Item</th><th>Estimate</th><th>Confidence</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DRC fintech counsel — initial engagement + partner-PSP opinion (Week 1)</td>
+          <td>$5k–$15k (flat or short retainer)</td>
+          <td>Low — rough planning anchor; not publicly indexed for DRC</td>
+        </tr>
+        <tr>
+          <td>AML / CFT policy drafting + review</td>
+          <td>$2k–$5k</td>
+          <td>Low — market norm</td>
+        </tr>
+        <tr>
+          <td>Privacy policy + terms of service (French + lawyer review)</td>
+          <td>$2k–$5k</td>
+          <td>Low — market norm</td>
+        </tr>
+        <tr>
+          <td>Entity formation (if foreign incorporation needed)</td>
+          <td>$2k–$10k</td>
+          <td>Low — depends on jurisdiction choice</td>
+        </tr>
+        <tr>
+          <td><strong>Legal subtotal</strong></td>
+          <td><strong>~$11k–$35k</strong></td>
+          <td>Treat as a planning anchor; re-quote before committing</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Important flag:</strong> if BCC determines that even our pass-through MVP triggers EMI licensing (we don't believe it does — the model is "rented rails" with pawaPay as the licensed entity per <a href="03-reports/recommendation.md">recommendation.md</a>), the $2.5M minimum capital requirement applies (per <a href="02-findings/cross-cutting/own-aggregator.md">own-aggregator.md</a>). That decision is the largest single risk in the cost projection and is exactly why Phase 0 Week 1 prioritises counsel engagement.</p>
+
+    <h3>Other costs</h3>
+
+    <table>
+      <thead><tr><th>Item</th><th>Estimate</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Real DRC SIMs for testing (3 operators × 2 each)</td>
+          <td>~$30–$60 + airtime</td>
+          <td>Need physical SIMs for end-to-end sandbox tests</td>
+        </tr>
+        <tr>
+          <td>1–2 mid-range Android test devices (e.g., Tecno Spark)</td>
+          <td>~$200–$400</td>
+          <td>Critical for performance verification on the dominant DRC device tier</td>
+        </tr>
+        <tr>
+          <td>WhatsApp Business account / number</td>
+          <td>Free to set up; conversation pricing only post-launch</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Brand exploration (logo, wordmark) if not in-house</td>
+          <td>$0–$5k (if contracted out)</td>
+          <td>Designer covers in-house in the lean / mid scenarios</td>
+        </tr>
+        <tr>
+          <td><strong>Other subtotal</strong></td>
+          <td><strong>~$230–$5.5k</strong></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Total Phase 0 + Phase 1 cost (19 weeks, all-in)</h3>
+
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>Team</th><th>Infra + vendors + other</th><th>Legal</th><th>Contingency (20%)</th><th>Total</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Lean</strong> (DRC-local team)</td>
+          <td>~$33k–$66k</td>
+          <td>~$3k–$10k</td>
+          <td>~$11k–$25k</td>
+          <td>~$9k–$20k</td>
+          <td><strong>~$56k–$121k</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Mid</strong> (mixed African team) — recommended</td>
+          <td>~$53k–$106k</td>
+          <td>~$3k–$10k</td>
+          <td>~$15k–$30k</td>
+          <td>~$14k–$30k</td>
+          <td><strong>~$85k–$176k</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Premium</strong> (US/EU contractors)</td>
+          <td>~$160k–$330k</td>
+          <td>~$3k–$10k</td>
+          <td>~$15k–$35k</td>
+          <td>~$36k–$75k</td>
+          <td><strong>~$214k–$450k</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><strong>Planning anchor — Mid scenario midpoint:</strong> budget approximately <strong>$130k</strong> for the 19-week MVP build to code freeze with a mixed African team, plus 20% contingency. <strong>The single biggest swing factor is team geography</strong>, not technology choices.</p>
+
+    <h3>What's NOT in this estimate (and where it lives)</h3>
+    <ul>
+      <li><strong>Phase 2 (production cutover + closed beta + store launches)</strong> — adds 4–8 weeks and ~$25k–$80k more depending on scenario. Covered separately.</li>
+      <li><strong>Marketing / acquisition</strong> — out of scope; this estimate is the engineering + product build only.</li>
+      <li><strong>Post-launch operations</strong> (ongoing infra, customer support headcount, recurring vendor fees) — modeled separately once we have launch projections.</li>
+      <li><strong>pawaPay transaction fees</strong> — only kick in after first real transaction (variable; modeled in <a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a>). Negligible during sandbox.</li>
+      <li><strong>Per-operator USSD shortcode provisioning</strong> — the customer-USSD channel is built <em>in</em> this schedule, but each MNO shortcode/till carries its own commercial setup (industry references: ~$1k setup + ~$600/mo per operator, plus ~$0.034 per USSD session) and a 3–9 month elapsed lead time. Engaging the operators is a parallel ops/commercial track, not build time on this Gantt.</li>
+      <li><strong>EMI licensing path (if Phase 4+ ambition pursued)</strong> — $2.5M BCC capital lock-up plus ~$50k–$200k application costs per <a href="02-findings/cross-cutting/own-aggregator.md">own-aggregator.md</a>.</li>
+    </ul>
+
+    <h3>Confidence summary</h3>
+    <ul>
+      <li><strong>High confidence:</strong> Apple / Google fees, pawaPay free tier, AWS Cape Town typical-workload pricing, EAS / Figma / GitHub pricing.</li>
+      <li><strong>Medium confidence:</strong> infrastructure exact monthly cost; Africa's Talking total usage during build; engineering team market rates (real quotes will vary ±30%).</li>
+      <li><strong>Low confidence:</strong> DRC fintech legal cost (no public indexing); entity formation cost (jurisdiction-dependent); contingency size (could be higher if legal posture forces partner-PSP).</li>
+    </ul>
+
+    <!-- ===== RISK WATCH ===== -->
+    <h2 id="risks">Risk watch by phase</h2>
+
+    <table>
+      <thead><tr><th>Phase</th><th>Top risk</th><th>Watch action</th></tr></thead>
+      <tbody>
+        <tr><td>Phase 0 (W1–4)</td><td>Counsel takes longer than 2 weeks to deliver opinion on partner-PSP question</td><td>Engage Day 1; have a backup firm on standby; default to "operate under pawaPay's regulatory cover" pending counsel</td></tr>
+        <tr><td>Phase 0 (W1–4)</td><td>pawaPay production KYC blocked by missing docs</td><td>One owner (founder); respond within 24h to any info request; have entity docs ready</td></tr>
+        <tr><td>Phase 0 buffer (W5)</td><td>Team tempted to skip catch-up and jump to Phase 1</td><td>Hold the line — W5 exists for a reason. The team that skips W5 catches up at W10 instead, with interest.</td></tr>
+        <tr><td>Phase 1 (W6–9)</td><td>Idempotency / state-machine bugs creep in</td><td>Write the state-machine tests BEFORE the integration code, not after</td></tr>
+        <tr><td>Phase 1 buffer (W10)</td><td>"Just one more feature" creep during catch-up</td><td>The PM holds the line; W10 is for cleaning, not building</td></tr>
+        <tr><td>Phase 1 (W11–13)</td><td>Real-world DRC network conditions break optimistic webhook assumptions</td><td>Test with simulated network drops, not only ideal conditions; reconciliation is the safety net</td></tr>
+        <tr><td>Phase 1 (W14–16)</td><td>Bug-bash backlog grows faster than burndown</td><td>Triage ruthlessly: correctness &gt; UX &gt; polish; defer polish to Phase 3</td></tr>
+        <tr><td>Phase 1 (W17–18)</td><td>Dogfood reveals systemic UX issues, not just bugs</td><td>Have a Phase 3 backlog ready to absorb non-blockers; only block freeze on correctness</td></tr>
+        <tr><td>Phase 1 (W19)</td><td>Pressure to immediately start Phase 2</td><td>Code freeze is the MVP milestone, not the launch. Wait until production conditions are right.</td></tr>
+      </tbody>
+    </table>
+
+    <p class="meta" style="margin-top:48px;">End of MVP build schedule · Generated 2026-06-04 · See <a href="roadmap.html">roadmap.html</a> for the full 24-month arc (Phase 2 onwards) and <a href="report.html">report.html</a> for underlying research.</p>
+  </main>
+</div>
+</body>
+</html>

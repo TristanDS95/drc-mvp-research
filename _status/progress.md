@@ -1,0 +1,61 @@
+# Progress tracker
+
+Update as you go. Status: not started / in progress / done / blocked.
+
+## Operators
+| Target | Status | Notes |
+|---|---|---|
+| M-Pesa (Vodacom) | done | Portal openapiportal.m-pesa.com; DRC onboarding via business.m-pesa.com/vodacom-drc/; C2B + B2C + status APIs; sandbox yes; DRC-specific API fees not public |
+| Orange Money | done | Orange Money Web Payment API at developer.orange.com/apis/om-webpay lists DRC; collection-only for merchants; payout/B2C API for DRC not found; consumer tariffs published |
+| Airtel Money | done | Unified developers.airtel.africa portal covers DRC; OAuth2; sandbox openapiuat.airtel.africa; Collection + Disbursement; DRC consumer fees not extractable from JS-rendered airtel.cd |
+| Afrimoney (Africell) | done | <1% DRC mobile money share; Comviva platform; GSMA spec merchant APIs (announced 2023-12); no public developer portal located |
+
+## Aggregators
+| Target | Status | Notes |
+|---|---|---|
+| pawaPay | done | DRC: 3 operators (Vodacom M-Pesa, Airtel, Orange) — NO Afrimoney. Self-serve sandbox. 1% pawaPay fee + MMO fee. Published fee tables. **v2 API deep-dive (2026-06-11):** /v2/predict-provider solves operator detection; /v2/active-conf gives dynamic limits/decimals/status; async callbacks mandatory (must build receiver); Vodacom M-Pesa CDF = no decimals. See pawapay-api-deep-dive.md. |
+| DPO Pay | done | DRC office in Kinshasa. Owned by Network International. M-Pesa/Airtel/Orange referenced; Afrimoney not confirmed. Bulk payouts via file. CDF/USD/GBP. Pricing not public. |
+| MOKO Afrika | done | DRC-first. **All 4 operators (M-Pesa, Airtel, Orange, AND Africell Afrimoney)** — unique. JWT auth, HMAC-SHA256 callbacks. Endpoint paydrc.gofreshbakery.net/api/v5/. Pricing not public. |
+| Onafriq | done | Kinshasa office. M-Pesa/Airtel/Orange confirmed via Visa Pay launch (2025-09-11); Afrimoney DRC unclear. Two portals (Onafriq + legacy MFS Africa). Targets PSPs/FIs. Pricing not public. |
+
+## Cross-cutting
+| Topic | Status | Notes |
+|---|---|---|
+| Fees & costs | done | pawaPay 3.5%–5.0% round-trip envelope on DRC; operator-direct + DPO/MOKO/Onafriq rates not public. FX 2–5%, settlement 2–5 BD as DRC norms. **Refund-leg (2026-06-17):** refunds billed like disbursements ("1% + MMO fee" per pawaPay Plans, `*` caveat unread); whether the original collection fee is reversed = **not found** → a refunded txn is a real loss (~collect% + refund%). See fees-and-costs.md. |
+| Payee identification | done | MSISDN (+243) is universal; merchant short codes per-operator (no use without onboarding); no DRC national QR; M-Pesa↔Orange bilateral interop live 2021; Airtel claims tri-operator interop. |
+| KYC & onboarding | done | BCC Instruction No. 15 (2018); Directive #24 (2011); 2-tier wallets ($100 / $3,000); SIM-tied; aggregators do merchant KYC only; Smile ID viable for app-side. Licensing flagged. |
+| Build-own-aggregator (vs rent) | done | Technically feasible (GSMA spec, $100–180k initial); commercially hard (4 bilateral operator contracts, opaque pricing); regulatorily gated (BCC EMI, $2.5M paid-up capital, 6–18mo timeline). Eliminates only ~2% pawaPay margin, not operator fees. Recommendation: rent now, hybrid v3+. |
+| Offline / no-internet version (USSD automation) | done | Feasible only as Android-only client-side USSD automation (Hover-style) riding operators' own USSD interop (M-Pesa Mikili etc.) — cannot "be pawaPay" on-device (bridging needs a money-holding server). No backend/ledger/fee capture → convenience layer, not a payments business; possibly lighter licensing. ~6–10 wks Android. **This client-side automation is the path we did NOT take**; our v1 customer channel is the **server-side USSD gateway** (see the 'USSD gateway / shortcode' row). See offline-ussd-feasibility.md. |
+| Operator detection (phone → network) | done | **pawaPay /v2/predict-provider solves it** (predict + validate + sanitise; self-learning, not 100% → allow override). Reject DIY prefix tables (number portability) and third-party HLR; user-select = fallback only. See operator-detection.md. |
+| USSD gateway / shortcode (server-side channel) | done | **Rent the USSD *bearer*; we already own the USSD *app*** (`ussd/` channel). **Africa's Talking** = DRC-confirmed dedicated codes + the exact callback model (`sessionId/phoneNumber/serviceCode/text` → CON/END) our code already speaks; **Infobip/Telerivet** = alternatives. DRC pricing (secondary, helloduty): ~$1,000 setup + ~$200/telco/mo + ~$0.034/session — **additive to pawaPay**. Self-host = per-operator VAS/WASP + ARPTC shortcode (own-aggregator barrier) → rent for MVP. **pawaPay USSD = Nigeria-only** today. Arch fit: thin `/ussd` adapter (split `*`-joined text), no domain change. See ussd-gateway-providers.md. |
+| On-net direct-operator APIs (DRC) | done | To beat pawaPay's 4–5% on **same-network** payments we'd integrate the operators' own C2B directly. **pawaPay can't shortcut it** (a deposit always lands in *our* wallet → always 2 legs; round-trips Airtel 5% / Vodacom 4.5% / Orange 4%). M-Pesa & Airtel support in-app USSD-push C2B + auto-confirm (good fit); **Orange is redirect+OTP, not in-app**. All partner-gated; aggregator/multi-merchant model + pricing + licensing unconfirmed → need direct contact. See on-net-direct-operator-apis.md. |
+
+## Reports
+| Report | Status | Notes |
+|---|---|---|
+| Feasibility summary | done | MVP feasible on rented rails; pawaPay path delivers 3 of 4 MNOs with published pricing; Afrimoney coverage and BCC licensing are flagged risks. |
+| Operator API comparison | done | Airtel API most dev-friendly; M-Pesa partner-gated but full; Orange collection-only on om-webpay; Afrimoney least documented. |
+| Aggregator comparison | done | pawaPay = MVP lead (open sandbox + public pricing). MOKO = only 4-MNO option (Afrimoney). DPO and Onafriq heavier shape and opaque pricing. |
+| Recommendation | done | Build MVP on pawaPay (M-Pesa+Airtel+Orange), **merchant-facing**: customers pay a merchant **till** (dialed / QR dial-through), **merchant onboarding in scope**, merchant absorbs the MDR; defer Afrimoney to v2 via MOKO if material; open separate legal/licensing track. (Reframed 2026-06-11.) |
+| Architecture comparison | done | **Decision reversed by the 2026-06-11 team pivot:** the merchant-acquiring direction once compared *against* is now what we build; the earlier consumer pass-through is the not-chosen alternative. Technical corrections still hold (pawaPay = RFC-9421 not HMAC; App Runner absent in af-south-1; latency figure; Flutterwave doesn't serve DRC mobile money). See 03-reports/architecture-comparison.md. |
+| Comparative fintech research (8 profiles) | done | M-Pesa, Wave, OPay/PalmPay, MTN/Airtel MoMo, Chipper/Flutterwave, Onafriq(strategy), bKash, global super-apps. Findings in 02-findings/comparables/; ~165 sources logged per-file + indexed in sources.md. WebFetch-denied → Medium confidence ceiling. |
+| Comparables synthesis | done | The monetisation ladder (payments wedge → merchant → lending → wealth); P2P = habit+data not margin; our pass-through forgoes the things that monetise (float/cash-out/agents) → levers are transfer-fee-as-acquisition, CDF↔USD FX spread, capital-light partner-bank lending later, **merchant acceptance = the MVP** (the 40 gas stations are the wedge, not a v2 test); USSD channel-parity (bKash/M-Pesa); operator-dependence = top risk. See 03-reports/comparables-synthesis.md. |
+
+## Open questions
+- BCC current (2025/2026) stance on cross-network mobile money interoperability — only 2014 source located.
+- Whether a foreign-incorporated MVP entity needs a BCC-registered local partner to operate on rented rails (PayAtlas summary is third-party; verify against BCC primary docs and counsel).
+- DRC-specific rate cards from DPO Pay, MOKO Afrika, and Onafriq (all require sales contact).
+- Whether any DRC operator (M-Pesa, Airtel, Orange) supports a **multi-merchant aggregator** model — one platform credential collecting to many merchants' tills — for an on-net direct C2B path; and the operator-direct **pricing** in DRC. Both unconfirmed for all three (and pawaPay) → need direct contact. See on-net-direct-operator-apis.md.
+- Whether intermediating operator payments on behalf of merchants needs an **ARPTC / Banque Centrale du Congo** licence (EMI/PSP) — flagged, unaddressed in public docs.
+- pawaPay's settlement cadence to merchant bank accounts in DRC.
+- Whether pawaPay **reverses the original collection fee** on a refund (the refund itself is billed ≈ the disbursement rate per the Plans page; the `*` footnote is unread). Determines the true loss on a refunded payment.
+- Whether Afrimoney's Dec 2023 GSMA-spec merchant APIs are live in DRC (and roadmap for pawaPay adding Afrimoney coverage).
+- ARPTC MSISDN-prefix-to-operator mapping (current ranges).
+- Confirm conflict between "Law No. 04/016 (2004)" and "Law No. 18/004 (2018)" as the operative DRC AML law (voveid vs payatlas).
+- CENAREF vs CENTIF naming for the DRC Financial Intelligence Unit — sources disagree.
+- Confirm 99% combined market share figure for M-Pesa+Airtel+Orange and the <1% Afrimoney figure against GSMA Mobile Money Metrics (primary).
+- Real-world end-to-end UX timings — measure via pawaPay sandbox + 1–2 DRC SIMs.
+- USSD bearer: Africa's Talking / Infobip **DRC rate card + per-operator coverage** (Vodacom/Airtel/Orange/Africell) — public figures are secondary (helloduty); confirm directly (team action, requires contact).
+- USSD shortcode **provisioning lead time via an aggregator** in the DRC (vs the ~3–9 month *direct* figure) — not found.
+- Whether **pawaPay will extend USSD collections to the DRC** (currently Nigeria-only) — would collapse the channel + payments into one vendor.
+- Dedicated vs shared USSD code for a *payment* menu in the DRC (UX + what ARPTC/operators permit); DRC VAS/WASP licensing for hosting a payment USSD menu (counsel + primary ARPTC source).

@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC payment app — development roadmap</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f7f7f5;
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --border: #e0e0dc;
+    --accent: #1d3557;
+    --accent-soft: #457b9d;
+    --link: #0a4f8c;
+    --good: #166534;
+    --mid: #92400e;
+    --low: #991b1b;
+    --warn: #b45309;
+    --code-bg: #f1ede2;
+    --p0: #6366f1;
+    --p1: #2563eb;
+    --p2: #0891b2;
+    --p3: #16a34a;
+    --p4: #ca8a04;
+    --p5: #d97706;
+    --p6: #9333ea;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+  nav.sidebar {
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border);
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    font-size: 14px;
+  }
+  nav.sidebar h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-soft);
+    margin: 18px 0 8px;
+    font-weight: 600;
+  }
+  nav.sidebar h2:first-child { margin-top: 0; }
+  nav.sidebar a {
+    display: block;
+    padding: 4px 0;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  nav.sidebar a:hover { text-decoration: underline; }
+  nav.sidebar .nav-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  nav.sidebar .nav-sub {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-bottom: 20px;
+  }
+  nav.sidebar .phase-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  main {
+    padding: 40px 56px 80px;
+    max-width: 1100px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 22px;
+    color: var(--accent);
+    margin: 48px 0 8px;
+    padding-top: 12px;
+    border-top: 2px solid var(--border);
+  }
+  h3 { font-size: 17px; color: var(--accent); margin: 24px 0 6px; }
+  h4 { font-size: 15px; color: var(--text); margin: 14px 0 4px; font-weight: 700; }
+  p { margin: 6px 0 12px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid #b3cce6; }
+  a:hover { background: #eef4fa; }
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  ul, ol { margin: 6px 0 12px; padding-left: 22px; }
+  li { margin: 3px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: var(--bg-alt); font-weight: 600; }
+  tr:nth-child(even) td { background: #fafaf7; }
+  .meta { font-size: 13px; color: var(--text-soft); margin: 4px 0 16px; }
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+    line-height: 1.6;
+  }
+  .b-eng    { background: #dbeafe; color: #1e40af; }
+  .b-pm     { background: #f3e8ff; color: #6b21a8; }
+  .b-legal  { background: #fee2e2; color: var(--low); }
+  .b-design { background: #fef3c7; color: var(--mid); }
+  .b-ops    { background: #dcfce7; color: var(--good); }
+  .b-risk-l { background: #dcfce7; color: var(--good); }
+  .b-risk-m { background: #fef3c7; color: var(--mid); }
+  .b-risk-h { background: #fee2e2; color: var(--low); }
+  .lead {
+    font-size: 16px;
+    background: #eef4fa;
+    border-left: 4px solid var(--accent-soft);
+    padding: 14px 18px;
+    margin: 14px 0 24px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout {
+    background: #fff8e6;
+    border-left: 4px solid var(--warn);
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 14px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-good { background: #f0fdf4; border-left-color: var(--good); }
+  .phase-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 24px 0 32px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .phase-header {
+    padding: 16px 22px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .phase-header h3 { color: white; margin: 0; font-size: 19px; }
+  .phase-header .phase-tag {
+    background: rgba(255,255,255,0.18);
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .phase-header .phase-time {
+    font-size: 14px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.22);
+    padding: 4px 12px;
+    border-radius: 6px;
+  }
+  .ph-0 .phase-header { background: var(--p0); }
+  .ph-1 .phase-header { background: var(--p1); }
+  .ph-2 .phase-header { background: var(--p2); }
+  .ph-3 .phase-header { background: var(--p3); }
+  .ph-4 .phase-header { background: var(--p4); }
+  .ph-5 .phase-header { background: var(--p5); }
+  .ph-6 .phase-header { background: var(--p6); }
+  .phase-body { padding: 18px 22px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 24px; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+  .stat-box {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  .stat-box strong { color: var(--accent); display: block; font-size: 13px; }
+  .stat-box .v { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 4px; }
+  .gantt {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 16px 0 24px;
+    overflow-x: auto;
+  }
+  .gantt table {
+    border: none;
+    margin: 0;
+    font-size: 13px;
+  }
+  .gantt th, .gantt td { border: none; padding: 4px 2px; vertical-align: middle; }
+  .gantt th { background: transparent; text-align: center; color: var(--text-soft); font-size: 11px; font-weight: 600; }
+  .gantt th.label-col { text-align: left; width: 230px; }
+  .gantt tr:nth-child(even) td { background: transparent; }
+  .bar {
+    height: 18px;
+    border-radius: 3px;
+    margin: 1px 0;
+    position: relative;
+  }
+  .bar.b0 { background: var(--p0); }
+  .bar.b1 { background: var(--p1); }
+  .bar.b2 { background: var(--p2); }
+  .bar.b3 { background: var(--p3); }
+  .bar.b4 { background: var(--p4); }
+  .bar.b5 { background: var(--p5); }
+  .bar.b6 { background: var(--p6); }
+  .bar-soft { opacity: 0.35; }
+  .legend-row { font-size: 13px; margin: 4px 0; }
+  .legend-row .badge { margin-right: 8px; }
+  .role-row {
+    display: flex;
+    gap: 14px;
+    font-size: 13px;
+    margin: 6px 0;
+    flex-wrap: wrap;
+  }
+  .role-row .role {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  @media print {
+    nav.sidebar { display: none; }
+    main { padding: 0; max-width: 100%; }
+    .layout { grid-template-columns: 1fr; }
+    a { color: var(--text); border-bottom: none; }
+    .phase-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-title">DRC payment app</div>
+    <div class="nav-sub">Development roadmap · 2026-06-04</div>
+
+    <h2>Top</h2>
+    <a href="#summary">Overview &amp; assumptions</a>
+    <a href="#timeline">Timeline at a glance</a>
+
+    <h2>Phases</h2>
+    <a href="#phase-0"><span class="phase-dot" style="background:var(--p0);"></span>0 — Foundation</a>
+    <a href="#phase-1"><span class="phase-dot" style="background:var(--p1);"></span>1 — MVP build</a>
+    <a href="#phase-2"><span class="phase-dot" style="background:var(--p2);"></span>2 — Production launch</a>
+    <a href="#phase-3"><span class="phase-dot" style="background:var(--p3);"></span>3 — Scale &amp; polish</a>
+    <a href="#phase-4"><span class="phase-dot" style="background:var(--p4);"></span>4 — Direct-operator on-ramp</a>
+    <a href="#phase-5"><span class="phase-dot" style="background:var(--p5);"></span>5 — Hybrid switch</a>
+    <a href="#phase-6"><span class="phase-dot" style="background:var(--p6);"></span>6 — Own the rails (optional)</a>
+
+    <h2>Reference</h2>
+    <a href="#risks">Risks &amp; contingencies</a>
+    <a href="#decisions">Open decisions</a>
+    <a href="report.html">→ Research report</a>
+  </nav>
+
+  <main>
+    <h1>DRC payment app — development roadmap</h1>
+    <div class="meta">Date: 2026-06-04 · Team size: 2–4 · MVP target: merchant acceptance — ~40 gas stations + pop-up stores already lined up · Path: rented rails (pawaPay) first, hybrid later</div>
+
+    <h2 id="summary">Overview &amp; assumptions</h2>
+
+    <div class="lead">
+      <strong>Seven phases, two horizons.</strong> Phases 0–3 are the MVP arc on rented rails — about <strong>6–11 months elapsed</strong> from kickoff to a public beta. Phases 4–6 are the "own the rails" track — a <strong>multi-year ambition</strong>, not part of v1. Time ranges assume a 2–4 person team and reflect realistic slippage; the low end requires a tight 4-person team with clean execution, the high end accommodates a 2-person team or normal startup friction.
+    </div>
+
+    <h3>Team assumption</h3>
+    <table>
+      <thead><tr><th>Role</th><th>Always</th><th>When team scales to 4</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Founder / PM / Ops</strong></td><td>Yes (1.0 FTE)</td><td>Same role + dedicated time on legal / partner / customer conversations</td></tr>
+        <tr><td><strong>Backend engineer</strong></td><td>Yes (1.0 FTE)</td><td>Same; can add 0.5 FTE for ledger / treasury hardening from Phase 3+</td></tr>
+        <tr><td><strong>Mobile engineer</strong></td><td>Yes (1.0 FTE)</td><td>Same; can add 0.5–1.0 FTE for second platform or polish from Phase 2+</td></tr>
+        <tr><td><strong>Designer (contract or FT)</strong></td><td>0.25–0.5 FTE contract</td><td>0.5–1.0 FTE; or absorbed by mobile engineer with templates</td></tr>
+        <tr><td><strong>Legal / compliance counsel</strong></td><td>External (DRC-licensed firm) — engaged from Phase 0</td><td>Same; not on FTE count</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Scope reminders (from research)</h3>
+    <ul>
+      <li><strong>In scope (v1):</strong> a <strong>merchant app</strong> (dashboard + onboarding); <strong>customer-initiated USSD payment</strong> (scan the merchant's QR — a <code>tel:</code> USSD dial-through — or dial the till; no customer app, PIN via the operator's own prompt) with a <strong>merchant-initiated "charge by customer number" fallback</strong>; <strong>merchant onboarding</strong> (settlement account + till / short code; KYC flagged); <strong>QR codes</strong> (central); collect → bridge → settle via pawaPay; M-Pesa + Airtel + Orange (~99% of DRC mobile money users); CDF + USD; French primary UI; MSISDN-based addressing.</li>
+      <li><strong>Out of scope (v1):</strong> bank-account settlement, rewards / loyalty, bill pay, a separate consumer app, Afrimoney (defer to v2 via MOKO Afrika if material), card payments, direct operator integration.</li>
+      <li><strong>Beachhead:</strong> ~40 gas stations + pop-up stores already lined up — merchant acquisition (usually the hardest part of a new acquiring product) is substantially de-risked for v1.</li>
+      <li><strong>Wedge:</strong> merchant acceptance — the customer pays the exact sticker price and the <strong>merchant absorbs our fee (MDR)</strong>; instant pass-through settlement to the merchant's existing mobile money account (we never hold funds).</li>
+    </ul>
+
+    <h3>Estimate calibration</h3>
+    <div class="grid3">
+      <div class="stat-box"><strong>Low estimate</strong><div class="v">4-person team</div>Clean execution, no major partner / store / regulator delays.</div>
+      <div class="stat-box"><strong>High estimate</strong><div class="v">2-person team</div>Or 3-person team with normal startup friction (vendor delays, real-world bugs, hiring time).</div>
+      <div class="stat-box"><strong>Buffer applied</strong><div class="v">~25%</div>For unforeseen issues — undocumented operator API quirks, App Store reviews, real-world failure modes.</div>
+    </div>
+
+    <!-- ===== TIMELINE OVERVIEW ===== -->
+    <h2 id="timeline">Timeline at a glance</h2>
+    <p>Each bar shows the phase active over an indicative monthly grid. Faded portions show optional / contingent work. Phase 0 runs alongside Phase 1; Phase 4 runs alongside Phase 3.</p>
+
+    <div class="gantt">
+      <table>
+        <thead>
+          <tr>
+            <th class="label-col">Phase</th>
+            <th>M1</th><th>M2</th><th>M3</th><th>M4</th><th>M5</th><th>M6</th>
+            <th>M7</th><th>M8</th><th>M9</th><th>M10</th><th>M11</th><th>M12</th>
+            <th>M13</th><th>M14</th><th>M15</th><th>M16</th><th>M17</th><th>M18</th>
+            <th>M19</th><th>M20</th><th>M21</th><th>M22</th><th>M23</th><th>M24</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p0);"></span>0 — Foundation</td>
+            <td colspan="2"><div class="bar b0"></div></td>
+            <td colspan="22"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p1);"></span>1 — MVP build</td>
+            <td></td>
+            <td colspan="5"><div class="bar b1"></div></td>
+            <td colspan="18"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p2);"></span>2 — Production launch</td>
+            <td colspan="5"></td>
+            <td colspan="3"><div class="bar b2"></div></td>
+            <td colspan="16"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p3);"></span>3 — Scale &amp; polish</td>
+            <td colspan="7"></td>
+            <td colspan="8"><div class="bar b3"></div></td>
+            <td colspan="9"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p4);"></span>4 — Direct-op on-ramp</td>
+            <td colspan="9"></td>
+            <td colspan="6"><div class="bar b4 bar-soft"></div></td>
+            <td colspan="9"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p5);"></span>5 — Hybrid switch</td>
+            <td colspan="14"></td>
+            <td colspan="6"><div class="bar b5 bar-soft"></div></td>
+            <td colspan="4"></td>
+          </tr>
+          <tr>
+            <td class="label-col"><span class="phase-dot" style="background:var(--p6);"></span>6 — Own the rails</td>
+            <td colspan="19"></td>
+            <td colspan="5"><div class="bar b6 bar-soft"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="meta">Bars are indicative for a 3-person team. Bands extend further on a 2-person team and compress on a 4-person team.</p>
+
+    <!-- ===== PHASE 0 ===== -->
+    <div class="phase-card ph-0" id="phase-0">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 0</span> &nbsp; Foundation &amp; due diligence</h3>
+        <div class="phase-time">4–8 weeks elapsed</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> have everything non-engineering in place so Phase 1 starts with no blockers.</p>
+
+        <h4>Workstreams</h4>
+        <div class="grid2">
+          <div>
+            <h4><span class="badge b-legal">Legal</span> Counsel engagement</h4>
+            <ul>
+              <li>Engage a DRC-registered fintech / banking counsel (1–2 weeks to select).</li>
+              <li>Settle the partner-PSP question: does the MVP entity operate under pawaPay's BCC posture, or do we need a licensed local-partner arrangement? (per <a href="report.html#kyc">KYC research</a>)</li>
+              <li>Stand up entity structure (DRC subsidiary, or operating-from-abroad model) per counsel.</li>
+            </ul>
+
+            <h4><span class="badge b-ops">Ops</span> Vendor signups</h4>
+            <ul>
+              <li>pawaPay sandbox signup at <a href="https://dashboard.sandbox.pawapay.io/">dashboard.sandbox.pawapay.io</a> (hours).</li>
+              <li>Open production-KYC questionnaire (<a href="https://www.pawapay.io/plans">plans page</a>) — paperwork can take 2–4 weeks running in parallel with build.</li>
+              <li>Apple Developer + Google Play Console accounts.</li>
+              <li>Optional: Smile ID account for app-side end-user KYC if held-balance path is adopted later.</li>
+            </ul>
+          </div>
+          <div>
+            <h4><span class="badge b-eng">Eng</span> Architecture design</h4>
+            <ul>
+              <li>Choose stack: merchant app (React Native vs Flutter vs native pair) + web dashboard, backend (Python/FastAPI as built, or Node/Go; Postgres, Redis), hosting (AWS / GCP region near DRC — Europe / Cape Town are the viable options).</li>
+              <li>Design the core domains — <strong>ledger, merchants, transactions</strong> — with a double-entry ledger and a transaction state machine: idempotency keys, retry policy, terminal-vs-pending states, webhook handling.</li>
+              <li>Design the two payment channels: <strong>customer-initiated USSD</strong> (QR / till dial-through, PIN on the operator's own prompt) and the <strong>merchant-initiated "charge by customer number"</strong> push.</li>
+              <li>Operator inference logic: MSISDN-prefix lookup; manual override UX.</li>
+              <li>Threat model and security baseline (TLS, secret management, OWASP ASVS Level 2 as a target).</li>
+            </ul>
+
+            <h4><span class="badge b-pm">PM</span> Brand &amp; positioning</h4>
+            <ul>
+              <li>Provisional name, domain, French primary copy.</li>
+              <li>One-page user-flow doc agreed by team.</li>
+              <li>Set up project management (Linear / Notion / shared docs).</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4>Team allocation (typical 3-person team)</h4>
+        <div class="role-row">
+          <div class="role"><strong>Founder/PM:</strong> Legal, vendor signups, brand — full time</div>
+          <div class="role"><strong>Backend eng:</strong> Architecture design, stack POCs — full time</div>
+          <div class="role"><strong>Mobile eng:</strong> Mobile-stack POC, design sync with founder — full time</div>
+        </div>
+
+        <h4>Exit criteria</h4>
+        <ul>
+          <li>Counsel engaged, written opinion on entity / licensing posture.</li>
+          <li>pawaPay sandbox account active; production KYC submitted.</li>
+          <li>Architecture doc signed off; stack choices made.</li>
+          <li>Provisional brand in place; first end-to-end mock screens.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 1 ===== -->
+    <div class="phase-card ph-1" id="phase-1">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 1</span> &nbsp; MVP build (sandbox)</h3>
+        <div class="phase-time">12–20 weeks elapsed (~3–5 months)</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> a working end-to-end merchant-acceptance app on pawaPay sandbox — a customer pays a registered merchant (via the USSD / QR channel) at the exact sticker price, funds collect → bridge → settle to the merchant, and the merchant sees it on their dashboard. Demoable to friends acting as customers.</p>
+
+        <h4>Backend workstreams</h4>
+        <ul>
+          <li><strong>Merchant auth &amp; identity</strong> — merchant signup/login, JWT session, <strong>Merchant</strong> entity (settlement MSISDN, till / short code; DRC <span class="mono">+243</span> validation). KYC flagged.</li>
+          <li><strong>Ledger &amp; transactions</strong> — double-entry ledger (accounts: <span class="mono">customer:external</span>, <span class="mono">merchant:external</span>, <span class="mono">pawapay:clearing</span>, <span class="mono">revenue:fees</span>); <strong>Transaction</strong> + <strong>LedgerEntry</strong> entities; transaction state machine (initiated → collection-pending → collection-confirmed → settlement-pending → settlement-confirmed / failed); idempotency keys per request.</li>
+          <li><strong>Payment codes &amp; USSD channel</strong> — generate per-merchant payment codes / till routing; the <strong>customer-initiated USSD</strong> dial-through (QR encodes a <code>tel:</code> USSD string, e.g. <span class="mono">tel:*123*1001%23</span>) and the <strong>merchant-initiated "charge by customer number"</strong> push.</li>
+          <li><strong>pawaPay integration</strong> — collection (Deposit) + settlement payout (Disbursement) + status query; webhook receiver with signature verification; retry/backoff. (Webhook receiver + reconciliation land in Phase D of the build.)</li>
+          <li><strong>Operator inference</strong> — MSISDN prefix → operator map; configurable via DB row so we can update without redeploy.</li>
+          <li><strong>Currency handling</strong> — CDF + USD; per-operator decimal precision (per <a href="report.html#agg-pawapay">pawaPay docs</a>: Vodacom CDF no decimals, others 2 decimals).</li>
+          <li><strong>Reconciliation job</strong> — daily compare of our ledger against pawaPay's status feed; flag discrepancies.</li>
+          <li><strong>Observability</strong> — structured logging, error tracking (Sentry), metrics (transaction success rate, latency by leg).</li>
+          <li><strong>Admin tooling</strong> — internal dashboard to inspect merchants and transactions and force reconciliation.</li>
+        </ul>
+
+        <h4>Merchant app workstreams</h4>
+        <ul>
+          <li><strong>Merchant onboarding</strong> — register the merchant, settlement details, and a till / short code; generate the merchant's <strong>QR</strong> (a <code>tel:</code> USSD dial-through) for display at the point of sale.</li>
+          <li><strong>Accept flow</strong> — merchant enters/sees the amount; customer pays at the <strong>exact sticker price</strong> by scanning the QR or dialling the till; PIN is entered on the customer's own operator prompt. Merchant absorbs the fee (MDR); dashboard shows pending → settled and net-of-fee.</li>
+          <li><strong>Charge-by-customer-number fallback</strong> — merchant keys the customer's number to push a collection prompt to that customer's phone.</li>
+          <li><strong>Transaction history &amp; reconciliation view</strong> — list, detail, retry-on-failure, daily totals.</li>
+          <li><strong>Localisation infrastructure</strong> — French primary; structure ready for Lingala / Swahili in Phase 3.</li>
+          <li><strong>Telemetry</strong> — funnel analytics, crash reporting.</li>
+          <li><strong>Build / release pipeline</strong> — TestFlight + Play Console internal testing.</li>
+        </ul>
+
+        <h4>Quality bars before exit</h4>
+        <ul>
+          <li>100 sandbox merchant-acceptance round-trips with &gt;= 99% terminal-state convergence (success or known-failure, no stuck-pending).</li>
+          <li>Customer-initiated USSD path proven end-to-end against the sandbox (QR / till dial-through → collection → settlement to merchant).</li>
+          <li>Idempotency proven (replay the same request → no duplicate operator call).</li>
+          <li>Webhook failure simulation works (drop callbacks → reconciliation job converges).</li>
+          <li>Manual operator override works for ambiguous prefixes.</li>
+          <li>French copy reviewed by a native French speaker (ideally DRC-French).</li>
+        </ul>
+
+        <h4>Team allocation (typical 3-person team)</h4>
+        <div class="role-row">
+          <div class="role"><strong>Founder/PM:</strong> Merchant testing (gas-station pilots), copy, partner / legal / operator-shortcode pursuit in parallel</div>
+          <div class="role"><strong>Backend eng:</strong> Ledger + merchant model + pawaPay integration + USSD channel + admin tools</div>
+          <div class="role"><strong>Mobile eng:</strong> Full merchant-app build + design execution</div>
+        </div>
+
+        <h4>Time breakdown</h4>
+        <table>
+          <thead><tr><th>Sub-phase</th><th>Weeks (4-person)</th><th>Weeks (2-person)</th></tr></thead>
+          <tbody>
+            <tr><td>Backend scaffolding + ledger + merchant model</td><td>3</td><td>5</td></tr>
+            <tr><td>pawaPay integration (deposit + settlement + webhooks)</td><td>2</td><td>4</td></tr>
+            <tr><td>USSD / QR channel + charge-by-number fallback</td><td>2</td><td>4</td></tr>
+            <tr><td>Merchant app scaffolding + onboarding + nav</td><td>3</td><td>5</td></tr>
+            <tr><td>Accept flow + transaction history</td><td>2</td><td>4</td></tr>
+            <tr><td>Reconciliation + admin tools</td><td>1</td><td>2</td></tr>
+            <tr><td>Hardening, edge cases, localisation prep</td><td>2</td><td>3</td></tr>
+            <tr><th>Total elapsed (parallel)</th><th>~12 weeks</th><th>~20 weeks</th></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 2 ===== -->
+    <div class="phase-card ph-2" id="phase-2">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 2</span> &nbsp; Production launch (closed → public beta)</h3>
+        <div class="phase-time">4–8 weeks elapsed</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> real DRC merchants accepting real customer payments through the app, observed end-to-end, with on-call coverage.</p>
+
+        <h4>Workstreams</h4>
+        <div class="grid2">
+          <div>
+            <h4><span class="badge b-ops">Ops</span> pawaPay production</h4>
+            <ul>
+              <li>Complete pawaPay production KYC (2–4 weeks elapsed, depends on them).</li>
+              <li>Production API tokens; switch endpoints from sandbox to prod.</li>
+              <li>Fund operator-side balances per pawaPay's treasury guidance.</li>
+              <li>Settlement-to-bank cadence agreed.</li>
+            </ul>
+
+            <h4><span class="badge b-eng">Eng</span> Production readiness</h4>
+            <ul>
+              <li>Infrastructure-as-code, CI/CD, rollback strategy.</li>
+              <li>Production observability dashboards (success rate by operator, leg latencies, error categories).</li>
+              <li>On-call rotation with PagerDuty / OpsGenie.</li>
+              <li>Database backups, secrets rotation.</li>
+            </ul>
+          </div>
+          <div>
+            <h4><span class="badge b-pm">PM</span> Beta program</h4>
+            <ul>
+              <li>Closed beta with a first cluster of the ~40 gas stations + pop-up stores already lined up — week 1–3.</li>
+              <li>Merchant-support intake — initially a phone number + WhatsApp.</li>
+              <li>Iterate on real-world failure modes (the Tanzania M-Pesa "undocumented rate limits at scale" pattern).</li>
+            </ul>
+
+            <h4><span class="badge b-design">UX</span> Store submission</h4>
+            <ul>
+              <li>App Store screenshots, privacy disclosures, store copy in French + English.</li>
+              <li>Google Play submission (review 1–3 days typical).</li>
+              <li>App Store submission (review 1–7 days; financial apps occasionally longer).</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4>Quality bars before opening to public</h4>
+        <ul>
+          <li>100 real-world merchant-acceptance transactions across all three operators (M-Pesa, Airtel, Orange) with &gt;= 95% success terminal rate.</li>
+          <li>Mean reconciliation lag &lt; 1 hour; every settlement reaches the merchant's account.</li>
+          <li>One end-to-end merchant-support cycle (issue raised → resolved → ledger reconciled) completed cleanly.</li>
+          <li>Crash-free sessions &gt; 99% across both platforms.</li>
+        </ul>
+
+        <h4>Team allocation</h4>
+        <div class="role-row">
+          <div class="role"><strong>Founder/PM:</strong> Merchant beta onboarding, support, store copy</div>
+          <div class="role"><strong>Backend eng:</strong> Production hardening, on-call setup</div>
+          <div class="role"><strong>Mobile eng:</strong> Store submissions, polish, telemetry tuning</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 3 ===== -->
+    <div class="phase-card ph-3" id="phase-3">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 3</span> &nbsp; Scale &amp; polish (post-launch)</h3>
+        <div class="phase-time">12–24 weeks elapsed (ongoing thereafter)</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> the app is the better way for a merchant to accept cross-network mobile money than the alternatives; merchant count and volume grow; the system handles it without us touching the firefighting button each day.</p>
+
+        <h4>Engineering tracks</h4>
+        <ul>
+          <li><strong>Real-world telemetry → ranked backlog.</strong> Once 1,000+ transactions/day are live, the failure-mode list reorganises priorities. Track success rate per (customer-operator, merchant-operator) pair; chase the worst ones first.</li>
+          <li><strong>Localisation:</strong> Lingala + Swahili UI strings (+4–6 weeks). Native speakers required for review.</li>
+          <li><strong>Afrimoney coverage</strong> via MOKO Afrika if commercially material — 4–8 weeks integration on top of pawaPay; routing layer chooses path per operator.</li>
+          <li><strong>Performance hardening:</strong> webhook redundancy, idempotency-key stress test, retry strategy tuned for DRC mobile network conditions.</li>
+          <li><strong>Fraud / abuse signals:</strong> rate-limit per merchant + customer number + device; anomaly detection on amount / frequency.</li>
+        </ul>
+
+        <h4>Growth tracks</h4>
+        <ul>
+          <li><strong>Merchant referral mechanic:</strong> reward existing merchants for referring other merchants; treat merchant-to-merchant referral as a primary acquisition channel alongside direct sales.</li>
+          <li><strong>Funnel analytics:</strong> merchant signup → onboarded (settlement set) → first accepted payment → repeat-acceptance conversion; identify drop-offs.</li>
+          <li><strong>Merchant-support tooling:</strong> ticketing system; canned responses in French; SLA targets.</li>
+        </ul>
+
+        <h4>Compliance &amp; legal tracks (often the quiet long-pole)</h4>
+        <ul>
+          <li>Stand up AML monitoring — pattern rules (e.g., velocity, structuring) — even if our entity is upstream of the regulated piece, the aggregator will require this.</li>
+          <li>Data-protection compliance (CNPDCP) — privacy policy, data-handling docs.</li>
+          <li>If merchant count / volume crosses thresholds, revisit licensing track started in Phase 0.</li>
+        </ul>
+
+        <h4>Team allocation (ideally 4 by now)</h4>
+        <div class="role-row">
+          <div class="role"><strong>Founder/PM:</strong> Growth, support, legal track</div>
+          <div class="role"><strong>Backend eng:</strong> Reliability, fraud, Afrimoney via MOKO</div>
+          <div class="role"><strong>Mobile eng:</strong> Localisation, funnel polish, merchant referral mechanic</div>
+          <div class="role"><strong>+ Designer / 4th eng:</strong> UX iteration, second-platform polish</div>
+        </div>
+
+        <h4>Exit signals (not strict, but useful)</h4>
+        <ul>
+          <li>Steady-state active merchants in the three-to-four-figure range, transacting regularly.</li>
+          <li>Cost per round-trip stable and modelled; effective MDR holds above the pawaPay round-trip cost.</li>
+          <li>You can take a weekend off without something breaking.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 4 ===== -->
+    <div class="phase-card ph-4" id="phase-4">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 4</span> &nbsp; Direct-operator on-ramp <span class="phase-tag" style="margin-left:6px;">parallel</span></h3>
+        <div class="phase-time">6–18 months elapsed (mostly relationship work)</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> open commercial conversations with the operators directly — not to replace pawaPay yet, but to start the relationship clock so Phase 5 has something to switch onto. <strong>This phase is mostly NOT engineering time.</strong></p>
+
+        <h4>Workstreams</h4>
+        <ul>
+          <li><strong>M-Pesa DRC commercial conversation</strong> via <span class="mono">supportmpesa@m-pesa.cd</span> — KYC pack, M-Pesa Services Agreement, pricing quote. Months of back-and-forth typical.</li>
+          <li><strong>Airtel Money DRC</strong> — self-serve sandbox via <a href="https://developers.airtel.africa/">developers.airtel.africa</a>; per-country contract for production. Easier than M-Pesa.</li>
+          <li><strong>Orange Money DRC</strong> — subscribe at an Orange DRC store as a KYA-compliant merchant; integrate Web Payment API for sandbox testing.</li>
+          <li><strong>Engineering side</strong>: build sandbox prototypes against each direct API behind a feature flag; measure success rates vs pawaPay; cache learnings.</li>
+        </ul>
+
+        <h4>Output of this phase</h4>
+        <ul>
+          <li>Real per-leg rate quotes from at least M-Pesa and Airtel (the two largest, ~82% of DRC mobile money share between them).</li>
+          <li>Working sandbox integrations to each (behind a flag — not yet in production traffic).</li>
+          <li>Decision: is the direct path actually cheaper than pawaPay for our volume, and how much would the switch save?</li>
+        </ul>
+
+        <h4>Team allocation</h4>
+        <div class="role-row">
+          <div class="role"><strong>Founder/PM:</strong> Most of the work — commercial outreach, contract review</div>
+          <div class="role"><strong>Backend eng:</strong> Sandbox prototype each operator (~3–4 weeks each, behind flags)</div>
+          <div class="role"><strong>Mobile eng:</strong> Unaffected — continues Phase 3 work</div>
+        </div>
+
+        <div class="callout">
+          <strong>Why this is "elapsed" not "engineering" time:</strong> contract negotiations are slow and asymmetric. As a small player, expect months for M-Pesa, weeks-to-months for Airtel, weeks for Orange. Engineering work fits in the cracks.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 5 ===== -->
+    <div class="phase-card ph-5" id="phase-5">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 5</span> &nbsp; Hybrid switch (own technical layer)</h3>
+        <div class="phase-time">16–32 weeks engineering (only when Phase 4 contracts exist)</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> route the M-Pesa and Airtel legs through our own direct integrations (cheaper, faster); keep pawaPay as the fallback for Orange + Afrimoney + as a safety net for the operators we own.</p>
+
+        <h4>Why hybrid not full</h4>
+        <ul>
+          <li>Direct contracts for M-Pesa + Airtel cover ~82% of DRC mobile money — most of the savings.</li>
+          <li>Orange and Afrimoney legs stay on pawaPay / MOKO until volume justifies separate contracts (or until they become uneconomic to route through aggregators).</li>
+          <li>Maintains fallback resilience — if direct operator API has an outage, we re-route via the aggregator for that leg automatically.</li>
+        </ul>
+
+        <h4>Engineering workstreams</h4>
+        <ul>
+          <li><strong>Internal "switch" abstraction</strong> — define our own provider interface (collect, payout, status, refund); pawaPay, M-Pesa, Airtel, Orange (Web Payment), MOKO all implement it.</li>
+          <li><strong>Routing logic</strong> — choose path per (operator, leg, retry) by configured policy; per-route success-rate telemetry.</li>
+          <li><strong>Reconciliation</strong> — multi-source ledger reconciliation across providers; harder than the pawaPay-only world.</li>
+          <li><strong>Compliance plumbing</strong> — direct contracts come with more direct AML/reporting obligations.</li>
+          <li><strong>Float / treasury function</strong> — operator-side prefunded balances; sweep policy; FX position management.</li>
+          <li><strong>Operations</strong> — recertification workflow as operator APIs change; runbooks.</li>
+        </ul>
+
+        <h4>Time breakdown</h4>
+        <table>
+          <thead><tr><th>Sub-phase</th><th>Weeks (4-person)</th><th>Weeks (2-person)</th></tr></thead>
+          <tbody>
+            <tr><td>Switch abstraction + routing</td><td>4</td><td>8</td></tr>
+            <tr><td>M-Pesa direct production integration</td><td>4</td><td>8</td></tr>
+            <tr><td>Airtel direct production integration</td><td>3</td><td>6</td></tr>
+            <tr><td>Multi-source reconciliation</td><td>3</td><td>5</td></tr>
+            <tr><td>Float / treasury tooling</td><td>2</td><td>5</td></tr>
+            <tr><th>Total elapsed</th><th>~16 weeks</th><th>~32 weeks</th></tr>
+          </tbody>
+        </table>
+
+        <h4>Pre-requisites</h4>
+        <ul>
+          <li>Direct contracts with at least M-Pesa DRC and Airtel DRC (output of Phase 4).</li>
+          <li>Working capital available for operator-side prefund balances (typically &gt;= 1 month of GMV).</li>
+          <li>Volume that materially justifies the build — see <a href="report.html#build-own">build-vs-rent analysis</a>.</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Don't start Phase 5 without Phase 4 deliverables.</strong> Building the switch without contracts means months of speculative engineering against APIs whose pricing you can't model.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PHASE 6 ===== -->
+    <div class="phase-card ph-6" id="phase-6">
+      <div class="phase-header">
+        <h3><span class="phase-tag">Phase 6</span> &nbsp; Own the rails (BCC EMI licence) — optional</h3>
+        <div class="phase-time">12–24+ months elapsed</div>
+      </div>
+      <div class="phase-body">
+        <p><strong>Goal:</strong> become a BCC-licensed Electronic Money Institution. Full ownership of the rails, full regulatory weight. <strong>Only undertaken if scale justifies the $2.5M capital lock-up and the compliance ops cost.</strong></p>
+
+        <h4>Workstreams (mostly NOT engineering)</h4>
+        <ul>
+          <li><strong>Capital:</strong> raise / commit US$ 2.5M paid-up minimum for the EMI subsidiary.</li>
+          <li><strong>Legal / corporate:</strong> incorporate a DRC special-purpose EMI subsidiary; governance.</li>
+          <li><strong>BCC application:</strong> business plan, risk framework, AML/CFT programme, IT controls, board, capital adequacy.</li>
+          <li><strong>Compliance ops:</strong> FIU reporting pipeline (CENAREF/CENTIF); 10-year data retention; PEP/UN/OFAC screening.</li>
+          <li><strong>Treasury:</strong> direct settlement to merchant bank accounts; FX desk; corporate banking.</li>
+          <li><strong>Engineering:</strong> incremental — most of the technical work already done in Phase 5. The big new piece is regulator-grade audit logging.</li>
+        </ul>
+
+        <h4>Decision gates before starting</h4>
+        <ul>
+          <li>Monthly GMV at a level where Phase 5 hybrid savings make a Phase 6 commitment look like ~3–5 year ROI on the $2.5M tied up + ongoing comply-cost.</li>
+          <li>Strategic case: do we want to be a regulated EMI? Are there ancillary products (issuance, custody, lending) that only an EMI can do?</li>
+          <li>Capital availability without distorting the core business.</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Most companies don't reach Phase 6.</strong> The build-vs-rent analysis in the <a href="report.html#build-own">main report</a> shows that even at $1.5M monthly GMV, the math is roughly neutral — the case strengthens at higher volumes and with ancillary products. Plan as if Phase 5 is the destination unless / until the data argues otherwise.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RISKS ===== -->
+    <h2 id="risks">Risks &amp; contingencies</h2>
+
+    <table>
+      <thead><tr><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>pawaPay production KYC slower than expected</td>
+          <td>Delays Phase 2 launch</td>
+          <td><span class="badge b-risk-m">Medium</span></td>
+          <td>Submit KYC questionnaire in Phase 0, not Phase 2.</td>
+        </tr>
+        <tr>
+          <td>Legal / licensing posture comes back as "must have local partner-PSP licence"</td>
+          <td>Adds 2–4 months elapsed and a partner contract</td>
+          <td><span class="badge b-risk-m">Medium</span></td>
+          <td>Counsel engaged in Phase 0; identify partner candidates early.</td>
+        </tr>
+        <tr>
+          <td>App Store rejects financial app on first submission</td>
+          <td>+1–3 weeks per rejection cycle</td>
+          <td><span class="badge b-risk-m">Medium</span></td>
+          <td>Comply with Apple's "real-money" guidelines; have a recovery / customer-support flow visible.</td>
+        </tr>
+        <tr>
+          <td>Real-world DRC network conditions break optimistic webhook assumptions</td>
+          <td>Reliability work in Phase 3 takes longer</td>
+          <td><span class="badge b-risk-h">High</span></td>
+          <td>Build retry/reconciliation as primary path from day one, not as an afterthought.</td>
+        </tr>
+        <tr>
+          <td>Hiring a strong mobile or backend engineer takes longer than expected</td>
+          <td>Slides everything 2–8 weeks</td>
+          <td><span class="badge b-risk-m">Medium</span></td>
+          <td>Start hiring before / during Phase 0; use a strong contractor as bridge.</td>
+        </tr>
+        <tr>
+          <td>Operator API changes mid-build (Afrimoney rollout, Airtel UAT updates)</td>
+          <td>2–4 weeks of rework per change</td>
+          <td><span class="badge b-risk-m">Medium</span></td>
+          <td>Wrap operator-specific code behind the switch abstraction from Phase 1 even though it's pawaPay-only initially.</td>
+        </tr>
+        <tr>
+          <td>Currency / FX exposure on held balances grows beyond risk appetite</td>
+          <td>Treasury work pulled forward from Phase 5 to Phase 3</td>
+          <td><span class="badge b-risk-l">Low (v1)</span></td>
+          <td>Pass-through model in v1 (no held balance) avoids this entirely.</td>
+        </tr>
+        <tr>
+          <td>Competitor launches similar merchant-acquiring app in DRC during Phase 1</td>
+          <td>Less acquisition leverage; pricing pressure</td>
+          <td><span class="badge b-risk-l">Low–Medium</span></td>
+          <td>Move quickly; lock in the ~40-merchant beachhead; build merchant referral mechanic in Phase 3; lean into local presence (Kinshasa team or partner).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ===== OPEN DECISIONS ===== -->
+    <h2 id="decisions">Open decisions to make before Phase 1</h2>
+
+    <ol>
+      <li><strong>Mobile stack:</strong> React Native (shared codebase, fastest team velocity) vs Flutter (Google ecosystem, strong UI) vs native Swift+Kotlin (best performance / store integration, 2x effort). Default for a 2–4 person team: <strong>React Native</strong>.</li>
+      <li><strong>Backend stack:</strong> Python (FastAPI; strong libraries, francophone-Africa hireability) vs Node/TypeScript (mobile-friendly type sharing) vs Go (ops simplicity, performance). The backend has in fact been built in <strong>Python / FastAPI</strong>; the tech-stack note leaves the final call to the hired engineer.</li>
+      <li><strong>Hosting region:</strong> AWS Europe (Frankfurt) or GCP Europe — closest viable to DRC with mature compliance.</li>
+      <li><strong>Pass-through vs held-balance model:</strong> v1 pass-through (recommended) — instant settlement to the merchant, we never hold funds. Held-balance is an EMI-shaped decision.</li>
+      <li><strong>MDR (merchant fee) level — open pricing decision:</strong> the placeholder is <strong>1%</strong>, but a pawaPay round-trip costs <strong>~3.5–5%</strong>, so 1% is below cost. A viable MDR is likely <strong>~5–7%+</strong>. The merchant absorbs this; the customer always pays the exact sticker price. Resolve before pricing the pilot.</li>
+      <li><strong>Beachhead rollout:</strong> sequence the ~40 lined-up gas stations + pop-up stores — all at once, or in clusters.</li>
+      <li><strong>Currency default:</strong> USD-first or CDF-first UX? (Both supported; default matters for cognitive load.)</li>
+      <li><strong>Brand language:</strong> French primary confirmed; Lingala / Swahili priority for Phase 3.</li>
+      <li><strong>Designer model:</strong> contract from Phase 0, or absorb into mobile engineer with a component library?</li>
+      <li><strong>Customer-support channel:</strong> WhatsApp Business + phone vs in-app chat. WhatsApp is cheaper and closer to DRC norms.</li>
+      <li><strong>Whether to start Phase 4 (operator-direct conversations) in parallel with Phase 1 or only after Phase 3.</strong> Earlier means the relationship clock runs sooner; later means we have data to bring to the table.</li>
+    </ol>
+
+    <h3>Resolving these in Phase 0</h3>
+    <p>Each item above can be settled in 1–3 days of focused work in Phase 0. Spending the time now avoids weeks of rework later.</p>
+
+    <p class="meta" style="margin-top:48px;">End of roadmap · Generated 2026-06-04 · See <a href="report.html">report.html</a> for full research; <span class="mono">drc-mvp-research/_status/progress.md</span> for tracking.</p>
+  </main>
+</div>
+</body>
+</html>

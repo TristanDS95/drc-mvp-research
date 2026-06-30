@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC payment-aggregator MVP — feasibility research report</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f7f7f5;
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --border: #e0e0dc;
+    --accent: #1d3557;
+    --accent-soft: #457b9d;
+    --link: #0a4f8c;
+    --warn: #b45309;
+    --good: #166534;
+    --mid: #92400e;
+    --low: #991b1b;
+    --primary-tag: #1e40af;
+    --secondary-tag: #475569;
+    --selfrep-tag: #c2410c;
+    --code-bg: #f1ede2;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+  nav.sidebar {
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border);
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    font-size: 14px;
+  }
+  nav.sidebar h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-soft);
+    margin: 18px 0 8px;
+    font-weight: 600;
+  }
+  nav.sidebar h2:first-child { margin-top: 0; }
+  nav.sidebar a {
+    display: block;
+    padding: 4px 0;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: none;
+  }
+  nav.sidebar a:hover { text-decoration: underline; }
+  nav.sidebar .nav-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  nav.sidebar .nav-sub {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-bottom: 20px;
+  }
+  main {
+    padding: 40px 56px 80px;
+    max-width: 1000px;
+  }
+  h1 {
+    font-size: 28px;
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  h2 {
+    font-size: 22px;
+    color: var(--accent);
+    margin: 48px 0 8px;
+    padding-top: 12px;
+    border-top: 2px solid var(--border);
+  }
+  h3 {
+    font-size: 17px;
+    color: var(--accent);
+    margin: 28px 0 8px;
+  }
+  h4 {
+    font-size: 15px;
+    color: var(--text);
+    margin: 16px 0 4px;
+    font-weight: 700;
+  }
+  p { margin: 6px 0 12px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid #b3cce6; }
+  a:hover { background: #eef4fa; }
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  ul, ol { margin: 6px 0 12px; padding-left: 22px; }
+  li { margin: 3px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th { background: var(--bg-alt); font-weight: 600; }
+  tr:nth-child(even) td { background: #fafaf7; }
+  .meta {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin: 4px 0 16px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    vertical-align: middle;
+    line-height: 1.6;
+  }
+  .b-high { background: #dcfce7; color: var(--good); }
+  .b-med  { background: #fef3c7; color: var(--mid); }
+  .b-low  { background: #fee2e2; color: var(--low); }
+  .b-primary    { background: #dbeafe; color: var(--primary-tag); }
+  .b-secondary  { background: #e5e7eb; color: var(--secondary-tag); }
+  .b-selfrep    { background: #ffedd5; color: var(--selfrep-tag); }
+  .b-yes { background: #dcfce7; color: var(--good); }
+  .b-no  { background: #fee2e2; color: var(--low); }
+  .b-partial { background: #fef3c7; color: var(--mid); }
+  .lead {
+    font-size: 16px;
+    background: #eef4fa;
+    border-left: 4px solid var(--accent-soft);
+    padding: 14px 18px;
+    margin: 14px 0 24px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout {
+    background: #fff8e6;
+    border-left: 4px solid var(--warn);
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 14px;
+    border-radius: 0 4px 4px 0;
+  }
+  .callout-good {
+    background: #f0fdf4;
+    border-left: 4px solid var(--good);
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 16px 0 28px;
+    background: #fff;
+  }
+  .card h3 {
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-soft);
+    margin-top: -4px;
+    margin-bottom: 10px;
+  }
+  .grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 24px; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+  .toplinks { margin: 4px 0 24px; font-size: 13px; color: var(--text-soft); }
+  .top { font-size: 12px; }
+  .src-list { font-size: 13px; }
+  .src-list li { margin: 4px 0; }
+  .legend {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin: 8px 0 18px;
+    font-size: 13px;
+  }
+  .legend-row { margin: 4px 0; }
+  .legend-row .badge { margin-right: 8px; }
+  @media print {
+    nav.sidebar { display: none; }
+    main { padding: 0; max-width: 100%; }
+    .layout { grid-template-columns: 1fr; }
+    a { color: var(--text); border-bottom: none; }
+    h2 { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-title">DRC payment-aggregator MVP</div>
+    <div class="nav-sub">Feasibility research · 2026-06-04</div>
+
+    <h2>Top of report</h2>
+    <a href="#summary">Bottom line</a>
+    <a href="#recommendation">Recommendation</a>
+    <a href="#legend">Reading legend</a>
+    <a href="#glossary">Glossary &amp; acronyms</a>
+
+    <h2>Operators</h2>
+    <a href="#op-mpesa">M-Pesa (Vodacom)</a>
+    <a href="#op-orange">Orange Money</a>
+    <a href="#op-airtel">Airtel Money</a>
+    <a href="#op-afrimoney">Afrimoney (Africell)</a>
+
+    <h2>Aggregators</h2>
+    <a href="#agg-pawapay">pawaPay</a>
+    <a href="#agg-dpo">DPO Pay</a>
+    <a href="#agg-moko">MOKO Afrika</a>
+    <a href="#agg-onafriq">Onafriq</a>
+
+    <h2>Cross-cutting</h2>
+    <a href="#fees">Fees &amp; costs</a>
+    <a href="#payee-id">Payee identification</a>
+    <a href="#kyc">KYC &amp; onboarding</a>
+
+    <h2>Strategic option</h2>
+    <a href="#build-own">Build our own aggregator?</a>
+
+    <h2>Synthesis</h2>
+    <a href="#operator-comparison">Operator comparison</a>
+    <a href="#aggregator-comparison">Aggregator comparison</a>
+    <a href="#user-flow">MVP user flow</a>
+    <a href="#open-questions">Open questions</a>
+
+    <h2>Reference</h2>
+    <a href="#sources">Sources</a>
+    <a href="#method">Method &amp; caveats</a>
+  </nav>
+
+  <main>
+    <h1>DRC payment-aggregator MVP — feasibility on rented rails</h1>
+    <div class="meta">Date: 2026-06-04 · Built from <span class="mono">drc-mvp-research/02-findings/</span> + <span class="mono">03-reports/</span> · All claims sourced inline.</div>
+
+    <!-- =========== SUMMARY =========== -->
+    <h2 id="summary">Bottom line</h2>
+    <div class="lead">
+      <strong>The MVP is technically feasible on rented rails today.</strong> A <strong>merchant-facing</strong> app — merchants accept payments from customers across DRC's three biggest networks (Vodacom M-Pesa, Airtel Money, Orange Money — ~99% of DRC mobile money subscribers) — can be built using <em>one</em> aggregator integration. The two-leg flow (collect from the customer → bridge → settle to the merchant) is supported end-to-end with <strong>publicly verifiable pricing on pawaPay</strong>. The <strong>merchant absorbs the fee (MDR)</strong>; the customer pays the exact sticker price. Round-trip cost envelope is <strong>3.5%–5.0%</strong> before FX — so the 1% MDR placeholder is <em>below</em> cost, and real pricing is an open decision. Sandbox is open and self-serve.
+    </div>
+    <p>The main constraints are:</p>
+    <ul>
+      <li><strong>Unit economics on low-value tickets.</strong> Sub-$10 round-trips are uneconomic at 4–5%.</li>
+      <li><strong>Afrimoney coverage gap.</strong> &lt;1% market share; hard zero on pawaPay; only MOKO Afrika among the four researched aggregators explicitly covers Afrimoney.</li>
+      <li><strong>Legal/licensing flag.</strong> DRC's BCC framework appears to require foreign PSPs to partner with a licensed local entity — a separate track per <span class="mono">00-overview/research-goals.md</span>.</li>
+    </ul>
+
+    <!-- =========== RECOMMENDATION =========== -->
+    <h2 id="recommendation">Recommendation</h2>
+    <div class="callout callout-good">
+      <strong>Build the MVP on pawaPay as the single aggregator.</strong> Address payees by MSISDN (<span class="mono">+243…</span>) across Vodacom M-Pesa, Airtel, and Orange. Defer Afrimoney to v2 (MOKO Afrika is the fallback if Afrimoney becomes material). Don't integrate operators directly for the MVP — that's four contracts and four opaque pricing conversations to replicate something pawaPay already publishes. <strong>Open a separate legal/licensing track immediately.</strong>
+    </div>
+
+    <h3>Vendor decision matrix</h3>
+    <table>
+      <thead>
+        <tr><th>Vendor</th><th>MVP use?</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>pawaPay</strong></td><td><span class="badge b-yes">Yes — lead</span></td><td>Public DRC pricing; self-serve sandbox; 3 of 4 MNOs; no setup or monthly fees on Standard.</td></tr>
+        <tr><td><strong>MOKO Afrika</strong></td><td><span class="badge b-partial">Reserve</span></td><td>Only researched aggregator with all 4 MNOs (includes Afrimoney). Pricing opaque. Escalate as v2 fallback.</td></tr>
+        <tr><td><strong>DPO Pay</strong></td><td><span class="badge b-no">No</span></td><td>Card/gateway-shaped; bulk-file payouts; opaque pricing; heavier onboarding. Right tool for a different shape.</td></tr>
+        <tr><td><strong>Onafriq</strong></td><td><span class="badge b-no">No</span></td><td>PSP-to-PSP shape (Visa Pay partnership). Over-engineered for v1. Opaque pricing.</td></tr>
+        <tr><td><strong>Direct operators</strong></td><td><span class="badge b-no">No (v1) — yes for v2</span></td><td>Four contracts, opaque per-leg fees. Right answer once volume justifies it.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Investigate in parallel</h3>
+    <ol>
+      <li><strong>Legal/licensing.</strong> Verify whether the MVP entity needs a BCC-registered partner. Engage counsel; confirm against BCC primary docs.</li>
+      <li><strong>Sandbox pilot.</strong> Run end-to-end on pawaPay sandbox with 1–2 real DRC SIMs. Measure success rates and end-to-end timing.</li>
+      <li><strong>Pricing quotes.</strong> Get real numbers from DPO, MOKO, Onafriq to confirm pawaPay is competitive.</li>
+      <li><strong>Afrimoney rollout.</strong> Track whether the Dec 2023 GSMA-spec merchant APIs are live in DRC.</li>
+      <li><strong>BCC interoperability stance.</strong> Confirm 2014 "no mandate" position is still current.</li>
+    </ol>
+
+    <!-- =========== LEGEND =========== -->
+    <h2 id="legend">Reading legend</h2>
+    <div class="legend">
+      <div class="legend-row"><strong>Confidence:</strong>
+        <span class="badge b-high">High</span>
+        <span class="badge b-med">Medium</span>
+        <span class="badge b-low">Low</span>
+      </div>
+      <div class="legend-row"><strong>Source type:</strong>
+        <span class="badge b-primary">Primary</span> official docs / regulator
+        <span class="badge b-secondary">Secondary</span> reputable third-party
+        <span class="badge b-selfrep">Self-reported</span> company marketing / press
+      </div>
+      <div class="legend-row"><strong>Support flags:</strong>
+        <span class="badge b-yes">Yes</span>
+        <span class="badge b-partial">Partial / unclear</span>
+        <span class="badge b-no">No / not found</span>
+      </div>
+      <div class="legend-row" style="margin-top:8px;color:var(--text-soft);font-size:12px;">
+        Every factual claim is sourced. "Not found" is treated as a valid finding — gaps are flagged rather than papered over.
+      </div>
+    </div>
+
+    <!-- =========== GLOSSARY =========== -->
+    <h2 id="glossary">Glossary &amp; acronyms</h2>
+    <p>Mobile money has a lot of three-letter shorthand. Every acronym used elsewhere in this report is defined here. Skim once, refer back as needed.</p>
+
+    <h3>Geography &amp; regulators</h3>
+    <table>
+      <thead><tr><th>Acronym</th><th>Stands for</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>DRC</strong></td><td>Democratic Republic of the Congo</td><td>The country this report is about. Sometimes written <strong>RDC</strong> (République Démocratique du Congo) in French sources.</td></tr>
+        <tr><td><strong>BCC</strong></td><td>Banque Centrale du Congo</td><td>DRC's central bank. The licensing authority for banks, EMIs, PSPs, and FX.</td></tr>
+        <tr><td><strong>ARPTC</strong></td><td>Autorité de Régulation de la Poste et des Télécommunications du Congo</td><td>DRC's telecom regulator. Allocates mobile number prefixes to operators.</td></tr>
+        <tr><td><strong>CENAREF / CENTIF</strong></td><td>Cellule Nationale de Renseignement Financier / Cellule Nationale de Traitement des Informations Financières</td><td>DRC's Financial Intelligence Unit (<strong>FIU</strong>). Sources disagree on the acronym — flagged for verification.</td></tr>
+        <tr><td><strong>CNPDCP</strong></td><td>Commission Nationale de Protection des Données et de Confidentialité des Personnes</td><td>DRC's data protection commission.</td></tr>
+        <tr><td><strong>GSMA</strong></td><td>Global System for Mobile Communications Association</td><td>The mobile industry's global trade body. Publishes the open Mobile Money API specification.</td></tr>
+        <tr><td><strong>UNCDF</strong></td><td>United Nations Capital Development Fund</td><td>UN agency that publishes payment-infrastructure assessments.</td></tr>
+        <tr><td><strong>FATF</strong></td><td>Financial Action Task Force</td><td>Intergovernmental body setting global AML/CFT standards.</td></tr>
+        <tr><td><strong>UN / OFAC</strong></td><td>United Nations / Office of Foreign Assets Control</td><td>Sanctions lists screened against in DRC KYC.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Payments business model &amp; licensing</h3>
+    <table>
+      <thead><tr><th>Acronym</th><th>Stands for</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>KYC</strong></td><td>Know Your Customer</td><td>Verifying who a user is at signup. In DRC: SIM-tied for end-users; document checks for merchants.</td></tr>
+        <tr><td><strong>KYA</strong></td><td>Know Your Agent</td><td>Orange Money's variant for verifying merchants/agents.</td></tr>
+        <tr><td><strong>AML</strong></td><td>Anti-Money Laundering</td><td>Rules and monitoring to prevent illicit funds moving through the system.</td></tr>
+        <tr><td><strong>CFT</strong></td><td>Combating the Financing of Terrorism</td><td>Usually paired with AML as "AML/CFT."</td></tr>
+        <tr><td><strong>CDD</strong></td><td>Customer Due Diligence</td><td>The actual identity and risk checks done at onboarding (and periodically after).</td></tr>
+        <tr><td><strong>SAR / STR</strong></td><td>Suspicious Activity / Transaction Report</td><td>What a PSP files with the FIU when it spots suspicious flows.</td></tr>
+        <tr><td><strong>UBO</strong></td><td>Ultimate Beneficial Owner</td><td>The real human(s) who own/control a business — KYC requires identifying them.</td></tr>
+        <tr><td><strong>PEP</strong></td><td>Politically Exposed Person</td><td>People in public office; trigger enhanced due diligence.</td></tr>
+        <tr><td><strong>PSP</strong></td><td>Payment Service Provider</td><td>An entity licensed to process payments. DPO Pay, MOKO, etc. are PSPs.</td></tr>
+        <tr><td><strong>EMI</strong></td><td>Electronic Money Institution</td><td>A specific licensed-entity category that may issue e-money. DRC requires a US$2.5M minimum capital subsidiary.</td></tr>
+        <tr><td><strong>MNO</strong></td><td>Mobile Network Operator</td><td>The telco. Vodacom, Airtel, Orange, Africell are DRC's MNOs.</td></tr>
+        <tr><td><strong>MMO</strong></td><td>Mobile Money Operator</td><td>An MNO operating a mobile money product (M-Pesa, Airtel Money, Orange Money, Afrimoney).</td></tr>
+        <tr><td><strong>MVP</strong></td><td>Minimum Viable Product</td><td>The v1 of the merchant-acceptance app this research feeds.</td></tr>
+        <tr><td><strong>GMV</strong></td><td>Gross Merchandise Value</td><td>Total transaction value flowing through the app — the base for percentage fees.</td></tr>
+        <tr><td><strong>TCO</strong></td><td>Total Cost of Ownership</td><td>All-in cost of build-and-run, not just upfront.</td></tr>
+        <tr><td><strong>PCI DSS</strong></td><td>Payment Card Industry Data Security Standard</td><td>Card-data security standard. Relevant only if we touch card data.</td></tr>
+        <tr><td><strong>ISO 27001</strong></td><td>Information security management standard</td><td>Generic security cert; pawaPay is certified.</td></tr>
+        <tr><td><strong>OWASP ASVS</strong></td><td>Open Web Application Security Project — Application Security Verification Standard</td><td>App security benchmark; pawaPay claims compliance.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Money flow &amp; transaction types</h3>
+    <table>
+      <thead><tr><th>Acronym</th><th>Stands for</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>C2B</strong></td><td>Customer-to-Business</td><td>Collection. Debiting the payer's wallet to pay a merchant.</td></tr>
+        <tr><td><strong>B2C</strong></td><td>Business-to-Customer</td><td>Payout / disbursement. Sending money from the business to a user wallet.</td></tr>
+        <tr><td><strong>B2B</strong></td><td>Business-to-Business</td><td>Business-to-business payments (e.g., invoice pay).</td></tr>
+        <tr><td><strong>P2P</strong></td><td>Peer-to-Peer</td><td>One consumer wallet to another consumer wallet.</td></tr>
+        <tr><td><strong>G2P</strong></td><td>Government-to-Person</td><td>e.g., social-assistance disbursements via mobile money.</td></tr>
+        <tr><td><strong>FX</strong></td><td>Foreign Exchange</td><td>Currency conversion (CDF ↔ USD in this context). Carries a markup.</td></tr>
+        <tr><td><strong>T+0 / T+1 / T+2</strong></td><td>Trade date + N days</td><td>Settlement timing. T+0 = same day; T+1 = next business day, etc.</td></tr>
+        <tr><td><strong>SLA</strong></td><td>Service Level Agreement</td><td>Promised uptime, response times, etc. from a vendor.</td></tr>
+        <tr><td><strong>STR</strong></td><td>Suspicious Transaction Report</td><td>See SAR — the formal filing to the FIU.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Currency &amp; identifiers</h3>
+    <table>
+      <thead><tr><th>Acronym</th><th>Stands for</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>CDF</strong></td><td>Congolese Franc</td><td>DRC's local currency. ISO code.</td></tr>
+        <tr><td><strong>FC</strong></td><td>Franc Congolais</td><td>Same as CDF; the local-language abbreviation often seen on tariff pages.</td></tr>
+        <tr><td><strong>USD</strong></td><td>US Dollar</td><td>Widely used in DRC alongside CDF, including in mobile money accounts.</td></tr>
+        <tr><td><strong>MSISDN</strong></td><td>Mobile Station International Subscriber Directory Number</td><td>A phone number in international format. DRC's country code: <span class="mono">+243</span>.</td></tr>
+        <tr><td><strong>SIM</strong></td><td>Subscriber Identity Module</td><td>The chip in the phone tied to the user's identity. DRC SIM registration is mandatory.</td></tr>
+        <tr><td><strong>BIN</strong></td><td>Bank Identification Number</td><td>The first digits of a card number identifying the issuer. Used by Onafriq's Card Issuance product.</td></tr>
+        <tr><td><strong>MD</strong></td><td>Managing Director</td><td>e.g., Vodacash MD (Hashim Mukudi) — cited in the M-Pesa Rallonge launch.</td></tr>
+        <tr><td><strong>RCCM</strong></td><td>Registre du Commerce et du Crédit Mobilier</td><td>DRC's commercial register — needed for merchant onboarding.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Technical &amp; security</h3>
+    <table>
+      <thead><tr><th>Acronym</th><th>Stands for</th><th>What it means here</th></tr></thead>
+      <tbody>
+        <tr><td><strong>API</strong></td><td>Application Programming Interface</td><td>The programmatic contract a system exposes for code-to-code communication. Every operator and aggregator has one.</td></tr>
+        <tr><td><strong>SDK</strong></td><td>Software Development Kit</td><td>A vendor-provided library (Node.js, Java, etc.) that wraps an API for easier integration.</td></tr>
+        <tr><td><strong>REST</strong></td><td>Representational State Transfer</td><td>The dominant style for modern web APIs (uses HTTP verbs, JSON).</td></tr>
+        <tr><td><strong>JSON</strong></td><td>JavaScript Object Notation</td><td>The standard data format used by these APIs.</td></tr>
+        <tr><td><strong>OAuth 2.0</strong></td><td>Open Authorization, version 2.0</td><td>An authentication protocol. Airtel Money's API uses it.</td></tr>
+        <tr><td><strong>JWT</strong></td><td>JSON Web Token</td><td>A signed token used to authenticate API requests. MOKO Afrika uses JWT.</td></tr>
+        <tr><td><strong>HMAC-SHA256</strong></td><td>Hash-based Message Authentication Code, using SHA-256</td><td>A cryptographic signature on webhook callbacks. Used by MOKO Afrika to verify callbacks are genuine.</td></tr>
+        <tr><td><strong>AES-256-CBC</strong></td><td>Advanced Encryption Standard, 256-bit key, Cipher Block Chaining mode</td><td>A symmetric encryption algorithm. MOKO Afrika encrypts payloads with it.</td></tr>
+        <tr><td><strong>2FA</strong></td><td>Two-Factor Authentication</td><td>Login security beyond a password. pawaPay supports it on the dashboard.</td></tr>
+        <tr><td><strong>USSD</strong></td><td>Unstructured Supplementary Service Data</td><td>The text-menu protocol that pops up on a mobile phone (e.g., when entering a PIN). DRC mobile money runs on it.</td></tr>
+        <tr><td><strong>STK</strong></td><td>SIM Toolkit</td><td>The on-SIM app the operator pushes prompts to. "STK push" is the payer's PIN prompt.</td></tr>
+        <tr><td><strong>QR</strong></td><td>Quick Response (code)</td><td>The square 2D barcode. No DRC national standard; some operators trial proprietary QR.</td></tr>
+        <tr><td><strong>mVISA</strong></td><td>mobile VISA</td><td>Visa's QR-payment standard, supported by DPO Pay.</td></tr>
+        <tr><td><strong>NQR / GhQR / KE-QR</strong></td><td>Nigeria / Ghana / Kenya QR standards</td><td>National QR-payment standards in those countries. DRC has no equivalent.</td></tr>
+        <tr><td><strong>IP</strong></td><td>Internet Protocol</td><td>"IP whitelisting" = restricting API access to specific source addresses (MOKO uses this).</td></tr>
+        <tr><td><strong>TLS</strong></td><td>Transport Layer Security</td><td>The protocol behind HTTPS. Encrypts data in transit.</td></tr>
+        <tr><td><strong>UAT</strong></td><td>User Acceptance Testing</td><td>"Staging" environment. Airtel's sandbox URL is <span class="mono">openapiuat.airtel.africa</span>.</td></tr>
+        <tr><td><strong>POS</strong></td><td>Point of Sale</td><td>The merchant terminal at checkout.</td></tr>
+        <tr><td><strong>SLA</strong></td><td>Service Level Agreement</td><td>Vendor uptime/performance commitments.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Vendor &amp; product-specific shorthand</h3>
+    <table>
+      <thead><tr><th>Term</th><th>Means</th></tr></thead>
+      <tbody>
+        <tr><td><strong>M-Pesa Mikili</strong></td><td>Vodacom's branding for cross-operator and international transfers (e.g., M-Pesa DRC ↔ Orange Money).</td></tr>
+        <tr><td><strong>M-Pesa Rallonge</strong></td><td>Vodacom DRC's overdraft product (launched 2022) — referenced as the launch source for the "6M M-Pesa users" figure.</td></tr>
+        <tr><td><strong>Daraja</strong></td><td>Safaricom Kenya's public M-Pesa API (launched 2017) — used here only as a comparison point.</td></tr>
+        <tr><td><strong>Lipa Na M-Pesa</strong></td><td>"Pay with M-Pesa" — the Kenya-branded merchant payment flow. The DRC equivalent uses the same STK PIN mechanism.</td></tr>
+        <tr><td><strong>Comviva</strong></td><td>A mobile money technology platform vendor. Afrimoney runs on Comviva.</td></tr>
+        <tr><td><strong>Visa Pay</strong></td><td>Visa's wallet product launched in DRC Sept 2025 via Onafriq — bridges Visa cards with mobile money wallets.</td></tr>
+        <tr><td><strong>Standard plan (pawaPay)</strong></td><td>pawaPay's no-setup, no-monthly-fee tier. DRC providers don't require Enterprise.</td></tr>
+        <tr><td><strong>Tier 1 / Tier 2 wallet</strong></td><td>DRC mobile money KYC tiers: Tier 1 capped at ~$100; Tier 2 at $3,000.</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ===================== OPERATORS ===================== -->
+    <h2>Mobile money operators</h2>
+    <p class="toplinks">Jump to: <a href="#op-mpesa">M-Pesa</a> · <a href="#op-orange">Orange Money</a> · <a href="#op-airtel">Airtel Money</a> · <a href="#op-afrimoney">Afrimoney</a></p>
+
+    <!-- M-Pesa -->
+    <div class="card" id="op-mpesa">
+      <h3>M-Pesa (Vodacom DRC) <span class="badge b-med">Confidence: Medium</span></h3>
+      <div class="card-meta">Operates in DRC since 2012 (Vodacash). Largest DRC mobile money operator.</div>
+
+      <h4>Reach (self-reported)</h4>
+      <ul>
+        <li><strong>6.4M active M-Pesa users in 2024 (+28.4% YoY)</strong> — Vodacom RDC release via <a href="https://bankable.africa/en/digital/0303-859-drc-vodacom-had-6-4m-m-pesa-users-in-2024-up-28-4-yoy">BANKABLE</a>. <span class="badge b-selfrep">Self-reported</span></li>
+        <li>~51% share of DRC mobile money subscribers; 2025 revenue $207.1M (Vodacom RDC) — <a href="https://rdc-analyse.org/files/2025/08/2025_08_CAT_Feasibility-analysis-of-Mobile-Money-in-eastern-DRC_VE-1.pdf">CAT feasibility analysis, 2025-08</a>. <span class="badge b-secondary">Secondary</span></li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Portal: <a href="https://openapiportal.m-pesa.com/">openapiportal.m-pesa.com</a> (unified across M-Pesa markets). <span class="badge b-primary">Primary</span></li>
+        <li>DRC-specific onboarding: <a href="https://business.m-pesa.com/vodacom-drc/onboarding-your-business-in-drc/">business.m-pesa.com/vodacom-drc/</a>. Contact <span class="mono">supportmpesa@m-pesa.cd</span>.</li>
+        <li>Sandbox: <span class="badge b-yes">Yes</span> (developer signup + email/phone confirmation).</li>
+        <li>Auth: API key.</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <table>
+        <tr><th>Capability</th><th>Supported?</th><th>Notes</th></tr>
+        <tr><td>Collection (C2B)</td><td><span class="badge b-yes">Yes</span></td><td>One of three initial portal products.</td></tr>
+        <tr><td>Payout (B2C)</td><td><span class="badge b-yes">Yes</span></td><td>To M-Pesa wallets. Behaviour for non-registered numbers not documented.</td></tr>
+        <tr><td>Transaction status</td><td><span class="badge b-yes">Yes</span></td><td>Plus reversals.</td></tr>
+        <tr><td>QR (DRC)</td><td><span class="badge b-partial">Not confirmed</span></td><td>6/7-digit merchant short code issued at onboarding. QR exists in other M-Pesa markets; DRC API surface for QR not documented.</td></tr>
+        <tr><td>Cross-network bridging</td><td><span class="badge b-no">No (operator API)</span></td><td>Single-operator API.</td></tr>
+      </table>
+
+      <h4>Money movement</h4>
+      <p><strong>Approval flow:</strong> STK/USSD push with PIN (verified for Kenya implementation via <a href="https://dev.to/msnmongare/m-pesa-express-stk-push-api-guide-40a2">STK Push guide</a> <span class="badge b-secondary">Secondary</span> — Kenya proxy; DRC UX inferred). <strong>Currencies:</strong> <span class="badge b-yes">CDF + USD</span>. <strong>Settlement timing:</strong> Not found — quoted after partner application.</p>
+
+      <h4>Consumer-side fees (Vodacom DRC tariff)</h4>
+      <p>Per <a href="https://www.vodacom.cd/particulier/m-pesa/combien-ca-coute">vodacom.cd consumer tariffs</a> (retrieved via search snippet — page JS-rendered). <span class="badge b-selfrep">Self-reported</span> <span class="badge b-med">Medium confidence</span></p>
+      <ul>
+        <li><strong>CDF:</strong> P2P free 1,000–500,000 FC; withdrawals tiered 13.5% → 0.63%.</li>
+        <li><strong>USD:</strong> P2P free $1–$500; withdrawals tiered 18% → 1.5%.</li>
+        <li>Account caps: Standard $100 / Premium $3,000.</li>
+      </ul>
+
+      <h4>API-driven merchant fees</h4>
+      <p><span class="badge b-no">Not public</span> — &ldquo;the M-Pesa Business team will review the application and inform you of the M-Pesa charging model.&rdquo; (<a href="https://business.m-pesa.com/vodacom-drc/onboarding-your-business-in-drc/">DRC onboarding page</a>)</p>
+
+      <h4>Onboarding</h4>
+      <p>Email <span class="mono">supportmpesa@m-pesa.cd</span> → KYC → sign M-Pesa Services Agreement → bank account → receive 6/7-digit merchant code.</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li>Exact DRC API per-leg fees.</li>
+        <li>Whether B2C payout can target non-M-Pesa-registered Vodacom numbers.</li>
+        <li>Settlement cadence; rate limits; per-transaction caps.</li>
+        <li>QR support in the DRC API surface (Kenya/Tanzania have it).</li>
+      </ul>
+    </div>
+
+    <!-- Orange Money -->
+    <div class="card" id="op-orange">
+      <h3>Orange Money (Orange DRC) <span class="badge b-med">Confidence: Medium</span></h3>
+      <div class="card-meta">DRC is explicitly listed on the Orange Money Web Payment / M Payment API. ~17% DRC mobile money share.</div>
+
+      <h4>Reach</h4>
+      <ul>
+        <li>~17% DRC mobile money subscribers — <a href="https://rdc-analyse.org/files/2025/08/2025_08_CAT_Feasibility-analysis-of-Mobile-Money-in-eastern-DRC_VE-1.pdf">CAT feasibility analysis, 2025-08</a>. <span class="badge b-secondary">Secondary</span></li>
+        <li>Orange Money group-wide: 17 countries, ~100M customers — Orange. <span class="badge b-selfrep">Self-reported</span></li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>API: <a href="https://developer.orange.com/apis/om-webpay">Orange Money Web Payment / M Payment (1.0)</a> — DRC ("RD Congo") explicitly listed alongside Mali, Cameroon, CI, Senegal, Madagascar, Botswana, Guinea Conakry, Guinea Bissau, Sierra Leone, CAR. <span class="badge b-primary">Primary</span></li>
+        <li>Sandbox: <span class="badge b-partial">Not confirmed publicly</span> — typically gated behind portal signup.</li>
+        <li>Auth: Not in public overview.</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <table>
+        <tr><th>Capability</th><th>Supported?</th><th>Notes</th></tr>
+        <tr><td>Collection (Web Payment)</td><td><span class="badge b-yes">Yes</span></td><td>"Dedicated to merchants" — KYA-compliant.</td></tr>
+        <tr><td>Payout (B2C)</td><td><span class="badge b-no">Not found</span></td><td>No public DRC B2C API on developer.orange.com. Third parties (Klasha, Digitalpaye, Nuvei) advertise Orange Money payout, but aggregator-mediated.</td></tr>
+        <tr><td>Cross-network</td><td><span class="badge b-partial">Consumer-level (1%)</span></td><td>Tariff lists "to other networks" at 1% — consumer flow only.</td></tr>
+        <tr><td>QR (DRC)</td><td><span class="badge b-partial">Visa-linked card</span></td><td>Merchant subscription; native QR not confirmed.</td></tr>
+      </table>
+
+      <h4>Consumer-side fees (Orange DRC tariff)</h4>
+      <p>Per <a href="https://www.orange.cd/fr/orange-money/tarifications-orange-money.html">orange.cd Orange Money tariffication page</a>. <span class="badge b-primary">Primary</span> <span class="badge b-high">High confidence</span></p>
+      <ul>
+        <li><strong>Withdrawal (national):</strong> 9% → 1% tiered (CDF and USD).</li>
+        <li><strong>Eastern region withdrawal:</strong> flat 1%.</li>
+        <li><strong>Transfer to OM (USSD/app, national):</strong> 1% flat.</li>
+        <li><strong>Transfer to other networks (off-net):</strong> <strong>1% flat</strong> — notable: off-net transfer is a designed feature, not an exception.</li>
+        <li>Withdrawal upper bound: 7,500,000 FC ≈ $2,500.</li>
+      </ul>
+
+      <h4>API-driven merchant fees</h4>
+      <p><span class="badge b-no">Not public</span></p>
+
+      <h4>Onboarding</h4>
+      <p>Merchant subscribes at an Orange store in DRC → KYA-compliant → integrate → accept. Central-bank approval flagged. Contact: <span class="mono">Serviceclients.RDC@orange.com</span>, +243 840 001 777, 372 Avenue Colonel Mondjiba, Ngaliema, Kinshasa.</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li>Does Orange Money DRC publish a B2C/disbursement API at all (not on developer.orange.com)?</li>
+        <li>Sandbox URL, authentication, settlement cadence.</li>
+        <li>Whether on-net/off-net 1% consumer transfer can be initiated from the API.</li>
+      </ul>
+    </div>
+
+    <!-- Airtel Money -->
+    <div class="card" id="op-airtel">
+      <h3>Airtel Money (Airtel DRC) <span class="badge b-med">Confidence: Medium-High</span></h3>
+      <div class="card-meta">Most developer-friendly of the four. Self-serve sandbox. Closing the gap on M-Pesa fast.</div>
+
+      <h4>Reach</h4>
+      <ul>
+        <li><strong>1M revenue-earning Airtel Money users in DRC</strong> — <a href="https://www.mobileworldlive.com/money/news-money/airtel-money-1m-revenue-earning-users-drc/">Mobile World Live</a>. <span class="badge b-selfrep">Self-reported</span></li>
+        <li>2025 revenue $194.8M (vs M-Pesa $207.1M); ~31% DRC mobile money share — <a href="https://bankable.africa/en/digital/1305-2927-with-194-8-million-in-2025-revenue-airtel-money-closes-in-on-m-pesa-in-drc">BANKABLE</a>. <span class="badge b-secondary">Secondary</span></li>
+        <li>Airtel Money group: 54.1M customers across 14 markets. <span class="badge b-selfrep">Self-reported</span></li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Portal: <a href="https://developers.airtel.africa/">developers.airtel.africa</a> (unified across 14 markets). <span class="badge b-primary">Primary</span></li>
+        <li>Sandbox URL: <span class="mono">https://openapiuat.airtel.africa</span>; production: <span class="mono">https://openapi.airtel.africa</span> — <a href="https://tech-ish.com/2021/11/19/developer-portal-airtel-money-api/">tech-ish.com</a>. <span class="badge b-secondary">Secondary</span></li>
+        <li>Auth: <strong>OAuth 2.0</strong>.</li>
+        <li>Self-serve portal signup; production go-live requires per-country contract.</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <table>
+        <tr><th>Capability</th><th>Supported?</th><th>Notes</th></tr>
+        <tr><td>Collection</td><td><span class="badge b-yes">Yes</span></td><td>Standard Airtel Africa product.</td></tr>
+        <tr><td>Disbursement (B2C)</td><td><span class="badge b-yes">Yes</span></td><td>To Airtel Money wallets.</td></tr>
+        <tr><td>Cross-network</td><td><span class="badge b-partial">Consumer-level</span></td><td>airtel.cd has an <a href="https://www.airtel.cd/airtelmoney/interopearbilite-avec-orange-money-m-pesa">interop page (URL exists; body JS-rendered)</a>.</td></tr>
+        <tr><td>QR (DRC)</td><td><span class="badge b-no">Not found</span></td><td>—</td></tr>
+      </table>
+
+      <h4>Fees</h4>
+      <p>Consumer tariff page exists at <a href="https://www.airtel.cd/airtel_money/charges">airtel.cd/airtel_money/charges</a> but JS-rendered (body opaque to fetch). API-driven merchant fees not public. <span class="badge b-low">Low confidence</span></p>
+
+      <h4>Onboarding</h4>
+      <p>Self-serve portal signup for sandbox. Production requires per-country contract — "MTN and Airtel make you sign contracts before seeing their API docs" pattern (<a href="https://dev.to/joova/why-mtn-and-airtel-make-you-sign-contracts-before-seeing-their-api-docs-and-how-to-start-building-3g4i">dev.to</a> <span class="badge b-secondary">Secondary</span>).</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li>DRC API per-transaction pricing and consumer-side fee schedule (airtel.cd page JS-opaque).</li>
+        <li>Whether disbursement can target a non-Airtel-Money MSISDN.</li>
+        <li>Mechanics of the airtel.cd "interopérabilité" page.</li>
+      </ul>
+    </div>
+
+    <!-- Afrimoney -->
+    <div class="card" id="op-afrimoney">
+      <h3>Afrimoney (Africell DRC) <span class="badge b-low">Confidence: Medium-Low</span></h3>
+      <div class="card-meta">Smallest reach, least public API surface. GSMA-spec adoption announced Dec 2023 but no public developer portal located.</div>
+
+      <h4>Reach</h4>
+      <ul>
+        <li>Africell DRC telecom subscribers: 5M+ active (since 2012 launch). <span class="badge b-selfrep">Self-reported</span></li>
+        <li>DRC telecom market share: 20–25% in active provinces; joint market leader in Kinshasa, Kongo-Central, Haut-Katanga — Africell. <span class="badge b-selfrep">Self-reported</span></li>
+        <li><strong>DRC mobile money share: &lt;1%</strong> — <a href="https://rdc-analyse.org/files/2025/08/2025_08_CAT_Feasibility-analysis-of-Mobile-Money-in-eastern-DRC_VE-1.pdf">CAT feasibility analysis</a>. <span class="badge b-secondary">Secondary</span></li>
+        <li>Africell group: 16M+ subscribers (Jan 2026). <span class="badge b-selfrep">Self-reported</span></li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Public developer portal: <span class="badge b-no">Not located</span></li>
+        <li>2023-12-07 announcement: Afrimoney adopted GSMA Mobile Money API Specification and migrated to Comviva platform. Developer portal and sandbox stated as forthcoming. — <a href="https://www.africell.com/story/afrimoney-adopts-mobile-money-specification/">africell.com news</a>. <span class="badge b-selfrep">Self-reported</span></li>
+        <li>Contact: <span class="mono">info@africell.cd</span>, phone 1010.</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <table>
+        <tr><th>Capability</th><th>Supported?</th><th>Notes</th></tr>
+        <tr><td>Collection (merchant API)</td><td><span class="badge b-partial">Announced</span></td><td>GSMA-spec; bill pay, online shopping, food delivery, ridesharing, tax collection.</td></tr>
+        <tr><td>Disbursement (B2C)</td><td><span class="badge b-partial">Forthcoming</span></td><td>"Expanding to disbursements and international money transfers APIs" (Dec 2023). 2020 World Bank/DRC Social Fund COVID disbursements existed but via bespoke integration.</td></tr>
+      </table>
+
+      <h4>Fees</h4>
+      <p>"Afrimoney fees are automatically deducted… current rates are displayed at all agent and partner points." Public consumer tariff <span class="badge b-no">not extractable</span>. P2P caps: $2,500 USD / 5,100,000 CDF.</p>
+
+      <h4>End-user onboarding</h4>
+      <p>Africell subscriber + national ID or passport + active SIM. Dial <span class="mono">*1020#</span> or visit shop. Free.</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li>Whether the Dec 2023 GSMA-spec merchant API is live in DRC.</li>
+        <li>Developer portal URL, sandbox, authentication, fees.</li>
+        <li>Whether disbursement targets non-Afrimoney Africell numbers.</li>
+      </ul>
+    </div>
+
+    <!-- ===================== AGGREGATORS ===================== -->
+    <h2>Aggregators / PSPs</h2>
+    <p class="toplinks">Jump to: <a href="#agg-pawapay">pawaPay</a> · <a href="#agg-dpo">DPO Pay</a> · <a href="#agg-moko">MOKO Afrika</a> · <a href="#agg-onafriq">Onafriq</a></p>
+
+    <!-- pawaPay -->
+    <div class="card" id="agg-pawapay">
+      <h3>pawaPay <span class="badge b-high">Confidence: High</span> <span class="badge b-yes">Recommended lead</span></h3>
+      <div class="card-meta">Mobile-money-only aggregator. 20+ African markets. Best documented and most price-transparent of the four.</div>
+
+      <h4>DRC coverage</h4>
+      <ul>
+        <li>Operators: <strong>Vodacom M-Pesa, Airtel, Orange</strong> (provider IDs <span class="mono">VODACOM_MPESA_COD</span>, <span class="mono">AIRTEL_COD</span>, <span class="mono">ORANGE_COD</span>). <span class="badge b-no">Afrimoney NOT supported.</span> — <a href="https://docs.pawapay.io/v2/docs/providers">pawaPay providers docs</a>. <span class="badge b-primary">Primary</span></li>
+        <li>Currencies: CDF (Vodacom no decimals; others 2 decimals) and USD (all 2 decimals).</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <ul>
+        <li>Collection (Deposits), Payout (Disbursements), Refunds, Batch disbursements.</li>
+        <li>Cross-network bridging at settlement layer (collect from any → balance → disburse to any).</li>
+        <li>Treasury services (local/global settlement, FX).</li>
+        <li>Centralised dashboard + real-time transaction tracking. ISO 27001, OWASP ASVS.</li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Docs: <a href="https://docs.pawapay.io/">docs.pawapay.io</a> · sandbox: <a href="https://dashboard.sandbox.pawapay.io/">dashboard.sandbox.pawapay.io</a>. <span class="badge b-primary">Primary</span></li>
+        <li>Self-serve sandbox signup.</li>
+        <li>Auth: API token.</li>
+      </ul>
+
+      <h4>Pricing — DRC, published</h4>
+      <table>
+        <tr><th>Provider</th><th>Collection</th><th>Disbursement</th></tr>
+        <tr><td>Vodacom M-Pesa DRC</td><td><strong>2.5%</strong> (1.5% MMO + 1% pawaPay)</td><td>2.0%</td></tr>
+        <tr><td>Airtel DRC</td><td><strong>3.0%</strong> (2.0% MMO + 1% pawaPay)</td><td>2.0%</td></tr>
+        <tr><td>Orange DRC</td><td><strong>3.0%</strong> (2.0% MMO + 1% pawaPay)</td><td><strong>1.0%</strong></td></tr>
+      </table>
+      <p>Standard plan: <strong>no setup or monthly fees</strong>. DRC providers do not require Enterprise. (<a href="https://www.pawapay.io/fees">pawaPay fees</a> / <a href="https://www.pawapay.io/plans">plans</a>.) <span class="badge b-primary">Primary</span></p>
+
+      <h4>Onboarding</h4>
+      <p>Sign up → test in sandbox → KYC questionnaire → specify markets and use case → go live. Standard plan via Discord community support; Enterprise via dedicated Slack + account manager.</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li>Settlement cadence to merchant bank account.</li>
+        <li>Per-transaction limits and rate limits per DRC provider.</li>
+        <li>End-user UX (assumed standard MMO USSD/PIN; not directly verified).</li>
+        <li>Whether pawaPay will add Afrimoney coverage.</li>
+      </ul>
+    </div>
+
+    <!-- DPO Pay -->
+    <div class="card" id="agg-dpo">
+      <h3>DPO Pay (DPO Group / Network International) <span class="badge b-med">Confidence: Medium</span></h3>
+      <div class="card-meta">Multi-channel PSP (cards + mobile money + bank transfers + QR). DRC support team in Kinshasa. Owned by Network International.</div>
+
+      <h4>DRC coverage</h4>
+      <ul>
+        <li>Operators: <strong>M-Pesa, Airtel, Orange</strong> referenced. <span class="badge b-partial">Afrimoney not confirmed.</span></li>
+        <li>Currencies: CDF, USD, GBP, "or any other currency."</li>
+        <li>DRC page: <a href="https://dpogroup.com/online-payments/drc/">dpogroup.com/online-payments/drc/</a> (page body returned binary asset — coverage detail from <a href="https://docs.dpopay.com/llms.txt">llms.txt</a> + <a href="https://payatlas.com/countries/congo-the-democratic-republic-of-the-cd">PayAtlas</a>).</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <ul>
+        <li>Collections via card, mobile money, bank transfer, mVISA QR.</li>
+        <li>Disbursements: <strong>bulk file payouts</strong> (real-time per-transaction payout API not separately documented).</li>
+        <li>Transaction status, refunds, dashboard.</li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Docs: <a href="https://docs.dpopay.com/">docs.dpopay.com</a>. <span class="badge b-primary">Primary</span></li>
+        <li>API v6 and v7. Sandbox referenced; URL not located in this research.</li>
+        <li>Community SDKs (Node.js, PHP).</li>
+      </ul>
+
+      <h4>Pricing</h4>
+      <p><span class="badge b-no">Not public</span>. PayAtlas DRC market norms: 2.5–4.0% card; 1,000–3,000 CDF per payout; 2–5% FX markup; ~5,000–10,000 CDF chargeback. <span class="badge b-secondary">Secondary</span> — market-wide, not DPO-specific.</p>
+
+      <h4>Why not for the MVP</h4>
+      <p>Card-and-collection-first shape; bulk-file payouts vs the per-payment real-time disbursement the MVP needs; opaque pricing; heavier commercial onboarding.</p>
+    </div>
+
+    <!-- MOKO -->
+    <div class="card" id="agg-moko">
+      <h3>MOKO Afrika <span class="badge b-med">Confidence: Medium-High</span> <span class="badge b-partial">Reserve for Afrimoney</span></h3>
+      <div class="card-meta">DRC-first aggregator. Only researched aggregator covering all four DRC MNOs. Linked to GoFresh/Freshpay group.</div>
+
+      <h4>DRC coverage</h4>
+      <ul>
+        <li>Operators: <strong>M-Pesa, Airtel, Orange, AND Afrimoney (Africell)</strong> — provider IDs <span class="mono">mpesa</span>, <span class="mono">airtel</span>, <span class="mono">orange</span>, <span class="mono">africell</span>. <a href="https://moko-africa-documentation.vercel.app/">moko-africa-documentation</a>. <span class="badge b-primary">Primary</span></li>
+        <li>Phone validation requires <span class="mono">+243</span> prefix — DRC-focused.</li>
+        <li>Currencies: CDF and USD.</li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <ul>
+        <li>Deposit (C2B) and Payout (B2C) — real-time delivery; bulk salary/supplier payments.</li>
+        <li>Cards (Visa/Mastercard), POS payments, QR codes for retail.</li>
+        <li>API endpoint: <span class="mono">https://paydrc.gofreshbakery.net/api/v5/</span></li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Docs: <a href="https://moko-africa-documentation.vercel.app/">moko-africa-documentation.vercel.app</a>.</li>
+        <li>Merchant dashboard: <a href="https://cd.merchants.gofreshpay.com/">cd.merchants.gofreshpay.com</a>.</li>
+        <li>Sandbox: stated; URL not located in this session.</li>
+        <li>Auth: <strong>JWT tokens</strong> via <span class="mono">/api/v5/token</span>; callbacks signed with <strong>HMAC-SHA256</strong> + <strong>AES-256-CBC</strong> encryption + IP whitelisting.</li>
+      </ul>
+
+      <h4>Pricing</h4>
+      <p><span class="badge b-no">Not public</span></p>
+
+      <h4>Scale signals (self-reported)</h4>
+      <ul>
+        <li>"25M+ mobile wallets in DRC; 47M+ accessible total."</li>
+        <li>"Thousands of enterprises in DRC."</li>
+        <li>Named clients: PremierBet, MulaSport, BetAndU, Equity BCDC, 1XBET, Cris.</li>
+      </ul>
+
+      <h4>Why reserve, not lead</h4>
+      <p>Public pricing absent; some doc sub-pages inconsistently available; less international visibility than pawaPay. But the all-four-MNO coverage including Afrimoney is unique among the researched options.</p>
+    </div>
+
+    <!-- Onafriq -->
+    <div class="card" id="agg-onafriq">
+      <h3>Onafriq (formerly MFS Africa) <span class="badge b-med">Confidence: Medium-High</span></h3>
+      <div class="card-meta">Pan-African digital payments network. DRC office in Kinshasa. Sept 2025 Visa Pay launch in DRC.</div>
+
+      <h4>DRC coverage</h4>
+      <ul>
+        <li>Operators: <strong>M-Pesa, Airtel, Orange confirmed</strong> via Visa Pay launch press. <span class="badge b-partial">Afrimoney DRC unclear</span> (Africell on network-level logos but not in DRC Visa Pay scope).</li>
+        <li>43 African markets. Visa Pay DRC launched 2025-09-11. — <a href="https://onafriq.com/press/article/onafriq-and-visa-partner-to-launch-visa-pay-unlocking-interoperability-between-card-and-mobile-money-in-the-drc">Onafriq press</a>. <span class="badge b-primary">Primary</span></li>
+      </ul>
+
+      <h4>Capabilities</h4>
+      <ul>
+        <li>Collections (Payins) and Disbursements (Payouts).</li>
+        <li>Cross-network bridging — signature capability.</li>
+        <li>Card Issuance (34 markets with live BINs), Agent Banking (400k+ agents primarily Nigeria), Treasury Services.</li>
+      </ul>
+
+      <h4>Developer access</h4>
+      <ul>
+        <li>Portals: <a href="https://developers.onafriq.com/">developers.onafriq.com</a> (current) + <a href="https://developer.mfsafrica.com/">developer.mfsafrica.com</a> (legacy MFS Africa Hub).</li>
+        <li>Base URLs: domestic <span class="mono">api.mfsafrica.com/api</span> · cross-border <span class="mono">mfsafrica.beyonicpartners.com/api</span>.</li>
+        <li>Sandbox: <a href="https://sandbox.gtpportal.com/DeveloperPortal">sandbox.gtpportal.com</a>.</li>
+        <li>Auth: token-based.</li>
+      </ul>
+
+      <h4>Pricing</h4>
+      <p><span class="badge b-no">Not public</span></p>
+
+      <h4>Why not for the MVP</h4>
+      <p>Targets PSPs and financial institutions; enterprise-shaped onboarding; over-engineered for a v1 merchant-acceptance MVP; opaque pricing.</p>
+    </div>
+
+    <!-- ===================== CROSS-CUTTING ===================== -->
+    <h2 id="fees">Fees &amp; costs</h2>
+
+    <h3>The publicly verifiable number: pawaPay round-trip cost</h3>
+    <table>
+      <thead>
+        <tr><th>Collect → Payout (cross-network)</th><th>Total fee</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>M-Pesa → Orange</td><td><strong>3.5%</strong> (cheapest)</td></tr>
+        <tr><td>M-Pesa → M-Pesa</td><td>4.5%</td></tr>
+        <tr><td>M-Pesa → Airtel</td><td>4.5%</td></tr>
+        <tr><td>Airtel → Orange</td><td>4.0%</td></tr>
+        <tr><td>Airtel → M-Pesa</td><td>5.0%</td></tr>
+        <tr><td>Airtel → Airtel</td><td>5.0%</td></tr>
+        <tr><td>Orange → Orange</td><td>4.0%</td></tr>
+        <tr><td>Orange → M-Pesa</td><td>5.0%</td></tr>
+        <tr><td>Orange → Airtel</td><td>5.0%</td></tr>
+      </tbody>
+    </table>
+    <p><span class="badge b-med">Medium-High confidence</span> — based on pawaPay's <a href="https://www.pawapay.io/fees">published fees</a> per leg.</p>
+
+    <h3>Other cost components</h3>
+    <ul>
+      <li><strong>FX (CDF ↔ USD):</strong> 2–5% above interbank as a DRC PSP market norm — <a href="https://payatlas.com/countries/congo-the-democratic-republic-of-the-cd">PayAtlas</a>. <span class="badge b-secondary">Secondary</span></li>
+      <li><strong>Settlement to bank:</strong> 1,000–3,000 CDF (~$0.35–$1.10) per payout per DRC norm; cadence 2–5 business days; delays &gt;$10k USD under BCC review.</li>
+      <li><strong>Setup / monthly fees:</strong> none on pawaPay Standard. Others not public.</li>
+      <li><strong>Tax withholding on payments to foreign merchants:</strong> 2–5% DRC norm — relevant if the MVP entity is foreign.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Ticket-size implication:</strong> Round-trip cost is ~3.5%–5.0% before FX. Acceptable for $20+ tickets; tight for $10–$20; <strong>punishing under $10</strong>. Plan v1 economics around mid-ticket merchant payments.
+    </div>
+
+    <h3>Direct operator API per-leg fees</h3>
+    <p>None of the four operators publishes API-driven merchant fees for DRC. M-Pesa's onboarding doc explicitly defers: "the M-Pesa Business team will review the application and inform you of the M-Pesa charging model." For modelling, pawaPay's "MMO portion" (1.5%–2%) is the best public proxy for what operators charge an aggregator.</p>
+
+    <!-- =========== PAYEE ID =========== -->
+    <h2 id="payee-id">Payee identification</h2>
+
+    <div class="lead">
+      The payee is a <strong>registered merchant</strong>, identified by a <strong>till / short-code</strong> the customer dials or scans (a QR carrying a <span class="mono">tel:</span> USSD dial-through). Settlement lands on the merchant's mobile-money number (captured at onboarding). <strong>Merchant onboarding is in scope</strong> (settlement account + till; merchant KYC flagged); MSISDN remains the underlying addressing for the settlement leg.
+    </div>
+
+    <h3>Addressing options summary</h3>
+    <table>
+      <thead>
+        <tr><th>Scheme</th><th>Available?</th><th>MVP fit</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Merchant till / short-code (our <span class="mono">*123*1001#</span> + a QR <span class="mono">tel:</span> dial-through)</td><td><span class="badge b-yes">Built</span></td><td><strong>Primary v1</strong> — the customer's pay action; merchant onboarding in scope.</td></tr>
+        <tr><td>MSISDN (the merchant's settlement number, +243…)</td><td><span class="badge b-yes">Universal</span></td><td>The underlying settlement addressing (server-derived from the merchant).</td></tr>
+        <tr><td>Operator merchant short codes (M-Pesa 6/7-digit; Orange KYA; Airtel)</td><td><span class="badge b-partial">Per operator</span></td><td>Not needed — we run our own till + QR.</td></tr>
+        <tr><td>DRC national QR standard</td><td><span class="badge b-no">Does not exist</span></td><td>No equivalent of KE-QR or GhQR → we run our own merchant QR.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Consumer-level cross-network reality</h3>
+    <ul>
+      <li><strong>M-Pesa DRC ↔ Orange Money:</strong> bilateral interop live (2021 launch confirmed by Vodacash MD Hashim Mukudi on LinkedIn). <span class="badge b-selfrep">Self-reported</span></li>
+      <li><strong>M-Pesa Mikili</strong> is M-Pesa's branding for cross-operator and international transfers (<a href="https://www.vodacom.cd/particulier/m-pesa/particulier/mpesa-mikili-recevoir-de-l-argent-de-l-etranger">vodacom.cd</a>).</li>
+      <li><strong>Airtel DRC</strong> has an <a href="https://www.airtel.cd/airtelmoney/interopearbilite-avec-orange-money-m-pesa">interoperability page</a> with Orange and M-Pesa (URL exists; body JS-rendered).</li>
+      <li><strong>Friction:</strong> consumer-level off-net works but with cost; the aggregator path bypasses this.</li>
+    </ul>
+
+    <h3>Additional DRC aggregators discovered (out-of-scope, flagged)</h3>
+    <p>Research surfaced <strong>Flexpay</strong> (multi-MNO incl. Afrimoney), <strong>SerdiPay</strong>, <strong>Flash / Marchand Flash</strong>, and <strong>Maxicash</strong> as alternative DRC aggregator paths. Not researched in depth — flagged for follow-up if the shortlisted four don't fit.</p>
+
+    <h3>MVP payee UX recipe (customer-initiated)</h3>
+    <ol>
+      <li>Customer scans the merchant's QR (a <span class="mono">tel:</span> USSD dial-through) or dials the till <span class="mono">*123*1001#</span> — no app, no internet.</li>
+      <li>Customer enters the amount and confirms in the USSD menu; our backend resolves the merchant from the till.</li>
+      <li>Backend calls the aggregator's collection → STK/USSD PIN prompt on the <strong>customer's</strong> phone.</li>
+      <li>On success, the backend settles <em>amount − fee</em> to the merchant; the merchant sees it in their app. (Fallback: the merchant charges a customer by number.)</li>
+    </ol>
+
+    <!-- =========== KYC =========== -->
+    <h2 id="kyc">KYC &amp; onboarding</h2>
+
+    <div class="lead">
+      Payer KYC <strong>rides existing SIM/operator wallet KYC</strong>. Aggregators run <strong>merchant KYC</strong> on the integrating business, not end-users. <strong>Licensing posture is the key flag</strong> — DRC may require foreign PSPs to partner with a licensed local entity.
+    </div>
+
+    <h3>Regulatory framework</h3>
+    <ul>
+      <li><strong>Banque Centrale du Congo (BCC)</strong> supervises banks, EMIs, PSPs, and FX.</li>
+      <li><strong>Directive #24 (Dec 2011)</strong> — original e-money framework. <a href="https://www.findevgateway.org/sites/default/files/publications/files/mfg-en-case-study-enabling-mobile-money-policies-in-the-democratic-republic-of-congo-mar-2014.pdf">findevgateway case study</a>. <span class="badge b-secondary">Secondary</span></li>
+      <li><strong>BCC Instruction No. 15 (2018)</strong> — current KYC, CDD, record-keeping rules. <a href="https://blog.voveid.com/kyc-compliance-in-the-drc-2025-guide-for-regulated-businesses/">voveid</a>. <span class="badge b-secondary">Secondary</span></li>
+      <li><strong>Law No. 04/016 (2004)</strong> — base AML/CFT law. <strong>Conflict noted:</strong> some sources cite Law No. 18/004 (2018) as the operative AML law — verify against BCC primary.</li>
+      <li><strong>CENAREF / CENTIF</strong> — DRC FIU. Sources disagree on the acronym — flag for verification.</li>
+      <li><strong>Data protection:</strong> Law No. 18/023 (2018); CNPDCP oversight.</li>
+    </ul>
+
+    <h3>End-user KYC tiers (mobile money)</h3>
+    <table>
+      <thead>
+        <tr><th>Tier</th><th>Account limit</th><th>Daily limit</th><th>Monthly limit</th><th>KYC level</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tier 1 (Standard)</td><td>Up to <strong>US$ 100</strong> (operator-set cap below $500 legal)</td><td>~US$ 100</td><td>~US$ 2,500</td><td>SIM registration + basic ID</td></tr>
+        <tr><td>Tier 2 (Premium)</td><td>Up to <strong>US$ 3,000</strong></td><td>~US$ 500</td><td>~US$ 2,500</td><td>Full CDD — verified ID document</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Accepted ID documents</h3>
+    <ul>
+      <li>National ID, passport, driver's licence, voter card, student card, service card.</li>
+      <li>SIM registration is mandatory — every mobile money wallet sits on an already-KYC'd SIM.</li>
+      <li><strong>Constraint:</strong> ~60% of DRC population lacks official IDs; ~10% hold national ID cards. Urban smartphone target audience has higher ID coverage but expect a meaningful share will hit ID friction.</li>
+    </ul>
+
+    <h3>Aggregator KYC-as-a-service</h3>
+    <table>
+      <thead>
+        <tr><th>Aggregator</th><th>Merchant KYC</th><th>End-user KYC</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>pawaPay</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No (passes to MMO)</span></td><td>KYC questionnaire at signup.</td></tr>
+        <tr><td>MOKO Afrika</td><td><span class="badge b-yes">Yes</span> (implied)</td><td><span class="badge b-no">No</span></td><td>Process not itemised publicly.</td></tr>
+        <tr><td>DPO Pay</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td>Bilateral commercial onboarding.</td></tr>
+        <tr><td>Onafriq</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-partial">Via Card Issuance product</span></td><td>—</td></tr>
+        <tr><td>Smile ID (third party)</td><td>—</td><td><span class="badge b-yes">Yes — DRC ID set</span></td><td>Pan-African KYC SDK; plug in independently of aggregator. <a href="https://usesmileid.com/countries/the-democratic-republic-of-congo/">usesmileid.com</a></td></tr>
+      </tbody>
+    </table>
+
+    <h3>The MVP shape decides the licensing burden</h3>
+    <ul>
+      <li><strong>Pass-through MVP (no held balance):</strong> likely operates under the aggregator's BCC posture. pawaPay already operates in DRC.</li>
+      <li><strong>Held-balance MVP (custodial wallet):</strong> likely an EMI/PSP candidate in its own right. Add Smile ID + counsel + partner-PSP licensing.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Legal/licensing is a separate track.</strong> Per <span class="mono">00-overview/research-goals.md</span> and <span class="mono">01-questions/kyc-and-onboarding.md</span>: flag to investigate, not a defined MVP requirement. Engage counsel + verify against BCC primary docs.
+    </div>
+
+    <!-- ===================== BUILD VS RENT ===================== -->
+    <h2 id="build-own">Strategic option: build our own aggregator?</h2>
+
+    <div class="lead">
+      <strong>The software is the easiest part — the hard parts are commercial, regulatory, and operational.</strong> Building our own DRC aggregator is technically feasible (GSMA spec is open; ~$100–180k initial; 4–6 months by 3–6 senior engineers), but it eliminates only <strong>pawaPay's ~1% per-leg margin (~2% round-trip)</strong>, not the operator fees (which we'd inherit directly and likely pay <em>more</em> for as a small player). The formal gate is the BCC EMI licence — <strong>US$2.5M paid-up capital</strong>, special-purpose subsidiary, 6–18 month application. The unseen gate is four bilateral commercial relationships with operators that don't publish per-leg API fees. <strong>Recommendation: rent now, own later</strong> — pawaPay for v1, hybrid model from v3+.
+    </div>
+
+    <h3>What a $20 round-trip fee is actually made of</h3>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Share of pawaPay round-trip</th><th>Goes to</th><th>Eliminable by going direct?</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>pawaPay margin</strong></td><td>1.0% per leg → <strong>2% round-trip</strong></td><td>pawaPay</td><td><span class="badge b-yes">Yes</span> — this is the saving</td></tr>
+        <tr><td>MMO (operator) pass-through</td><td>1.5–2.0% per leg → <strong>3–4% round-trip</strong></td><td>Vodacom / Airtel / Orange</td><td><span class="badge b-no">No</span> — we pay these directly; likely <em>more</em> as a small player</td></tr>
+        <tr><td>FX (if currency switch)</td><td>2–5%</td><td>FX provider / pawaPay</td><td><span class="badge b-partial">Partly at scale</span></td></tr>
+        <tr><td>Settlement to bank</td><td>~$0.35–$1.10 per payout (DRC norm)</td><td>Bank / aggregator</td><td><span class="badge b-partial">Partly at scale</span></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Realistic ceiling on savings from owning rails: ~2% of GMV.</strong> The operator-fee portion stays — and likely grows — until we have aggregator-scale volume to negotiate.</p>
+
+    <h3>An aggregator does five jobs, not one</h3>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>What it is</th><th>Difficulty</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1. Technical</td><td>REST APIs per operator, idempotency, webhooks, status query, reconciliation, encryption</td><td><span class="badge b-partial">Moderate, well-understood</span></td></tr>
+        <tr><td>2. Commercial</td><td>Bilateral merchant contracts with each operator; per-leg pricing negotiated case-by-case</td><td><span class="badge b-no">Hard — the actual moat</span></td></tr>
+        <tr><td>3. Regulatory</td><td>BCC-licensed EMI/PSP entity; AML/CFT monitoring; FIU reporting; merchant KYC</td><td><span class="badge b-no">The formal gate</span></td></tr>
+        <tr><td>4. Float / Treasury</td><td>Prefunded operator accounts; settlement to merchant banks; FX management; working capital in flight</td><td><span class="badge b-no">Capital-intensive</span></td></tr>
+        <tr><td>5. Operations</td><td>24/7 monitoring, reconciliation, disputes, customer service, recertification when operator APIs change</td><td><span class="badge b-partial">Continuous</span></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Layer 1 — Technical (the easiest part)</h3>
+    <ul>
+      <li><strong>Engineering benchmark</strong> (<a href="https://intasend.com/payments/building-vs-buying-payment-infrastructure-the-true-cost-analysis-for-african-fintech-startups">IntaSend cost analysis</a> <span class="badge b-secondary">Secondary</span>): 3–6 senior developers for 4–6 months; 1–2 security specialists; <strong>$100k–$180k initial</strong> to first transaction; <strong>30–40% of ongoing engineering</strong> on payment infrastructure maintenance.</li>
+      <li><strong>Spec exists.</strong> The <a href="https://developer.mobilemoneyapi.io/">GSMA Mobile Money API Specification v1.2</a> covers all 8 use cases (merchant payments, disbursements, P2P, etc.) with open-source SDKs in Java, JavaScript, Node.js, PHP, and Android.</li>
+      <li><strong>DRC adopters:</strong> Afrimoney announced GSMA-spec adoption Dec 2023. M-Pesa, Airtel, and Orange use proprietary-but-similar REST APIs. A single internal abstraction layer over four operator APIs is achievable.</li>
+      <li><strong>Real-world friction at scale:</strong> "One Tanzania-focused fintech discovered their M-Pesa integration failed at higher volumes due to undocumented rate limits" (IntaSend). Webhook reliability needs redundant systems. Reconciliation discrepancies "run into the hundreds daily" in high-volume environments.</li>
+    </ul>
+    <p><strong>Verdict on this layer: moderately hard, well-understood, ~$100–180k + a year of senior engineering. Not the gate.</strong></p>
+
+    <h3>Layer 2 — Commercial (the actual moat)</h3>
+    <p>Without an aggregator's cover, we onboard with each of the four operators directly:</p>
+    <table>
+      <thead>
+        <tr><th>Operator</th><th>How we'd onboard</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Vodacom M-Pesa DRC</td><td>Email <span class="mono">supportmpesa@m-pesa.cd</span> → KYC pack → sign M-Pesa Services Agreement → 6/7-digit merchant code.</td></tr>
+        <tr><td>Orange Money DRC</td><td>Subscribe at an Orange store in DRC → KYA-compliant merchant → integrate Web Payment API; central-bank approval required.</td></tr>
+        <tr><td>Airtel Money DRC</td><td>Self-serve sandbox is open; per-country contract required to go live ("MTN and Airtel make you sign contracts before seeing their API docs" — <a href="https://dev.to/joova/why-mtn-and-airtel-make-you-sign-contracts-before-seeing-their-api-docs-and-how-to-start-building-3g4i">dev.to</a>).</td></tr>
+        <tr><td>Afrimoney DRC</td><td>Contact <span class="mono">info@africell.cd</span>; no public developer portal; Dec 2023 GSMA-spec announcement was forward-looking.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Pricing reality:</strong> None of the four operators publishes API per-leg fees for DRC. M-Pesa's onboarding page states it explicitly: "the M-Pesa Business team will review the application and inform you of the M-Pesa charging model." We can't model unit economics in advance, and as a small player we likely get quoted <em>at or above</em> pawaPay's pass-through rates — not below.
+    </div>
+    <p><strong>The very existence of pawaPay and Onafriq is because direct operator integration was so painful</strong> for ordinary merchants. They aggregated the pain. The DRC operators are not at Kenya/Nigeria openness levels — DRC sits behind operators like Kenya's Daraja in API maturity.</p>
+    <p><strong>Verdict on this layer: this is the actual moat. Four bilateral commercial relationships, opaque pricing, no startup-favourable negotiating position. Months to years of relationship building.</strong></p>
+
+    <h3>Layer 3 — Regulatory (the formal gate)</h3>
+    <table>
+      <thead>
+        <tr><th>Requirement</th><th>Detail</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Regulator</td><td>Banque Centrale du Congo (BCC) supervises banks, EMIs, PSPs, FX</td><td><a href="https://generisonline.com/understanding-the-regulatory-framework-for-digital-payments-and-fintech-companies-in-the-democratic-republic-of-the-congo/">Generis</a></td></tr>
+        <tr><td>Framework</td><td>Directive #24 (Dec 2011) — e-money. BCC Instruction No. 15 (2018) — KYC/AML</td><td><a href="https://www.findevgateway.org/sites/default/files/publications/files/mfg-en-case-study-enabling-mobile-money-policies-in-the-democratic-republic-of-congo-mar-2014.pdf">findevgateway</a></td></tr>
+        <tr><td><strong>Minimum capital (EMI)</strong></td><td><strong>US$ 2.5 million paid-up</strong>, sitting on balance sheet</td><td>findevgateway + <a href="https://payatlas.com/countries/congo-the-democratic-republic-of-the-cd">PayAtlas DRC</a> (verified across two sources)</td></tr>
+        <tr><td>Entity structure</td><td>Special-purpose subsidiary, DRC-incorporated</td><td>findevgateway</td></tr>
+        <tr><td>Foreign operator rule</td><td>"Foreign PSPs must partner with licensed local entities or obtain BCC authorisation; independent operation is prohibited"</td><td>PayAtlas <span class="badge b-secondary">Secondary, Med confidence</span> (not verified against BCC primary)</td></tr>
+        <tr><td>AML/CFT</td><td>KYC, CDD, SAR to CENAREF/CENTIF within 24h, 10-year retention</td><td><a href="https://blog.voveid.com/kyc-compliance-in-the-drc-2025-guide-for-regulated-businesses/">voveid</a></td></tr>
+        <tr><td>Indicative timeline</td><td>African fintech licensing: 6–18 months (DRC-specific not located)</td><td>Generis <span class="badge b-low">Low confidence for DRC</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout">
+      <strong>Capital opportunity cost:</strong> US$2.5M tied up on balance sheet, at a 10% opportunity-cost-of-capital assumption, is <strong>~$250k/year of foregone return</strong> — before paying salaries, building software, or processing a single transaction.
+    </div>
+    <p><strong>Verdict on this layer: largest single hard gate. No paid-up $2.5M, no licence. No licence, no direct operator contracts (or only a partner-PSP arrangement that reintroduces a margin).</strong></p>
+
+    <h3>Layer 4 — Float / Treasury / Operations</h3>
+    <ul>
+      <li><strong>Float</strong> = sum of prefunds in operator-side accounts + in-flight settlements − customer-payable balances. To send a payout, our pawaPay-equivalent account at Vodacom must already be funded.</li>
+      <li><strong>Liquidity management cost:</strong> per <a href="https://documents1.worldbank.org/curated/en/802221501150875893/pdf/117459-WP-Tool-10-5-Liquidity-Management-Series-IFC-mobile-money-toolkit-PUBLIC.pdf">IFC's Liquidity Management for Mobile Money Providers toolkit</a> — "consumes 20–30% of total expenses" for mobile money retail agents (search summary; PDF body not extracted; <span class="badge b-med">Medium confidence — planning anchor</span>).</li>
+      <li><strong>FX:</strong> DRC mobile money runs in CDF and USD. PayAtlas cites DRC PSP norm of <strong>2–5% FX markup</strong> above interbank. Without our own interbank book we pay this to an FX provider.</li>
+      <li><strong>Operations:</strong> 24/7 monitoring, reconciliation timing-gap exceptions running "into the hundreds daily" at scale, recertification when operator APIs change.</li>
+    </ul>
+    <p><strong>Verdict on this layer: materially more expensive than the software build. The day-zero requirement includes millions of dollars in operator prefunds + working capital + an FX line + an ops team.</strong></p>
+
+    <h3>What comparable players actually did</h3>
+    <table>
+      <thead>
+        <tr><th>Player</th><th>Founded</th><th>Path</th><th>Capital raised</th><th>Years to scale</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>pawaPay</strong></td><td>2020</td><td>Subsidiary of <a href="https://www.pawapay.io/">betPawa</a> — already had volume + operator relationships</td><td><strong>$9M seed (Aug 2021)</strong> <a href="https://techcrunch.com/2021/08/26/pawapay-raises-9m-seed-backed-by-msa-88mph-and-mr-eazis-zagadat-capital/">TechCrunch</a></td><td>5+ years</td></tr>
+        <tr><td><strong>Onafriq (MFS Africa)</strong></td><td><strong>2009</strong></td><td>Founder Dare Okoudjou — former MTN Group exec who led mobile money in 21 countries. Inside relationships from day one. <a href="https://onafriq.com/view/mfs-africa-announces-rebrand-to-onafriq">Onafriq rebrand</a></td><td><strong>$217.7M total</strong> <a href="https://www.cbinsights.com/company/mfs-africa">CB Insights</a></td><td>14+ years</td></tr>
+        <tr><td>MOKO Afrika</td><td>n/d</td><td>DRC-focused; "Freshpay/GoFresh" lineage; clients include Equity BCDC</td><td>Not public</td><td>Unknown</td></tr>
+        <tr><td>DPO Pay</td><td>~2006</td><td>Card-first PSP, acquired by Network International (UAE)</td><td>Acquired for $288M (2021)</td><td>10+ years</td></tr>
+        <tr><td>Maxicash</td><td>DRC</td><td>Female-founded; "major Congolese startup deal" in 2021</td><td><strong>$350k (2021)</strong></td><td>4+ years</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Pattern: every successful African mobile money aggregator either (a) had pre-existing operator relationships via a parent or founder, (b) raised serious capital, or (c) both.</strong> None did it as a side bet from a consumer-app MVP.</p>
+
+    <h3>When does building pay off? A cost model</h3>
+    <p><strong>Assumptions</strong> (illustrative — order-of-magnitude, not for budgeting):</p>
+    <ul>
+      <li>100k round-trip transactions/month at $15 avg ticket = $1.5M monthly GMV</li>
+      <li>pawaPay round-trip cost at the 4.5% midpoint = $67,500/month = ~$810k/year</li>
+      <li><strong>pawaPay margin (eliminable, ~2% GMV):</strong> $30k/month = <strong>$360k/year</strong></li>
+      <li>MMO portion (not eliminable; possibly worse direct): ~2.5% GMV = $450k/year</li>
+    </ul>
+    <p><strong>Annual cost of building &amp; running our own:</strong></p>
+    <table>
+      <thead><tr><th>Line item</th><th>Year-1 estimate</th><th>Ongoing</th></tr></thead>
+      <tbody>
+        <tr><td>EMI capital opportunity cost ($2.5M @ 10%)</td><td>$250k</td><td>$250k</td></tr>
+        <tr><td>Engineering build (initial)</td><td>$100k–$180k</td><td>—</td></tr>
+        <tr><td>Engineering maintenance (30–40% of small team)</td><td>—</td><td>$200k–$400k</td></tr>
+        <tr><td>Compliance ops (Nigeria CTO benchmark, scaled)</td><td>$70k–$150k</td><td>$70k–$150k</td></tr>
+        <tr><td>Legal + licensing</td><td>$50k–$200k</td><td>$50k</td></tr>
+        <tr><td>Float / treasury financing cost</td><td>$50k–$150k</td><td>$50k–$150k</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>~$650k–$1.2M</strong></td><td><strong>~$500k–$900k</strong></td></tr>
+      </tbody>
+    </table>
+    <p><strong>Conclusion: at $1.5M monthly GMV, building costs roughly the same or more than renting pawaPay</strong> while introducing massive execution risk. Break-even on building requires materially higher volume <em>and</em> a 1–3 year ramp where we pay both ways (rented while building).</p>
+
+    <h3>Recommended path: rent now, hybrid later</h3>
+    <ol>
+      <li><strong>v1 (now):</strong> Rent pawaPay. Ship consumer UX. Build volume. Learn what fails in production.</li>
+      <li><strong>v2 (12–18 mo):</strong> Add MOKO Afrika as Afrimoney fallback if needed. Open early commercial conversations with M-Pesa DRC + Airtel DRC directly — sandbox in their portals — to start the relationship clock.</li>
+      <li><strong>v3 (24–36 mo, volume-permitting):</strong> Stand up our own technical layer over <strong>direct M-Pesa + Airtel contracts</strong> (the two largest DRC operators, ~82% of mobile money share combined). <strong>Keep pawaPay as fall-through for Orange + Afrimoney</strong> until volume justifies separate contracts.</li>
+      <li><strong>v4 (only if scale justifies):</strong> Apply for BCC EMI licence, commit the $2.5M capital, fully own the rails.</li>
+    </ol>
+
+    <h3>Direct answers</h3>
+    <table>
+      <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Would building be relatively easy?</td>
+          <td><strong>The software is moderately hard, well-understood, and the smallest part of the problem.</strong> 4–6 months, 3–6 engineers, $100–180k initial. The hard parts are everything <em>around</em> the software.</td>
+        </tr>
+        <tr>
+          <td>Mainly licensing/legal limitations?</td>
+          <td><strong>Licensing is the largest formal gate ($2.5M paid-up + 6–18 month application), but commercial is just as hard.</strong> Even with a licence we still need four operators to accept us and quote competitive rates — which as a small player we don't get for 12–24 months. Ranked: <strong>commercial ≈ regulatory &gt; operational &gt; technical.</strong></td>
+        </tr>
+        <tr>
+          <td>Would it eliminate the per-transaction fee source?</td>
+          <td><strong>Only partly.</strong> Eliminates pawaPay's ~2% round-trip margin. <strong>Does NOT eliminate</strong> the operator's 1.5–2% per-leg fee, which we'd inherit directly and likely pay <em>more</em> for as a small player. Realistic ceiling: ~2% of GMV saved against $500k–$900k/year run cost + $2.5M tied up.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Open questions for this option</h3>
+    <ul>
+      <li>BCC EMI application timeline and total fees — not publicly indexed; needs BCC contact or local DRC fintech counsel.</li>
+      <li>Whether a <strong>partner-PSP arrangement</strong> (operating under a licensed-local-entity) is a viable middle path that avoids the $2.5M capital while still owning the technical layer.</li>
+      <li>Real per-leg fee quotes from M-Pesa DRC and Airtel DRC for a small direct partner.</li>
+      <li>Whether MOKO Afrika's all-4-MNO posture (a small DRC-incorporated player) represents a viable template — their licensing posture and capital structure aren't public.</li>
+      <li>DRC working-capital cost — local USD/CDF credit-line pricing.</li>
+    </ul>
+
+    <h4>Sources for this section</h4>
+    <ul class="src-list">
+      <li>xo-019 · <a href="https://techcrunch.com/2021/08/26/pawapay-raises-9m-seed-backed-by-msa-88mph-and-mr-eazis-zagadat-capital/">TechCrunch — pawaPay $9M seed</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-020 · <a href="https://www.cbinsights.com/company/mfs-africa">CB Insights — Onafriq company profile</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-021 · <a href="https://onafriq.com/view/mfs-africa-announces-rebrand-to-onafriq">Onafriq — MFS Africa rebrand</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-022 · <a href="https://developer.mobilemoneyapi.io/">GSMA Mobile Money API Developer Portal</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-023 · <a href="https://www.gsma.com/mobilefordevelopment/wp-content/uploads/2021/10/Mobile-Money-API-Specification-1.2.0-Merchant-Payments.pdf">GSMA Mobile Money API Specification 1.2.0 — Merchant Payments</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-024 · <a href="https://intasend.com/payments/building-vs-buying-payment-infrastructure-the-true-cost-analysis-for-african-fintech-startups">IntaSend — Build vs Buy Payment Infrastructure (African fintech)</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-025 · <a href="https://financeinafrica.com/insights/apis-africas-developers-money-code/">Finance in Africa — Payment APIs in Africa</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-026 · <a href="https://documents1.worldbank.org/curated/en/802221501150875893/pdf/117459-WP-Tool-10-5-Liquidity-Management-Series-IFC-mobile-money-toolkit-PUBLIC.pdf">IFC / World Bank — Liquidity Management for Mobile Money Providers</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-027 · <a href="https://optimus.tech/blog/payment-reconciliation-pitfalls-7-errors-costing-merchants-millions">Optimus.tech — Payment reconciliation pitfalls</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>mp-010 · <a href="https://www.findevgateway.org/sites/default/files/publications/files/mfg-en-case-study-enabling-mobile-money-policies-in-the-democratic-republic-of-congo-mar-2014.pdf">findevgateway DRC mobile money policies (2014)</a> — cites $2.5M EMI capital · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-005 · <a href="https://payatlas.com/countries/congo-the-democratic-republic-of-the-cd">PayAtlas DRC — PSPs, Compliance &amp; Fees</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-014 · <a href="https://blog.voveid.com/kyc-compliance-in-the-drc-2025-guide-for-regulated-businesses/">voveid KYC Compliance in the DRC</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-017 · <a href="https://generisonline.com/understanding-the-regulatory-framework-for-digital-payments-and-fintech-companies-in-the-democratic-republic-of-the-congo/">Generis — DRC digital payments regulatory framework</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>am-009 · <a href="https://dev.to/joova/why-mtn-and-airtel-make-you-sign-contracts-before-seeing-their-api-docs-and-how-to-start-building-3g4i">dev.to — MTN/Airtel contract gating</a> · <span class="badge b-secondary">Secondary</span></li>
+    </ul>
+
+    <!-- ===================== COMPARISONS ===================== -->
+    <h2 id="operator-comparison">Operator API comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>M-Pesa</th>
+          <th>Orange</th>
+          <th>Airtel</th>
+          <th>Afrimoney</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>DRC mobile money share</td><td>~51%</td><td>~17%</td><td>~31%</td><td>&lt;1%</td></tr>
+        <tr><td>Public API portal</td><td>openapiportal.m-pesa.com</td><td>developer.orange.com/apis/om-webpay</td><td>developers.airtel.africa</td><td>None public</td></tr>
+        <tr><td>Sandbox self-serve</td><td><span class="badge b-partial">After signup</span></td><td><span class="badge b-partial">Not in public docs</span></td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">None located</span></td></tr>
+        <tr><td>Collection (C2B)</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-partial">Announced</span></td></tr>
+        <tr><td>Payout (B2C) via own API</td><td><span class="badge b-yes">Yes (to M-Pesa)</span></td><td><span class="badge b-no">Not found for DRC</span></td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-partial">Forthcoming</span></td></tr>
+        <tr><td>API per-leg fees public?</td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td></tr>
+        <tr><td>Currencies</td><td>CDF + USD</td><td>CDF + USD</td><td>CDF + USD</td><td>CDF + USD</td></tr>
+        <tr><td>Auth</td><td>API key</td><td>Not in public overview</td><td><strong>OAuth 2.0</strong></td><td>Not public</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="aggregator-comparison">Aggregator comparison</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>pawaPay</th>
+          <th>DPO Pay</th>
+          <th>MOKO Afrika</th>
+          <th>Onafriq</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>DRC ops covered (of 4)</td><td>3 (no Afrimoney)</td><td>~3</td><td><strong>4</strong></td><td>~3</td></tr>
+        <tr><td>Public DRC pricing</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td><td><span class="badge b-no">No</span></td></tr>
+        <tr><td>Self-serve sandbox</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-yes">Yes (URL not located)</span></td><td><span class="badge b-yes">Stated</span></td><td><span class="badge b-yes">Yes (gtpportal)</span></td></tr>
+        <tr><td>Setup / monthly fees</td><td>None on Standard</td><td>Not public</td><td>Not public</td><td>Not public</td></tr>
+        <tr><td>Real-time per-tx payout</td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-partial">Bulk file</span></td><td><span class="badge b-yes">Yes</span></td><td><span class="badge b-yes">Yes</span></td></tr>
+        <tr><td>Best-fit shape</td><td>Pass-through MVP</td><td>Card-and-collection gateway</td><td>DRC-focused multi-MNO incl. Afrimoney</td><td>PSP-to-PSP hub</td></tr>
+        <tr><td>Time to live (inference)</td><td>Days–weeks</td><td>Weeks</td><td>Days–weeks</td><td>Weeks–months</td></tr>
+        <tr><td>Auth</td><td>API token</td><td>API key (v6/v7)</td><td>JWT + HMAC-SHA256 callbacks</td><td>Token-based</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ===================== USER FLOW ===================== -->
+    <h2 id="user-flow">MVP user flow (pawaPay path)</h2>
+    <ol>
+      <li><strong>Customer initiates on their own phone.</strong> Scans the merchant's QR (a <span class="mono">tel:</span> USSD dial-through) or dials the till <span class="mono">*123*1001#</span> — no app, no internet — then enters the amount and confirms. The backend resolves the merchant from the till. (Fallback: the merchant charges the customer by number.)</li>
+      <li><strong>Backend calls pawaPay's deposit (collection) API</strong> for the customer's number on their operator. pawaPay triggers a <strong>USSD/STK PIN prompt</strong> on the customer's phone in their operator's own UX (M-Pesa / Airtel Money / Orange Money PIN). The customer pays the exact sticker price.</li>
+      <li><strong>Funds land in the pawaPay clearing balance</strong> mid-transfer (held at pawaPay, not by us).</li>
+      <li><strong>Backend calls pawaPay's payout (settlement) API</strong> for <em>amount − fee</em> to the merchant's number — the <strong>merchant absorbs the MDR</strong>. The merchant sees the payment in their app/dashboard.</li>
+      <li><strong>Settlement to bank</strong> (if the merchant cashes out beyond mobile money) follows pawaPay's cadence — DRC PSP market norm is 2–5 business days.</li>
+    </ol>
+
+    <h3>Sample economics — $20 round-trip, M-Pesa payer → Orange merchant</h3>
+    <ul>
+      <li>Collection (M-Pesa, 2.5%): $0.50</li>
+      <li>Disbursement (Orange, 1.0%): $0.20</li>
+      <li><strong>Total before FX:</strong> $0.70 (3.5%)</li>
+      <li>+ FX 2–5% if currency switch: $0.40–$1.00</li>
+      <li>+ Settlement fee per payout (DRC norm): $0.35–$1.10</li>
+    </ul>
+
+    <!-- ===================== OPEN QUESTIONS ===================== -->
+    <h2 id="open-questions">Open questions / what's still missing</h2>
+    <ul>
+      <li><strong>BCC current (2025/2026) stance on cross-network mobile money interoperability</strong> — only 2014 source located.</li>
+      <li><strong>Whether a foreign-incorporated MVP entity needs a BCC-registered local partner</strong> to operate on rented rails (PayAtlas summary is third-party; verify against BCC primary docs + counsel).</li>
+      <li><strong>DRC-specific rate cards</strong> from DPO Pay, MOKO Afrika, Onafriq (all require sales contact).</li>
+      <li><strong>pawaPay's settlement cadence</strong> to DRC merchant bank accounts (foreign account option?).</li>
+      <li><strong>Afrimoney Dec 2023 GSMA-spec rollout status in DRC</strong>; pawaPay's roadmap for Afrimoney coverage.</li>
+      <li><strong>ARPTC MSISDN-prefix-to-operator mapping</strong> (current allocations).</li>
+      <li><strong>Conflict between Law No. 04/016 (2004) and Law No. 18/004 (2018)</strong> as operative DRC AML law.</li>
+      <li><strong>CENAREF vs CENTIF</strong> naming for the DRC FIU.</li>
+      <li><strong>99% combined market share for M-Pesa + Airtel + Orange</strong> — confirm against GSMA Mobile Money Metrics (primary).</li>
+      <li><strong>Real-world end-to-end UX timings</strong> — measure via pawaPay sandbox + 1–2 DRC SIMs.</li>
+      <li><strong>Operator-direct API per-transaction rates</strong> for M-Pesa and Airtel DRC (for v2 modelling).</li>
+    </ul>
+
+    <!-- ===================== SOURCES ===================== -->
+    <h2 id="sources">Sources</h2>
+    <p>All sources logged in <span class="mono">04-sources/sources.md</span> with type, reliability, and date accessed (2026-06-04 across the board).</p>
+
+    <h3>Operator sources</h3>
+
+    <h4>M-Pesa (Vodacom DRC)</h4>
+    <ul class="src-list">
+      <li>mp-001 · <a href="https://business.m-pesa.com/vodacom-drc/onboarding-your-business-in-drc/">M-Pesa "Onboarding your Business in DRC"</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mp-002 · <a href="https://business.m-pesa.com/developers/">M-Pesa Developers hub</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mp-003 · <a href="https://business.m-pesa.com/products/b2c-funds-disbursement/">M-Pesa B2C Funds Disbursement product</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mp-004 · <a href="https://business.m-pesa.com/products/">M-Pesa products page</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mp-005 · <a href="https://openapiportal.m-pesa.com/">M-Pesa Open API portal</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mp-006 · <a href="https://www.vodacom.cd/particulier/m-pesa/combien-ca-coute">Vodacom DRC particulier M-Pesa tariffs</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med (JS-rendered)</span></li>
+      <li>mp-007 · <a href="https://www.vodacom.cd/entreprise/m-pesa/combien-ca-coute">Vodacom DRC entreprise M-Pesa tariffs</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med</span></li>
+      <li>mp-008 · <a href="https://www.mobileeurope.co.uk/vodacom-launches-m-pesa-rallonge-in-democratic-republic-of-congo/">Mobile Europe — M-Pesa Rallonge DRC (2022-11-25)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-med">Med</span></li>
+      <li>mp-009 · <a href="https://en.wikipedia.org/wiki/M-Pesa">M-Pesa Wikipedia</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>mp-010 · <a href="https://www.findevgateway.org/sites/default/files/publications/files/mfg-en-case-study-enabling-mobile-money-policies-in-the-democratic-republic-of-congo-mar-2014.pdf">findevgateway DRC mobile money policies (2014)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-med">Med (dated)</span></li>
+      <li>mp-011 · <a href="https://dev.to/msnmongare/m-pesa-express-stk-push-api-guide-40a2">STK Push API guide (Kenya reference)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-low">Low (proxy)</span></li>
+      <li>mp-012 · <a href="https://rdc-analyse.org/files/2025/08/2025_08_CAT_Feasibility-analysis-of-Mobile-Money-in-eastern-DRC_VE-1.pdf">CAT — Feasibility analysis of Mobile Money in eastern DRC (2025-08)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-med">Med</span></li>
+    </ul>
+
+    <h4>Orange Money (Orange DRC)</h4>
+    <ul class="src-list">
+      <li>om-001 · <a href="https://developer.orange.com/apis/om-webpay">Orange Money Web Payment / M Payment API</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>om-002 · <a href="https://www.orange.cd/fr/orange-money/tarifications-orange-money.html">Orange Money tariff page (DRC)</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>om-003 · <a href="https://www.orange.cd/fr/orange-money-new.html">Orange Money landing (DRC)</a> · <span class="badge b-primary">Primary</span></li>
+      <li>om-004 · <a href="https://www.orange.cd/">Orange DRC homepage / contacts</a> · <span class="badge b-primary">Primary</span></li>
+      <li>om-005 · <a href="https://www.gsma.com/mobilefordevelopment/m/orange-money-rdc/">GSMA Mobile for Development — Orange Money RDC profile</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>om-006 · <a href="https://newsroom.orange.com/orange-and-vodacom-create-a-joint-venture-to-expand-network-coverage-in-rural-areas-in-the-drc/">Orange/Vodacom rural-network JV press release</a> · <span class="badge b-primary">Primary</span></li>
+      <li>om-007 · <a href="https://en.wikipedia.org/wiki/Orange_Money">Orange Money Wikipedia</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>om-008 · <a href="https://www.klasha.com/blog/klasha-launches-momo-payout-api-powering-seamless-mobile-money-disbursements-across-africa">Klasha MOMO Payout API press</a> · <span class="badge b-selfrep">Self-reported</span></li>
+      <li>om-009 · <a href="https://www.nuvei.com/apm/orange-money">Nuvei Orange Money page</a> · <span class="badge b-selfrep">Self-reported</span></li>
+    </ul>
+
+    <h4>Airtel Money (Airtel DRC)</h4>
+    <ul class="src-list">
+      <li>am-001 · <a href="https://developers.airtel.africa/">Airtel Africa Developer Portal</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>am-002 · <a href="https://tech-ish.com/2021/11/19/developer-portal-airtel-money-api/">tech-ish.com — Airtel Money API portal upgrade (2021-11-19)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-med">Med</span></li>
+      <li>am-003 · <a href="https://www.airtel.cd/airtelmoney/envoi-argent-international-a-partir-d-airtel-money">airtel.cd — Airtel Money international transfer</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med (JS-rendered)</span></li>
+      <li>am-004 · <a href="https://www.airtel.cd/airtelmoney/interopearbilite-avec-orange-money-m-pesa">airtel.cd — interoperability with Orange Money / M-Pesa</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med (JS-rendered)</span></li>
+      <li>am-005 · <a href="https://www.airtel.cd/airtel_money/charges">airtel.cd — Airtel Money charges</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med (JS-rendered)</span></li>
+      <li>am-006 · <a href="https://en.wikipedia.org/wiki/Airtel_Africa">Airtel Africa Wikipedia</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>am-007 · <a href="https://www.mobileworldlive.com/money/news-money/airtel-money-1m-revenue-earning-users-drc/">Mobile World Live — 1M Airtel Money DRC users</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-med">Med</span></li>
+      <li>am-008 · <a href="https://medium.com/@muhanzi/how-to-integrate-airtel-money-api-for-payment-collections-and-remittances-67d2202cd488">Medium — Muhanzi Airtel Money integration</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-low">Low</span></li>
+      <li>am-009 · <a href="https://dev.to/joova/why-mtn-and-airtel-make-you-sign-contracts-before-seeing-their-api-docs-and-how-to-start-building-3g4i">dev.to — MTN/Airtel contract gating</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-low">Low</span></li>
+    </ul>
+
+    <h4>Afrimoney (Africell DRC)</h4>
+    <ul class="src-list">
+      <li>af-001 · <a href="https://www.africell.cd/">Africell DRC homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>af-002 · <a href="https://www.africell.cd/afrimoney/">Africell DRC — Afrimoney service page</a> · <span class="badge b-primary">Primary</span></li>
+      <li>af-003 · <a href="https://www.africell.com/story/afrimoney-adopts-mobile-money-specification/">Africell — Afrimoney adopts GSMA spec (2023-12-07)</a> · <span class="badge b-selfrep">Self-reported</span></li>
+      <li>af-004 · <a href="https://www.africell.com/market/drc/">Africell DRC market profile</a> · <span class="badge b-selfrep">Self-reported</span></li>
+      <li>af-005 · <a href="https://en.wikipedia.org/wiki/Africell">Africell Wikipedia</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>af-006 · <a href="https://www.africell.com/story/africell-launches-new-drc-provinces/">Africell — launches services in new DRC provinces</a> · <span class="badge b-selfrep">Self-reported</span></li>
+    </ul>
+
+    <h3>Aggregator sources</h3>
+
+    <h4>pawaPay</h4>
+    <ul class="src-list">
+      <li>pp-001 · <a href="https://pawapay.io/">pawaPay homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>pp-002 · <a href="https://docs.pawapay.io/v2/docs/providers">pawaPay v2 docs — Providers</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>pp-003 · <a href="https://www.pawapay.io/fees">pawaPay Fees page</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>pp-004 · <a href="https://www.pawapay.io/plans">pawaPay Plans page</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>pp-005 · <a href="https://www.pawapay.io/product-overview">pawaPay Product Overview</a> · <span class="badge b-primary">Primary</span></li>
+      <li>pp-006 · <a href="https://www.pawapay.io/product-payments">pawaPay Product Payments</a> · <span class="badge b-primary">Primary</span></li>
+      <li>pp-007 · <a href="https://docs.pawapay.io/getting_started">pawaPay Getting Started</a> · <span class="badge b-primary">Primary</span></li>
+      <li>pp-008 · <a href="https://dashboard.sandbox.pawapay.io/">pawaPay Sandbox dashboard</a> · <span class="badge b-primary">Primary</span></li>
+    </ul>
+
+    <h4>DPO Pay</h4>
+    <ul class="src-list">
+      <li>dp-001 · <a href="https://dpogroup.com/">DPO Group homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>dp-002 · <a href="https://dpogroup.com/online-payments/drc/">DPO Group DRC online payments</a> · <span class="badge b-primary">Primary</span> <span class="badge b-med">Med</span></li>
+      <li>dp-003 · <a href="https://docs.dpopay.com/dpo-pay-by-network">DPO Pay docs landing</a> · <span class="badge b-primary">Primary</span></li>
+      <li>dp-004 · <a href="https://docs.dpopay.com/llms.txt">DPO Pay llms.txt summary</a> · <span class="badge b-primary">Primary</span></li>
+      <li>dp-005 · <a href="https://docs.dpopay.com/api/index.html">DPO Pay API reference v6</a> · <span class="badge b-primary">Primary</span></li>
+      <li>dp-006 · <a href="https://dpogroup.com/payment-methods/">DPO Pay Payment Methods</a> · <span class="badge b-primary">Primary</span></li>
+      <li>dp-007 · <a href="https://docs.dpopay.com/dpo-pay-by-network/docs/features-overview">DPO Pay Features Overview</a> · <span class="badge b-primary">Primary</span></li>
+    </ul>
+
+    <h4>MOKO Afrika</h4>
+    <ul class="src-list">
+      <li>mk-001 · <a href="https://www.mokoafrika.com/en">MOKO Afrika homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>mk-002 · <a href="https://moko-africa-documentation.vercel.app/">MOKO Afrika API documentation</a> · <span class="badge b-primary">Primary</span> <span class="badge b-high">High</span></li>
+      <li>mk-003 · <a href="https://cd.merchants.gofreshpay.com/">MOKO Afrika merchant dashboard</a> · <span class="badge b-primary">Primary</span></li>
+      <li>mk-004 · <a href="https://www.mokoafrika.com/en/products">MOKO Afrika products</a> · <span class="badge b-primary">Primary</span> <span class="badge b-low">404 on this date</span></li>
+      <li>mk-005 · <a href="https://www.mokoafrika.com/en/signin">MOKO Afrika signin</a> · <span class="badge b-primary">Primary</span></li>
+    </ul>
+
+    <h4>Onafriq</h4>
+    <ul class="src-list">
+      <li>on-001 · <a href="https://onafriq.com/">Onafriq homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-002 · <a href="https://onafriq.com/press/article/onafriq-and-visa-partner-to-launch-visa-pay-unlocking-interoperability-between-card-and-mobile-money-in-the-drc">Onafriq press — Visa Pay launch in DRC (2025-09-11)</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-003 · <a href="https://developers.onafriq.com/">Onafriq Developers portal</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-004 · <a href="https://developer.mfsafrica.com/">MFS Africa Developer Hub (legacy)</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-005 · <a href="https://developer.mfsafrica.com/docs/combined-api-information">MFS Africa Combined API information</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-006 · <a href="https://developer.mfsafrica.com/docs/api-endpoints">MFS Africa API endpoints</a> · <span class="badge b-primary">Primary</span></li>
+      <li>on-007 · <a href="https://sandbox.gtpportal.com/DeveloperPortal">Onafriq sandbox / gtpportal</a> · <span class="badge b-primary">Primary</span></li>
+    </ul>
+
+    <h3>Cross-cutting sources</h3>
+    <ul class="src-list">
+      <li>xo-001 · <a href="https://developingtelecoms.com/telecom-technology/financial-services/19062-onafriq-and-visa-launch-visa-pay-in-drc-for-wallet-interoperability.html">Developing Telecoms — Onafriq + Visa Pay DRC</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-002 · <a href="https://davidkathoh.medium.com/tout-savoir-sur-lacc%C3%A8s-%C3%A0-l-api-de-paiement-mobile-money-en-rd-congo-3197330fa259">David Kathoh — Mobile money API access in DRC (Medium)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-low">Low</span></li>
+      <li>xo-003 · <a href="https://www.gsma.com/newsroom/press-release/digital-reforms-could-connect-9-7-million-more-congolese-and-add-cdf-9-8-trillion-to-gdp-by-2029-in-drc-gsma-report-reveals/">GSMA newsroom — Digital Reforms DRC</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-high">High</span></li>
+      <li>xo-004 · <a href="https://financialit.net/news/payments/onafriq-and-visa-partner-launch-visa-pay-unlocking-interoperability-between-card-and">Financial IT — Onafriq + Visa Pay DRC</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-005 · <a href="https://payatlas.com/countries/congo-the-democratic-republic-of-the-cd">PayAtlas — Accepting Payments in DRC: PSPs, Compliance &amp; Fees</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-006 · <a href="https://bankable.africa/en/digital/0303-859-drc-vodacom-had-6-4m-m-pesa-users-in-2024-up-28-4-yoy">BANKABLE — Vodacom 6.4M M-Pesa users 2024</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-007 · <a href="https://bankable.africa/en/digital/1305-2927-with-194-8-million-in-2025-revenue-airtel-money-closes-in-on-m-pesa-in-drc">BANKABLE — Airtel Money $194.8M 2025</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-008 · <a href="https://ci.linkedin.com/posts/hashim-mukudi-99918317_money-transfer-between-m-pesa-drc-and-orange-money-activity-6801869903801409536-mPMP">Hashim Mukudi LinkedIn — M-Pesa DRC ↔ Orange Money interop (2021)</a> · <span class="badge b-selfrep">Self-reported</span></li>
+      <li>xo-009 · <a href="https://libregrandlac.com/article/8046/la-republique-du-cash-:-pourquoi-la-rdc-resiste-encore-a-la-revolution-du-mobile-money">Libre Grand Lac — DRC mobile money adoption</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-010 · <a href="https://davidkathoh.medium.com/int%C3%A9grez-le-paiement-en-une-minute-dans-votre-application-avec-flexpay-649891d6448d">David Kathoh — Flexpay integration (Medium)</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-011 · <a href="https://www.flash.one/marchand-flash.html">Flash / Marchand Flash</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-012 · <a href="https://serdipay.com/">SerdiPay homepage</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-013 · <a href="https://www.vodacom.cd/particulier/m-pesa/particulier/mpesa-mikili-recevoir-de-l-argent-de-l-etranger">Vodacom CD — M-Pesa Mikili</a> · <span class="badge b-primary">Primary</span></li>
+      <li>xo-014 · <a href="https://blog.voveid.com/kyc-compliance-in-the-drc-2025-guide-for-regulated-businesses/">voveid — KYC Compliance in the DRC: 2026 Guide</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-015 · <a href="https://blog.voveid.com/aml-compliance-in-the-democratic-republic-of-the-congo-2025-guide-for-fintechs-and-startups/">voveid — AML Compliance in DRC</a> · <span class="badge b-secondary">Secondary</span></li>
+      <li>xo-016 · <a href="https://usesmileid.com/countries/the-democratic-republic-of-congo/">Smile ID — DRC ID verification</a> · <span class="badge b-primary">Primary (vendor)</span></li>
+      <li>xo-017 · <a href="https://generisonline.com/understanding-the-regulatory-framework-for-digital-payments-and-fintech-companies-in-the-democratic-republic-of-the-congo/">Generis — DRC digital payments regulatory framework</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-low">Low</span></li>
+      <li>xo-018 · <a href="https://migrantmoney.uncdf.org/wp-content/uploads/2025/05/Payment-Infrastructure-Assessment-DRC-April2025.pdf">UNCDF — Payment Infrastructure Assessment DRC (April 2025)</a> · <span class="badge b-secondary">Secondary</span> <span class="badge b-high">High (body not extracted; referenced)</span></li>
+    </ul>
+
+    <!-- ===================== METHOD ===================== -->
+    <h2 id="method">Method &amp; caveats</h2>
+    <ul>
+      <li><strong>Research date:</strong> 2026-06-04. API capabilities, pricing, and availability change frequently — verify time-sensitive items before acting.</li>
+      <li><strong>Sourcing rule:</strong> every factual claim is tied to a primary source (operator docs, regulator, central bank) or labelled secondary/self-reported. "Not found" is treated as a valid finding.</li>
+      <li><strong>DRC-specific priority:</strong> figures from other markets (Kenya M-Pesa, Senegal Orange Money) are labelled as proxies, not conflated with DRC.</li>
+      <li><strong>Out-of-scope:</strong> demand/adoption (separate track). Legal/licensing is flagged for investigation, not defined.</li>
+      <li><strong>Known data gaps:</strong> JS-rendered pages on <span class="mono">vodacom.cd</span> and <span class="mono">airtel.cd</span> were not extractable via headless fetch — consumer tariff details came via search index snippets where unavoidable. Several PDF sources (UNCDF April 2025; CAT Aug 2025) were not extracted in body and are referenced for future deep-read.</li>
+      <li><strong>Conflicts surfaced:</strong> "Law No. 04/016 (2004)" vs "Law No. 18/004 (2018)" as operative AML law; "CENAREF" vs "CENTIF" naming for the FIU.</li>
+    </ul>
+
+    <p class="meta" style="margin-top:48px;">End of report · Generated 2026-06-04 · See <span class="mono">drc-mvp-research/_status/progress.md</span> for tracking and <span class="mono">drc-mvp-research/04-sources/sources.md</span> for the full source registry.</p>
+  </main>
+</div>
+</body>
+</html>

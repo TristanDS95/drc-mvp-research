@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC payment app — MVP deliverables &amp; goals</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f7f7f5;
+    --text: #1a1a1a;
+    --text-soft: #555;
+    --border: #e0e0dc;
+    --accent: #1d3557;
+    --accent-soft: #457b9d;
+    --link: #0a4f8c;
+    --good: #166534;
+    --mid: #92400e;
+    --low: #991b1b;
+    --warn: #b45309;
+    --code-bg: #f1ede2;
+    --p0: #6366f1;
+    --p1: #2563eb;
+    --gate: #b45309;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    margin: 0;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .layout { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+  nav.sidebar {
+    background: var(--bg-alt);
+    border-right: 1px solid var(--border);
+    padding: 28px 22px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    font-size: 13px;
+  }
+  nav.sidebar h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-soft); margin: 18px 0 6px; font-weight: 600;
+  }
+  nav.sidebar h2:first-of-type { margin-top: 0; }
+  nav.sidebar a { display: block; padding: 3px 0; color: var(--accent); text-decoration: none; }
+  nav.sidebar a:hover { text-decoration: underline; }
+  nav.sidebar .nav-title { font-weight: 700; font-size: 15px; color: var(--accent); margin-bottom: 4px; }
+  nav.sidebar .nav-sub { font-size: 12px; color: var(--text-soft); margin-bottom: 16px; }
+  nav.sidebar .nav-week {
+    display: inline-block; min-width: 28px; font-weight: 600;
+    color: var(--text-soft); font-variant-numeric: tabular-nums;
+  }
+  nav.sidebar .phase-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    margin-right: 5px; vertical-align: middle;
+  }
+  nav.sidebar .gate-flag { color: var(--gate); font-size: 11px; }
+  main { padding: 36px 56px 80px; max-width: 1000px; }
+  h1 { font-size: 28px; margin: 0 0 6px; color: var(--accent); font-weight: 700; }
+  h2 {
+    font-size: 22px; color: var(--accent); margin: 44px 0 8px;
+    padding-top: 12px; border-top: 2px solid var(--border);
+  }
+  h3 { font-size: 17px; color: var(--accent); margin: 20px 0 6px; }
+  p { margin: 6px 0 12px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid #b3cce6; }
+  a:hover { background: #eef4fa; }
+  code, .mono {
+    font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px;
+    background: var(--code-bg); padding: 1px 5px; border-radius: 3px;
+  }
+  ul, ol { margin: 4px 0 10px; padding-left: 20px; }
+  li { margin: 4px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 18px; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-alt); font-weight: 600; }
+  tr:nth-child(even) td { background: #fafaf7; }
+  .meta { font-size: 13px; color: var(--text-soft); margin: 4px 0 16px; }
+  .lead {
+    font-size: 16px; background: #eef4fa; border-left: 4px solid var(--accent-soft);
+    padding: 14px 18px; margin: 14px 0 20px; border-radius: 0 4px 4px 0;
+  }
+  .callout {
+    background: #fff8e6; border-left: 4px solid var(--warn);
+    padding: 12px 16px; margin: 14px 0; font-size: 14px; border-radius: 0 4px 4px 0;
+  }
+  .callout-good { background: #f0fdf4; border-left-color: var(--good); }
+
+  /* term highlight + interactive definition tooltip (works on desktop hover AND mobile tap/focus) */
+  .term {
+    position: relative;
+    border-bottom: 1px dotted var(--accent-soft);
+    cursor: help;
+    font-weight: 500;
+    outline: none;
+  }
+  .term::after {
+    content: attr(data-def);
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    width: 270px;
+    max-width: 78vw;
+    background: #1f2430;
+    color: #f4f4f0;
+    padding: 9px 11px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: normal;
+    overflow-wrap: break-word;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.22);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .term:hover::after,
+  .term:focus::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0 20px; }
+  .stat-box {
+    background: var(--bg-alt); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px; font-size: 13px;
+  }
+  .stat-box strong { color: var(--accent); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-box .v { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 4px; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    main { padding: 24px; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .goals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 24px; }
+  .goal-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: #fff; }
+  .goal-card .gnum {
+    display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center;
+    background: var(--accent); color: white; border-radius: 50%; font-size: 13px; font-weight: 700; margin-right: 8px;
+  }
+  .goal-card h4 { display: inline; font-size: 15px; color: var(--accent); }
+  .goal-card p { font-size: 13px; color: var(--text-soft); margin: 8px 0 0; }
+  @media (max-width: 900px) { .goals-grid { grid-template-columns: 1fr; } }
+
+  /* timeline strip — 16 weeks */
+  .strip {
+    background: var(--bg-alt); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px; margin: 14px 0 24px; overflow-x: auto;
+  }
+  .strip-bars { display: grid; grid-template-columns: 190px repeat(16, 1fr); gap: 1px; align-items: center; font-size: 11.5px; }
+  .strip-bars .week-h { text-align: center; color: var(--text-soft); font-weight: 600; }
+  .strip-bars .row-l { font-size: 12px; padding: 4px 6px 4px 0; color: var(--text-soft); }
+  .seg { height: 16px; border-radius: 2px; }
+  .seg.p0 { background: var(--p0); }
+  .seg.p1 { background: var(--p1); }
+  .seg.dot { background: transparent; position: relative; }
+  .seg.dot::after { content: ""; position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; background: var(--low); border-radius: 50%; transform: translate(-50%, -50%); }
+  .seg.gate { background: transparent; position: relative; }
+  .seg.gate::after { content: "◆"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -55%); color: var(--gate); font-size: 11px; }
+
+  /* gates */
+  .gate-card {
+    border: 1px solid #f0d9a8; background: #fffdf6; border-left: 4px solid var(--gate);
+    border-radius: 6px; padding: 12px 16px; margin: 10px 0; font-size: 13.5px;
+  }
+  .gate-card .gate-head { font-weight: 700; color: var(--mid); margin-bottom: 4px; }
+  .gate-card .gate-meta { font-size: 12px; color: var(--text-soft); }
+  .gate-risk-l { color: var(--good); font-weight: 600; }
+  .gate-risk-m { color: var(--mid); font-weight: 600; }
+  .gate-risk-h { color: var(--low); font-weight: 600; }
+
+  /* week cards */
+  .week-card { border: 1px solid var(--border); border-radius: 8px; margin: 14px 0; background: #fff; }
+  .week-card .wk-head { padding: 10px 18px; color: white; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border-radius: 7px 7px 0 0; }
+  .week-card .wk-num { font-size: 13px; font-weight: 700; background: rgba(255,255,255,0.22); padding: 3px 10px; border-radius: 12px; }
+  .week-card .wk-title { font-size: 16px; font-weight: 700; flex: 1; }
+  .week-card .wk-phase { font-size: 11.5px; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em; }
+  .week-card.p0 .wk-head { background: var(--p0); }
+  .week-card.p1 .wk-head { background: var(--p1); }
+  .week-card .wk-body { padding: 14px 18px 16px; font-size: 14px; }
+  .sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-soft); font-weight: 700; margin: 12px 0 4px; }
+  .sec-label:first-child { margin-top: 0; }
+  .wk-goal {
+    background: var(--bg-alt); border-left: 3px solid var(--accent-soft);
+    padding: 8px 12px; margin: 0 0 4px; border-radius: 0 4px 4px 0; font-size: 14px;
+  }
+  .week-card ul.tasks { margin: 4px 0 4px; }
+  .week-card ul.tasks > li { margin: 6px 0; }
+  .week-card ul.tasks > li > strong { color: var(--accent); }
+  .research-box {
+    background: #f4f6fb; border-left: 3px solid var(--accent-soft);
+    padding: 8px 12px; margin: 4px 0 0; border-radius: 0 4px 4px 0;
+  }
+  .research-box ul { margin: 0; padding-left: 20px; }
+  .research-box li { margin: 4px 0; font-size: 13.5px; color: var(--text); }
+
+  .milestone-banner {
+    background: linear-gradient(90deg, #fef3c7, #fefcb1); border: 1px solid #f0c674;
+    border-radius: 6px; padding: 10px 16px; margin: 14px 0; font-size: 14px; font-weight: 600; color: var(--mid);
+  }
+  .milestone-banner::before { content: "★"; margin-right: 8px; color: var(--warn); }
+
+  /* glossary */
+  .glossary-item { margin: 0 0 12px; padding: 0 0 12px; border-bottom: 1px solid var(--border); }
+  .glossary-item:last-child { border-bottom: none; }
+  .glossary-term { font-weight: 700; color: var(--accent); font-size: 15px; }
+  .glossary-def { font-size: 14px; margin-top: 2px; }
+
+  @media print {
+    nav.sidebar { display: none; }
+    main { padding: 0; max-width: 100%; }
+    .layout { grid-template-columns: 1fr; }
+    a { color: var(--text); border-bottom: none; }
+    .week-card, .goal-card, .gate-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="nav-title">DRC payment app</div>
+    <div class="nav-sub">MVP deliverables &amp; goals · 16 weeks</div>
+
+    <h2>Top</h2>
+    <a href="#overview">Overview</a>
+    <a href="#goals">Primary goals</a>
+    <a href="#gates">Gates &amp; dependencies</a>
+    <a href="#timeline">Timeline at a glance</a>
+
+    <h2>Phase 0 · Foundation (W1-4)</h2>
+    <a href="#w1"><span class="nav-week">W1</span> <span class="phase-dot" style="background:var(--p0);"></span>Kickoff <span class="gate-flag">◆</span></a>
+    <a href="#w2"><span class="nav-week">W2</span> <span class="phase-dot" style="background:var(--p0);"></span>Architecture &amp; accounts <span class="gate-flag">◆</span></a>
+    <a href="#w3"><span class="nav-week">W3</span> <span class="phase-dot" style="background:var(--p0);"></span>Designs &amp; app shell</a>
+    <a href="#w4"><span class="nav-week">W4</span> <span class="phase-dot" style="background:var(--p0);"></span>Merchant sign-up &amp; first payment <span class="gate-flag">◆</span></a>
+
+    <h2>Phase 1 · Build (W5-16)</h2>
+    <a href="#w5"><span class="nav-week">W5</span> <span class="phase-dot" style="background:var(--p1);"></span>Backbone &amp; merchant setup</a>
+    <a href="#w6"><span class="nav-week">W6</span> <span class="phase-dot" style="background:var(--p1);"></span>Collecting from the customer</a>
+    <a href="#w7"><span class="nav-week">W7</span> <span class="phase-dot" style="background:var(--p1);"></span>Settling to the merchant</a>
+    <a href="#w8"><span class="nav-week">W8</span> <span class="phase-dot" style="background:var(--p1);"></span>Full payment end-to-end</a>
+    <a href="#w9"><span class="nav-week">W9</span> <span class="phase-dot" style="background:var(--p1);"></span>History &amp; receipts</a>
+    <a href="#w10"><span class="nav-week">W10</span> <span class="phase-dot" style="background:var(--p1);"></span>Automatic safety net</a>
+    <a href="#w11"><span class="nav-week">W11</span> <span class="phase-dot" style="background:var(--p1);"></span>Support tools</a>
+    <a href="#w12"><span class="nav-week">W12</span> <span class="phase-dot" style="background:var(--p1);"></span>Edge cases</a>
+    <a href="#w13"><span class="nav-week">W13</span> <span class="phase-dot" style="background:var(--p1);"></span>French &amp; copy</a>
+    <a href="#w14"><span class="nav-week">W14</span> <span class="phase-dot" style="background:var(--p1);"></span>Speed &amp; reliability</a>
+    <a href="#w15"><span class="nav-week">W15</span> <span class="phase-dot" style="background:var(--p1);"></span>Team use &amp; bug bash</a>
+    <a href="#w16"><span class="nav-week">W16</span> <span class="phase-dot" style="background:var(--p1);"></span>Code freeze</a>
+
+    <h2>Reference</h2>
+    <a href="#glossary">Glossary</a>
+    <a href="#costs">Costs at a glance</a>
+    <a href="#next">What's next</a>
+    <a href="mvp-schedule.html">→ Detailed task schedule</a>
+    <a href="05-product-spec/">→ Product spec</a>
+  </nav>
+
+  <main>
+    <h1>MVP deliverables &amp; goals — to code freeze</h1>
+    <div class="meta">Date: 2026-06-04 · 16 weeks · Endpoint: app fully built &amp; tested, ready to go live. For per-person task detail see the <a href="mvp-schedule.html">detailed schedule</a>.</div>
+
+    <!-- ===== OVERVIEW ===== -->
+    <h2 id="overview">Overview</h2>
+
+    <div class="lead">
+      Over 16 weeks, the app goes from nothing to a complete, tested <strong>merchant-acceptance</strong> product running on the payment partner's test system — built, proven, and frozen, ready to switch to live whenever the business gives the go-ahead. It lets a merchant accept mobile-money payments from a customer on <em>any</em> network; the customer pays the exact sticker price (no app needed — they pay by USSD / QR), and the merchant absorbs our fee.
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><strong>Total time</strong><div class="v">16 weeks</div>~3.7 months to code freeze</div>
+      <div class="stat-box"><strong>Foundation</strong><div class="v">W1–4</div>Setup, design, first test payment</div>
+      <div class="stat-box"><strong>Build</strong><div class="v">W5–16</div>The full app on a test system</div>
+      <div class="stat-box"><strong>The finish line</strong><div class="v">Code freeze</div>Built, tested, ready to launch</div>
+    </div>
+
+    <p>The first four weeks (<strong>Foundation</strong>) stand up the team, tools, designs, and accounts, resolve the central legal question, and prove a single test payment can flow through the payment partner. The next twelve weeks (<strong>Build</strong>) turn that proven plumbing into the full product: the money-records backbone, merchant onboarding (settlement account + till), the two halves of a payment (collecting from the customer and settling to the merchant), the customer's no-app USSD / QR way to pay, the headline cross-network capability, history and receipts, an automatic safety net, internal support tools, thorough failure-handling, full French, performance on low-cost phones, and a final hardening pass into code freeze.</p>
+
+    <p>Each week is broken into its <strong>Goal(s)</strong>, the concrete <strong>Tasks</strong>, and the open questions to <strong>Research</strong> (investigations to resolve that week). External dependencies that could delay us — legal sign-off, accounts, partner approvals — are tracked separately under <a href="#gates">Gates &amp; dependencies</a> so the build goals read cleanly. <span class="term" tabindex="0" data-def="The point where we stop adding features and only fix bugs, locking the app down so it's stable and ready to launch.">Code freeze</span> means we stop adding new features and only fix bugs — the app is fully built and proven on the <span class="term" tabindex="0" data-def="A complete fake-money copy of the payment system, used for safe testing without real money or risk.">test ("sandbox") environment</span> and ready to flip to the real, live system. Going live (publishing to the app stores, real money, real users) is the next phase.</p>
+
+    <!-- ===== PRIMARY GOALS ===== -->
+    <h2 id="goals">Primary goals — what these 16 weeks deliver</h2>
+
+    <p>Everything in the schedule ladders up to six concrete outcomes:</p>
+
+    <div class="goals-grid">
+      <div class="goal-card">
+        <span class="gnum">1</span><h4>A working merchant-acceptance app</h4>
+        <p>A polished merchant app (iPhone + Android) where a merchant signs up, sets where they get paid, and accepts a customer's payment in a few taps. The customer needs no app — they pay by USSD / QR from any phone.</p>
+      </div>
+      <div class="goal-card">
+        <span class="gnum">2</span><h4>Cross-network acceptance proven</h4>
+        <p>The core promise: a merchant on one mobile money network (e.g. Vodacom) can accept a customer paying from any other (e.g. Airtel or Orange) — something merchants can't easily do today.</p>
+      </div>
+      <div class="goal-card">
+        <span class="gnum">3</span><h4>Trustworthy &amp; safe</h4>
+        <p>The customer always pays the exact sticker price (the merchant absorbs our fee), automatic refunds to the customer when a payment fails, and a precise internal record of every transaction.</p>
+      </div>
+      <div class="goal-card">
+        <span class="gnum">4</span><h4>Built for the real DRC</h4>
+        <p>French throughout, works on low-cost Android phones and shaky networks, and meets customers where they are — paying by USSD from a basic phone, sharing proof on WhatsApp.</p>
+      </div>
+      <div class="goal-card">
+        <span class="gnum">5</span><h4>The legal path clarified</h4>
+        <p>A clear answer from counsel on whether we can operate on our payment partner's license or need our own — the single biggest unknown, resolved early.</p>
+      </div>
+      <div class="goal-card">
+        <span class="gnum">6</span><h4>Ready to launch on demand</h4>
+        <p>Fully tested, documented, and frozen — so the business can flip the switch to "live" whenever conditions are right, with no scramble.</p>
+      </div>
+    </div>
+
+    <!-- ===== GATES ===== -->
+    <h2 id="gates">Gates &amp; dependencies</h2>
+
+    <p>These are things <strong>outside the building work</strong> that we depend on. Most are quick and low-risk; one (legal) is the real watch item. They're listed here so they're visible and owned, without cluttering the weekly build goals. A diamond (◆) marks weeks that involve a gate.</p>
+
+    <div class="gate-card">
+      <div class="gate-head">Legal opinion — do we need our own financial license?</div>
+      <div class="gate-meta">
+        <strong>What it is:</strong> A written answer from DRC fintech counsel on whether our <span class="term" tabindex="0" data-def="An approach where the app never holds the money — it flows straight from the customer, through the payment partner, to the merchant.">pass-through model</span> (we never hold the money) lets us operate under the payment partner's existing license, or whether we need our own license from the <span class="term" tabindex="0" data-def="Banque Centrale du Congo — the DRC's central bank and financial regulator.">central bank</span>.<br>
+        <strong>Starts:</strong> Week 1 &nbsp;·&nbsp; <strong>Needed by:</strong> Week 4 (it shapes the architecture) &nbsp;·&nbsp; <strong>Risk if it slips:</strong> <span class="gate-risk-h">High</span> — the biggest single unknown in the plan. If counsel says we need our own license, that's a much larger, more expensive path. Front-loaded to Week 1 precisely so we learn the answer early.
+      </div>
+    </div>
+
+    <div class="gate-card">
+      <div class="gate-head">Payment partner — test access (instant)</div>
+      <div class="gate-meta">
+        <strong>What it is:</strong> A free, self-serve account on the partner's test environment (fake-money sandbox). No approval needed.<br>
+        <strong>Starts:</strong> Week 2 &nbsp;·&nbsp; <strong>Risk:</strong> <span class="gate-risk-l">Low</span> — sign up and go.
+      </div>
+    </div>
+
+    <div class="gate-card">
+      <div class="gate-head">Payment partner — live-money approval (for going live, not this build)</div>
+      <div class="gate-meta">
+        <strong>What it is:</strong> The partner's verification of our business before we can move <em>real</em> money. We start it early so the clock is running, but it only blocks <strong>going live (the next phase)</strong> — not this build, which uses the test environment.<br>
+        <strong>Starts:</strong> Week 2 (early) &nbsp;·&nbsp; <strong>Needed by:</strong> next phase &nbsp;·&nbsp; <strong>Risk to this 16-week plan:</strong> <span class="gate-risk-l">Low</span> — runs in the background, gates no build deliverable here.
+      </div>
+    </div>
+
+    <div class="gate-card">
+      <div class="gate-head">App store accounts</div>
+      <div class="gate-meta">
+        <strong>What it is:</strong> Apple Developer account ($99/yr) + Google Play Console account ($25 one-time) — required to publish later.<br>
+        <strong>Starts:</strong> Week 2 &nbsp;·&nbsp; <strong>Risk:</strong> <span class="gate-risk-l">Low</span> — 1–2 days each.
+      </div>
+    </div>
+
+    <div class="gate-card">
+      <div class="gate-head">Test SIM cards &amp; phones</div>
+      <div class="gate-meta">
+        <strong>What it is:</strong> Real DRC SIM cards (Vodacom, Airtel, Orange) and 1–2 low-cost Android phones (the kind most Congolese use) for realistic testing.<br>
+        <strong>Starts:</strong> Week 3 &nbsp;·&nbsp; <strong>Needed by:</strong> Week 4 (sign-up testing) &nbsp;·&nbsp; <strong>Risk:</strong> <span class="gate-risk-l">Low</span> — simple procurement, ~$250–$450 total.
+      </div>
+    </div>
+
+    <!-- ===== TIMELINE ===== -->
+    <h2 id="timeline">Timeline at a glance</h2>
+    <p>Red dots are major milestones; orange diamonds (◆) mark weeks with an external gate.</p>
+
+    <div class="strip">
+      <div class="strip-bars">
+        <div class="row-l"></div>
+        <div class="week-h">W1</div><div class="week-h">2</div><div class="week-h">3</div><div class="week-h">4</div>
+        <div class="week-h">5</div><div class="week-h">6</div><div class="week-h">7</div><div class="week-h">8</div>
+        <div class="week-h">9</div><div class="week-h">10</div><div class="week-h">11</div><div class="week-h">12</div>
+        <div class="week-h">13</div><div class="week-h">14</div><div class="week-h">15</div><div class="week-h">16</div>
+
+        <div class="row-l">Foundation</div>
+        <div class="seg p0"></div><div class="seg p0"></div><div class="seg p0"></div><div class="seg p0"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+
+        <div class="row-l">Build the app</div>
+        <div></div><div></div><div></div><div></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+        <div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div><div class="seg p1"></div>
+
+        <div class="row-l">Milestones</div>
+        <div></div><div></div><div></div>
+        <div class="seg dot" title="Foundation complete — first test payment works"></div>
+        <div></div><div></div><div></div>
+        <div class="seg dot" title="Core promise proven — full cross-network merchant payment works"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        <div class="seg dot" title="Code freeze — MVP complete"></div>
+
+        <div class="row-l">Gates ◆</div>
+        <div class="seg gate" title="Legal clock starts"></div>
+        <div class="seg gate" title="Accounts opened; payment-partner clocks start"></div>
+        <div></div>
+        <div class="seg gate" title="Legal opinion due; test SIMs in hand"></div>
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PHASE 0 ===== -->
+    <h2>Phase 0 — Foundation (Weeks 1-4)</h2>
+    <p>Get the team, tools, designs, and external clocks all in motion — and prove a single test payment can flow through the payment partner before the real building starts.</p>
+
+    <!-- W1 -->
+    <div class="week-card p0" id="w1">
+      <div class="wk-head"><span class="wk-num">Week 1</span><div class="wk-title">Kickoff &amp; legal clock started</div><span class="wk-phase">Foundation</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The team, tools, and the most important external clock (legal) are all in motion, and an empty app builds on both phone types.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Stand up the code repository and automatic checks</strong> — set up where the code lives plus <span class="term" tabindex="0" data-def="A system that automatically tests every code change before it's accepted, catching mistakes early.">continuous integration</span> (every change is automatically tested before it's accepted).</li>
+          <li><strong>Create the empty app</strong> — a blank app that compiles for iPhone and Android from <span class="term" tabindex="0" data-def="A single set of code that produces both the iPhone and Android versions, instead of building each separately.">one shared codebase</span>, plus a basic <span class="term" tabindex="0" data-def="The 'brain' of the app that runs on rented computers in a data center and does the real work.">cloud server</span> that answers a health check.</li>
+          <li><strong>Engage DRC fintech counsel</strong> with the licensing question (see <a href="#gates">Gates</a>).</li>
+          <li><strong>Set up project tools</strong> — task tracking, team chat, shared documents.</li>
+          <li><strong>Competitor teardown</strong> — study how Wave, M-Pesa, and Orange Money apps look and behave.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Which legal entity must own the eventual app-store listings? (Regulators sometimes require the licensed financial provider to be the publisher.)</li>
+          <li>Which cloud region sits closest to DRC for the lowest delay to users?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W2 -->
+    <div class="week-card p0" id="w2">
+      <div class="wk-head"><span class="wk-num">Week 2</span><div class="wk-title">Architecture locked &amp; accounts opened</div><span class="wk-phase">Foundation</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">We know exactly how the system is structured, every account is open, and the test environment is reachable.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Write the architecture blueprint</strong> — how money flows, how data is stored, and how our server talks to the payment partner. (Like a building's structural drawings before construction.)</li>
+          <li><strong>Design the payment "state machine"</strong> — the <span class="term" tabindex="0" data-def="A defined set of stages every payment passes through (started, money taken, money sent, done, failed, refunded) so its status is never ambiguous.">fixed set of stages</span> every payment passes through, so its status is never ambiguous.</li>
+          <li><strong>Open the test environment</strong> — the partner's fake-money sandbox.</li>
+          <li><strong>Open app-store accounts</strong> — Apple and Google.</li>
+          <li><strong>First rough screen sketches</strong> (wireframes).</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Exactly which capabilities does the partner's interface offer — collecting money, paying out to a merchant, status checks? Read the documentation in depth and confirm.</li>
+          <li>Which database design best fits a money ledger that must always balance?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W3 -->
+    <div class="week-card p0" id="w3">
+      <div class="wk-head"><span class="wk-num">Week 3</span><div class="wk-title">Designs done &amp; app shell navigable</div><span class="wk-phase">Foundation</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The full look of the app exists in design, and you can tap through the empty screens.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Finish the visual designs</strong> — all screens and pop-ups, in French, in the coral brand style (detailed mockups, not yet working software).</li>
+          <li><strong>Build the reusable component kit</strong> — the shared <span class="term" tabindex="0" data-def="A library of standard building blocks (buttons, inputs, cards) reused across every screen so the app looks consistent.">design system</span> (buttons, inputs, cards) every screen is assembled from.</li>
+          <li><strong>Wire up navigation</strong> so you can move between the empty screens.</li>
+          <li><strong>Set up the translation system</strong> — a <span class="term" tabindex="0" data-def="A framework that swaps every piece of text by language, so adding a language later means supplying translations, not rebuilding screens.">framework that swaps every piece of text by language</span>, even though we start French-only.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Does the coral palette render well on low-cost Android screens, which often show colors differently?</li>
+          <li>Does the chosen font display French accents cleanly at small sizes?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W4 -->
+    <div class="week-card p0" id="w4">
+      <div class="wk-head"><span class="wk-num">Week 4</span><div class="wk-title">Merchant sign-up works &amp; first test payment</div><span class="wk-phase">Foundation</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">A real DRC merchant can sign up and set an app passcode, and the system can push a first payment through the partner's test environment.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Merchant phone sign-up</strong> — enter a number, receive a <span class="term" tabindex="0" data-def="A short code texted to your phone to prove the number is really yours.">one-time code by text message</span>, you're in. Under a minute. (Fuller business verification — KYC — is flagged for later.)</li>
+          <li><strong>App passcode setup</strong> — the merchant sets a passcode that unlocks the merchant app. (The <em>customer</em> never uses our app — they approve on their own operator's prompt.)</li>
+          <li><strong>Secure login</strong> — keep merchants signed in using <span class="term" tabindex="0" data-def="Signed digital passes that keep a user securely logged in and can be revoked by our server if needed.">session tokens</span> (digital passes), revocable by our server.</li>
+          <li><strong>Connect to the payment partner</strong> — build the connector and trigger a first test "take money" request; confirm the partner's <span class="term" tabindex="0" data-def="An automatic message the payment partner sends our server the moment a payment's status changes.">status message (webhook)</span> is received.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Do one-time codes actually arrive on Vodacom and Airtel lines? Validate with real SIM cards.</li>
+          <li>Has the legal opinion arrived, and does it hold up against the architecture we locked?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">Foundation complete — the team is set, designs are done, sign-up works, and the payment plumbing is proven.</div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PHASE 1 ===== -->
+    <h2>Phase 1 — Build the app (Weeks 5-16)</h2>
+    <p>Turn the proven plumbing into a complete, trustworthy, polished product — built and tested entirely on the safe test environment, ending fully ready to go live.</p>
+
+    <!-- W5 -->
+    <div class="week-card p1" id="w5">
+      <div class="wk-head"><span class="wk-num">Week 5</span><div class="wk-title">Money-records backbone &amp; merchant setup</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The app's internal accounting system is built and rigorously tested, and a merchant can finish onboarding — set where they get paid and get their till / QR — before any real payment touches it.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build the ledger</strong> — the precise internal record of every money movement, using <span class="term" tabindex="0" data-def="An accounting method where every movement is recorded twice (out of one place, into another) so the totals must always balance, making errors easy to catch.">double-entry bookkeeping</span> (every movement recorded twice so the totals must always balance).</li>
+          <li><strong>Build merchant onboarding</strong> — record the merchant, the <strong>settlement account</strong> (the mobile-money number they get paid into), and a <strong>till / short code</strong>; generate the merchant's <strong>QR</strong> (a USSD dial-through) to display at the counter. (Fuller business verification — KYC — is flagged for later.)</li>
+          <li><strong>Implement the payment state machine</strong> — the defined stages: started → money collected from customer → money settled to merchant → done / failed / refunded.</li>
+          <li><strong>Add a repeat-safeguard</strong> — <span class="term" tabindex="0" data-def="A safeguard that ensures an accidentally-repeated request only moves money once, even if the network makes the app send it twice.">idempotency keys</span> so an accidentally-repeated request only moves money once.</li>
+          <li><strong>Build the automatic-refund logic</strong> and cover everything with <span class="term" tabindex="0" data-def="Small automated tests that check each piece of code in isolation, run on every change.">unit tests</span> (automated checks for each piece in isolation).</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>What are the exact rules for the rare "money taken but the customer refund itself failed" case that needs a human?</li>
+          <li>How does the partner represent amounts (whole units vs fractions) for each currency, so rounding is never wrong?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W6 -->
+    <div class="week-card p1" id="w6">
+      <div class="wk-head"><span class="wk-num">Week 6</span><div class="wk-title">Accepting a payment: collecting from the customer</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">A merchant can request a payment; the customer pays the exact amount via USSD / QR from any phone, and the operator's approval prompt appears on the <em>customer's</em> phone.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build the "collect" step</strong> — ask the partner to take money from the customer's wallet; the operator's familiar <span class="term" tabindex="0" data-def="The menu that pops up from the mobile money operator asking the user to enter their secret code to approve. Works even on basic phones with no internet.">secret-code prompt</span> appears on the customer's phone.</li>
+          <li><strong>Build the customer-USSD / QR path</strong> — the merchant's <span class="term" tabindex="0" data-def="A QR code that, when scanned, simply dials a USSD code on the customer's phone — so any phone, even a basic one, can pay without an app or internet.">QR is a USSD dial-through</span>; the customer scans it or dials the till and confirms with their own operator PIN. No customer app.</li>
+          <li><strong>Build the amount / request screen</strong> — the merchant enters an amount and switches between US dollars and Congolese francs; the customer is charged the exact sticker price (the merchant absorbs our fee).</li>
+          <li><strong>Handle the status messages</strong> (the partner's automatic updates) that move the payment along.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Does the USSD dial-through behave consistently across all three operators — and what's the cleanest fallback if a customer's phone can't scan?</li>
+          <li>How long does the approval prompt typically take, so the merchant's waiting screen timer is realistic?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W7 -->
+    <div class="week-card p1" id="w7">
+      <div class="wk-head"><span class="wk-num">Week 7</span><div class="wk-title">Accepting a payment: settling to the merchant</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">Money can be settled into the merchant's wallet (net of our fee), and any failure refunds the customer automatically.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build the "settle" step</strong> — the partner sends the money on to the merchant's mobile-money wallet, and the merchant gets their operator's normal "you received money" confirmation. This is instant pass-through — we never hold the funds.</li>
+          <li><strong>Generate the receipt</strong> — proof of payment, showing the gross amount, our fee, and the net the merchant received; keepable and shareable.</li>
+          <li><strong>Wire the failure path</strong> — if settlement fails, the customer is automatically refunded using the backbone from Week 5.</li>
+          <li><strong>Add resilient retries</strong> — <span class="term" tabindex="0" data-def="Automatically re-attempting a failed message, waiting a little longer between each try, so brief glitches don't cause failures.">retry-with-backoff</span> for status messages (re-attempt automatically, waiting longer each time).</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>What happens if a merchant's settlement number is valid but not yet a registered wallet — does the partner create one, or reject it?</li>
+          <li>How quickly do customer refunds actually land across the three operators?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W8 -->
+    <div class="week-card p1" id="w8">
+      <div class="wk-head"><span class="wk-num">Week 8</span><div class="wk-title">Full cross-network merchant payment, end-to-end</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The product's core promise works — a customer on one network pays a merchant on another, as one smooth flow — and the first half of the build is stabilized.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Stitch the two halves into one experience</strong> — collect from the customer, then settle to the merchant, shown as a single payment with clear progress stages, working across <em>every</em> customer-to-merchant network combination (e.g. customer on Vodacom → merchant on Airtel).</li>
+          <li><strong>Add whole-flow automated tests</strong> — <span class="term" tabindex="0" data-def="Automated tests that run the entire payment from start to finish, catching problems that piece-by-piece tests miss.">end-to-end tests</span> that exercise the full payment.</li>
+          <li><strong>Stabilize</strong> — fix whatever the first half of building and the demos exposed.</li>
+          <li><strong>Run live demos</strong> with advisors and pilot merchants.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Which network combinations are slowest, and can anything speed them up?</li>
+          <li>What confused people in the demos, and what's the smallest change that fixes it?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">Core promise proven — a full cross-network merchant payment works end-to-end. This is the heart of the product.</div>
+
+    <!-- W9 -->
+    <div class="week-card p1" id="w9">
+      <div class="wk-head"><span class="wk-num">Week 9</span><div class="wk-title">History &amp; receipts</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">Merchants can see their past payments, daily totals, and share proof.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build the payment history list</strong> — every payment received, grouped by day with daily totals, showing clear status (settled / pending / failed) and the net amount after our fee.</li>
+          <li><strong>Build shareable receipts</strong> — a clean receipt for each payment with one-tap <strong>WhatsApp sharing</strong> (the dominant way Congolese share proof of payment).</li>
+          <li><strong>Make the list feel fast</strong> with <span class="term" tabindex="0" data-def="Grey placeholder layouts shown while real data loads, so the screen feels responsive even on slow networks.">skeleton screens</span> (grey placeholders shown while data loads).</li>
+          <li><strong>Generate the shareable receipt page</strong> on the server so it previews nicely in a WhatsApp message.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>How does the receipt actually look in a WhatsApp preview on real devices?</li>
+          <li>How long should a shared receipt link stay viewable?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W10 -->
+    <div class="week-card p1" id="w10">
+      <div class="wk-head"><span class="wk-num">Week 10</span><div class="wk-title">Automatic safety net</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The system catches money mismatches on its own, and the team is alerted instantly when anything breaks.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build automatic reconciliation</strong> — a <span class="term" tabindex="0" data-def="A scheduled, automatic comparison of our records against the payment partner's records, flagging any difference. Like a nightly audit.">daily scheduled comparison</span> of our records against the partner's, flagging any mismatch.</li>
+          <li><strong>Add monitoring and alerts</strong> — <span class="term" tabindex="0" data-def="Recording events in a searchable, organized way so problems can be traced quickly.">structured logging</span> plus instant alerts so the team is pinged the moment something breaks.</li>
+          <li><strong>Add operator-status tracking</strong> — watch each network's success rate and show a banner if one is failing.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>What success-rate level should trigger the "this network is having problems" banner?</li>
+          <li>How far back can the partner's records be queried for the daily comparison?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W11 -->
+    <div class="week-card p1" id="w11">
+      <div class="wk-head"><span class="wk-num">Week 11</span><div class="wk-title">Support tools</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The team can resolve a stuck merchant (or a customer's stuck payment) quickly — without needing a developer.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Build the internal admin dashboard</strong> — look up any merchant or payment, issue a refund, resolve an issue, with an <span class="term" tabindex="0" data-def="A permanent record of every action a staff member takes, so support actions are accountable and traceable.">action log</span> recording every staff action.</li>
+          <li><strong>Add the in-app "report a problem" button</strong> — opens WhatsApp with the payment details already filled in, making support easy for the merchant.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Walking real (test) cases through the tool, what capability is missing?</li>
+          <li>What should the support workflow and response-time targets be?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W12 -->
+    <div class="week-card p1" id="w12">
+      <div class="wk-head"><span class="wk-num">Week 12</span><div class="wk-title">Handling the weird edge cases</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The unusual-but-real failures are all handled gracefully, and money is always accounted for.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Handle every odd scenario</strong> — an operator reversing a payment, the network dropping mid-payment, a double-tap on "send," a payment that gets stuck. Each resolves cleanly.</li>
+          <li><strong>Add offline handling</strong> — queue actions, show an offline banner, and never lose or duplicate a payment when the signal drops (common in DRC).</li>
+          <li><strong>Add a remote update switch</strong> — a <span class="term" tabindex="0" data-def="The ability to require users to update to a new version, used only if a serious fix must reach everyone quickly.">force-update control</span> for the rare case a critical fix must reach everyone.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>In a focused "try to break it" session, what failure modes appear that we haven't handled?</li>
+          <li>What should the refund and dispute policies be?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W13 -->
+    <div class="week-card p1" id="w13">
+      <div class="wk-head"><span class="wk-num">Week 13</span><div class="wk-title">Everything in proper French</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">Every word in the app is correct, natural DRC French.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Route all text through the translation system</strong> and fill in French, reviewed by a DRC-French speaker so nothing reads like a bad translation. (The system is built so Lingala and Swahili can be added later.)</li>
+          <li><strong>Check the fit</strong> — French is longer than English, so confirm every button and label still fits on screen.</li>
+          <li><strong>Add the privacy policy and terms of service</strong> — in French, lawyer-reviewed.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Does the tone read as warm but precise to native speakers?</li>
+          <li>Do number, date, and currency formats match DRC conventions?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W14 -->
+    <div class="week-card p1" id="w14">
+      <div class="wk-head"><span class="wk-num">Week 14</span><div class="wk-title">Speed &amp; reliability under pressure</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The app stays fast and reliable even under heavy use and poor networks.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Run load testing</strong> — <span class="term" tabindex="0" data-def="Simulating many people using the app at the same time to make sure it doesn't slow down or break under real demand.">simulate many users at once</span> and fix the bottlenecks it reveals.</li>
+          <li><strong>Make status messages resilient</strong> — a backup queue retries any dropped message, with the daily reconciliation as the final safety net.</li>
+          <li><strong>Tune for low-cost phones</strong> — fast startup and a small download size on the budget Android phones most Congolese use.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Where does the system break under load, and is there comfortable headroom above expected demand?</li>
+          <li>Does the app recover correctly under simulated network drops, not just ideal conditions?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W15 -->
+    <div class="week-card p1" id="w15">
+      <div class="wk-head"><span class="wk-num">Week 15</span><div class="wk-title">Team use &amp; bug bash</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The whole team uses the app daily on real phones, surfacing and fixing the last bugs.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Everyone lives in the app</strong> — distribute private test builds and use it daily (<span class="term" tabindex="0" data-def="Industry slang for using your own product for real, every day — a powerful way to find bugs that planned testing misses.">"dogfooding"</span>), finding the rough edges planned testing misses.</li>
+          <li><strong>Burn down the bug list</strong> — money-correctness first, then experience, then minor polish.</li>
+          <li><strong>Prepare launch marketing assets</strong> — app-store screenshots, descriptions, and graphics for the next phase.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Are the team's day-over-day "would I recommend this?" gut-feel scores improving?</li>
+          <li>Which non-blocking issues should be deferred to after launch?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- W16 -->
+    <div class="week-card p1" id="w16">
+      <div class="wk-head"><span class="wk-num">Week 16</span><div class="wk-title">Code freeze — MVP complete</div><span class="wk-phase">Build</span></div>
+      <div class="wk-body">
+        <div class="sec-label">Goal</div>
+        <div class="wk-goal">The app is built, tested, documented, and ready to flip live whenever the business says go.</div>
+
+        <div class="sec-label">Tasks</div>
+        <ul class="tasks">
+          <li><strong>Declare code freeze</strong> — stop adding features; only fix bugs, locking the app down for launch readiness.</li>
+          <li><strong>Run a security pass</strong> — check outside code libraries for known issues, confirm secrets are stored safely, and test that backups can be restored.</li>
+          <li><strong>Complete documentation</strong> — how to run, support, and onboard new team members onto the system.</li>
+          <li><strong>Stakeholder demo</strong> — a full walkthrough of the finished app.</li>
+        </ul>
+
+        <div class="sec-label">Research — open questions</div>
+        <div class="research-box"><ul>
+          <li>Is the payment partner's live-money approval (started in Week 2) complete or on track for the next phase?</li>
+          <li>Does everything pass a final readiness review against the launch checklist?</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="milestone-banner">MVP complete — the app is fully built, tested, and ready to launch. Going live (app stores, real money, real users) is the next phase.</div>
+
+    <!-- ===== GLOSSARY ===== -->
+    <h2 id="glossary">Glossary — plain English</h2>
+    <p>Every technical term used in this document, explained simply.</p>
+
+    <div class="glossary-item">
+      <div class="glossary-term">Payment partner / "rails"</div>
+      <div class="glossary-def">The company whose infrastructure we rent to actually move money. Instead of us building a separate connection to each mobile money network (Vodacom, Airtel, Orange), the partner has already done that — we connect once to them, and they reach all the networks. "Rails" is the industry word for this kind of underlying payment infrastructure (like railroad tracks that trains run on).</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Aggregator</div>
+      <div class="glossary-def">A company (like our payment partner) that bundles many payment networks together behind a single connection, so businesses don't have to integrate each one separately.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Test environment ("sandbox")</div>
+      <div class="glossary-def">A complete fake-money copy of the payment system, used for safe testing. You can run thousands of payments through it without any real money moving and without risk. The entire 16-week build happens here.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Going live ("production")</div>
+      <div class="glossary-def">The opposite of the test environment — the real, live system with real money and real customers. Reaching it is the <em>next</em> phase, after this 16-week plan.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Collect (the "collect leg")</div>
+      <div class="glossary-def">The first half of a payment: taking money out of the customer's mobile money wallet.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Settle / payout (the "settlement leg")</div>
+      <div class="glossary-def">The second half of a payment: paying the money into the merchant's mobile money wallet (net of our fee). It's instant pass-through — we never hold it.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Cross-network</div>
+      <div class="glossary-def">When the customer and the merchant are on different mobile money networks (e.g. customer on Vodacom, merchant on Airtel). Letting a merchant accept payment regardless of network is the core promise of our app.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Ledger</div>
+      <div class="glossary-def">The app's precise internal record of every money movement — like a meticulous accounting book. It's the source of truth for what happened to every payment.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Double-entry bookkeeping</div>
+      <div class="glossary-def">A centuries-old accounting method where every movement is recorded twice — money leaving one place and arriving in another — so the totals must always balance. If they don't, you know instantly there's an error. Standard for anything handling money.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Transaction state machine</div>
+      <div class="glossary-def">A defined set of stages every payment must pass through — started, money taken, money sent, done, failed, refunded — with strict rules for moving between them. It guarantees a payment's status is never ambiguous or skipped.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Repeat-safeguard (idempotency keys)</div>
+      <div class="glossary-def">A safeguard ensuring that if a payment request is accidentally sent twice — for example because the network hiccuped — the money still only moves once.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Reconciliation</div>
+      <div class="glossary-def">Regularly comparing our records against the partner's records to make sure they match exactly, and flagging any difference. Our system does this automatically every day — a nightly audit.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Status message (webhook)</div>
+      <div class="glossary-def">An automatic message the payment partner sends our server the instant a payment's status changes (for example, "money collected" or "delivery failed"), so our records stay current without us constantly asking.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Retry-with-backoff</div>
+      <div class="glossary-def">Automatically re-attempting a failed message, waiting a little longer between each attempt, so brief glitches sort themselves out instead of becoming failures.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Operator approval prompt</div>
+      <div class="glossary-def">The little menu that pops up on your phone from your mobile money operator asking you to enter your secret code to approve a payment. It comes from the operator, not from our app, and it works even on basic phones with no internet.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Sticker price &amp; the merchant fee (MDR)</div>
+      <div class="glossary-def">The customer always pays the <em>exact</em> displayed price — never a surcharge. Our fee (the "merchant discount rate", or MDR) is taken out of the merchant's side: they receive the price minus the fee. A 1% placeholder is used in mock-ups, but the real round-trip cost through the payment partner is ~3.5–5%, so the actual MDR is an open pricing decision (likely higher than 1%).</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">One-time code</div>
+      <div class="glossary-def">The short code texted to your phone to prove the number is really yours, used when you sign up or reset your secret code.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Secret code</div>
+      <div class="glossary-def">The secret code a user sets to unlock our app and approve payments inside it. (Separate from the operator's own code used in the approval prompt above.)</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Identity verification (KYC)</div>
+      <div class="glossary-def">Confirming who someone really is, as required by financial regulators. The paying customer's identity already rides on their SIM-card registration. For the <em>merchant</em> (our app's user), fuller business verification is flagged as an item to confirm with counsel — kept light for the MVP.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Pass-through model</div>
+      <div class="glossary-def">Our chosen approach where the app <em>never holds</em> the money — it flows straight from the customer, through the payment partner, to the merchant in one motion (instant settlement). This keeps us simpler and (we believe) avoids needing our own financial license. Confirming that belief is the Week 1–4 legal gate.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Central bank (Banque Centrale du Congo)</div>
+      <div class="glossary-def">The DRC's central bank and financial regulator — the body that issues financial licenses and sets the rules for handling money in the country.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Electronic money institution license</div>
+      <div class="glossary-def">A specific, expensive type of financial license (requiring millions in capital) needed by companies that hold customers' money. Our pass-through model is designed to avoid needing this — but only the legal opinion can confirm it.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Cloud server / backend</div>
+      <div class="glossary-def">The "brain" of the app that runs on rented computers in a data center (the "cloud") rather than on the user's phone. It talks to the payment partner, keeps the ledger, and does the real work. The phone app is just the friendly face on top.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">One shared codebase</div>
+      <div class="glossary-def">A single set of code that produces both the iPhone and Android versions of the app, instead of building each separately — faster and cheaper for a small team. (Built with a toolkit called React Native.)</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Continuous integration</div>
+      <div class="glossary-def">A system that automatically tests every code change the moment it's submitted, so mistakes are caught immediately rather than piling up.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Session tokens</div>
+      <div class="glossary-def">Signed digital passes that keep a user securely logged in after they sign in, and which our server can revoke (for example, on sign-out) without needing the user's secret code.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Skeleton screens</div>
+      <div class="glossary-def">Grey placeholder layouts shown while real content loads, making the app feel fast and responsive even on slow networks.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Unit tests / end-to-end tests</div>
+      <div class="glossary-def">Automated checks for the code. Unit tests check one small piece in isolation; end-to-end tests run a whole flow (like a complete payment) from start to finish. Both run automatically to catch problems before users do.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Load testing</div>
+      <div class="glossary-def">Simulating many people using the app at the same time to confirm it stays fast and doesn't break under real-world demand.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Structured logging &amp; alerting</div>
+      <div class="glossary-def">Recording events in an organized, searchable way (logging) and automatically pinging the team the instant something goes wrong (alerting), so problems are caught and traced quickly.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Translation system</div>
+      <div class="glossary-def">A framework that swaps every piece of text in the app by language. Build it once, and adding a new language later means supplying translations rather than rebuilding screens.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Force-update control</div>
+      <div class="glossary-def">The ability to require users to update to a new version — used sparingly, only when a serious fix must reach everyone quickly.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Code freeze</div>
+      <div class="glossary-def">The point near the end where we deliberately stop adding new features and only fix bugs — locking the app down so it's stable and ready to launch. It's the finish line for this 16-week plan.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-term">Dogfooding</div>
+      <div class="glossary-def">Industry slang for "using your own product for real, every day" (from "eating your own dog food"). A powerful way to find bugs that planned testing misses.</div>
+    </div>
+
+    <!-- ===== COSTS ===== -->
+    <h2 id="costs">Costs at a glance</h2>
+    <p>A business-level summary. The full line-by-line breakdown and methodology is in the <a href="mvp-schedule.html#costs">detailed schedule</a>.</p>
+
+    <table>
+      <thead>
+        <tr><th>Team approach</th><th>Who builds it</th><th>All-in cost, 16 weeks</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Lean</strong></td><td>Engineers based in DRC / francophone Africa</td><td><strong>~$50k–$107k</strong></td></tr>
+        <tr><td><strong>Mid</strong> (recommended)</td><td>Senior engineers across Lagos / Nairobi / Cape Town / Kinshasa</td><td><strong>~$75k–$153k</strong></td></tr>
+        <tr><td><strong>Premium</strong></td><td>US / European contractors</td><td><strong>~$183k–$386k</strong></td></tr>
+      </tbody>
+    </table>
+
+    <p><strong>Planning anchor:</strong> budget around <strong>~$115k</strong> for the recommended mid-scenario, including a 20% contingency. The biggest cost swing is <em>where the team is based</em>, not the technology. The largest cost <em>risk</em> is the legal gate: if counsel determines we need our own financial license, that's a much larger, separate undertaking (millions in required capital) — which is exactly why we resolve that question in the first four weeks.</p>
+
+    <p class="meta">Not included here: going live (next phase, +4–8 weeks), marketing, ongoing running costs, and the optional "build our own payment rails" path — all covered in the <a href="roadmap.html">full roadmap</a> and <a href="report.html">research report</a>.</p>
+
+    <!-- ===== NEXT ===== -->
+    <h2 id="next">What's next (after code freeze)</h2>
+    <p>This plan ends with a finished, tested app ready to launch. The next phase — <strong>going live</strong> — takes about 4–8 more weeks and covers:</p>
+    <ul>
+      <li>Switching from the test system to real money (the payment partner's live-money approval must be complete by here).</li>
+      <li>A small closed test with a first cluster of the ~40 gas stations + pop-up stores already lined up, taking real customer payments.</li>
+      <li>Publishing the merchant app to the Apple App Store and Google Play Store.</li>
+      <li>Public launch and the first real merchants accepting payments.</li>
+    </ul>
+    <p>The deliberate advantage of stopping at code freeze: going live can begin <strong>when conditions are right</strong> (legal cleared, payment partner approved, team ready) rather than on a fixed calendar date. See the <a href="roadmap.html">full roadmap</a> for the complete arc.</p>
+
+    <p class="meta" style="margin-top:48px;">Goals-focused view · Generated 2026-06-04 · For per-person task detail see the <a href="mvp-schedule.html">detailed schedule</a>; for the product design see the <a href="05-product-spec/">product spec</a>; for the underlying research see the <a href="report.html">research report</a>.</p>
+  </main>
+</div>
+</body>
+</html>
