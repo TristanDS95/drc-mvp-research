@@ -14,7 +14,9 @@ Driven by an agentic assistant (Claude Code), which reads `CLAUDE.md` for its wo
 5. **Comparative fintech research** — 8 companies (M-Pesa, Wave, OPay/PalmPay, MTN/Airtel, Chipper/Flutterwave, Onafriq, bKash, global super-apps) studied for structure, monetisation, and rollout.
 
 ## Start here (key documents)
-- **Plain-English research summary:** `report.html`
+- **Short digest (start here for the tour):** `reports.html` - a phase-by-phase plain-English summary that links into the detail.
+- **Full research report (detailed):** `report.html` - the deep, fully-sourced feasibility report.
+- **Who competes with us (plain-language):** `competitor-landscape.html` - sorts pawaPay, IllicoCash, the mobile networks, and foreign look-alikes into real vs. not-real competitors.
 - **Product spec:** `05-product-spec/README.md` (+ `product-spec.html` summary)
 - **The recommendation:** `03-reports/recommendation.md`
 - **Architecture: merchant-acquiring (chosen) vs the earlier consumer model:** `03-reports/architecture-comparison.md`
@@ -41,7 +43,7 @@ drc-mvp-research/
 ├── 04-sources/sources.md      # master source registry (every claim traces here)
 ├── 05-product-spec/           # how the app works: functionality, ui, screens, data-model, api, tech-stack
 ├── _templates/ · _status/     # note templates · progress tracker
-└── *.html                     # human-readable summaries (report, reports, product-spec, schedule, roadmap, deliverables)
+└── *.html                     # human-readable summaries (reports=digest, report=full, competitor-landscape, product-spec, schedule, roadmap, deliverables)
 ```
 
 ## Ground rules (full version in CLAUDE.md)

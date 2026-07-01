@@ -2,12 +2,14 @@
 
 Comparative research on fintech leaders (African core + select global analogs) to learn **how to structure our app, how to derive value, and how to control feature development & rollout.** Added when the workspace scope broadened (2026-06-09) — see `00-overview/research-goals.md`.
 
+> **⚠️ Pre-pivot framing (2026-06-11 correction applies).** These profiles were written against the *earlier* consumer "pay any number" **pass-through** model (MSISDN payee, **no merchant onboarding in v1**). The MVP has since become a **merchant-acquiring** app: merchants onboard, are addressed by a **till / QR**, and **absorb the fee (MDR)**, while the customer pays the sticker price with no app (USSD/QR). Read every "no merchant onboarding" or "merchant MDR deferred" line as **superseded** - merchant acceptance and MDR are now the MVP core, not a later rung. The comparative *lessons* still hold; only our own product's framing changed. Current direction: [`00-overview/product-summary.md`](../../00-overview/product-summary.md).
+
 ## The three lenses (every profile uses these)
 1. **Product structure & architecture** — single app vs super-app; consumer vs merchant vs both; channels (smartphone app / USSD-feature-phone / agent network / web); what they built *first* and how the surface grew; held-balance/wallet vs pass-through.
 2. **Monetisation & value capture** — where the money actually comes from (P2P fees, cash-out fees, merchant/MDR, float/interest, FX, lending, bill-pay commissions, subscriptions, ads); who bears the fee (payer vs merchant); how pricing evolved.
 3. **Feature rollout & sequencing** — what shipped first, in what order features were added, how they controlled scope/expansion, geographic sequencing, and what unlocked each next step.
 
-Every profile ends with **"What it means for us"** — concrete, transferable implications for our DRC consumer cross-network **pass-through** MVP (on pawaPay, MSISDN payee, no merchant onboarding in v1) **and** our phased **feature-phone/USSD** channel.
+Every profile ends with **"What it means for us"** — concrete, transferable implications for our DRC cross-network **merchant-acquiring** MVP (on pawaPay; the merchant onboards with a till/QR and absorbs the MDR) **and** our **feature-phone/USSD** customer channel. *(Several profiles were first written against the earlier consumer "pay any number" framing - see the pivot notice above; the lessons transfer, the product framing was corrected 2026-06-11.)*
 
 ## Accuracy standards (per `CLAUDE.md`)
 - Source every factual claim; prefer primary (company sites, engineering blogs, regulators, filings) over press.

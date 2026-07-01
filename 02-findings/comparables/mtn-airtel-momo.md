@@ -1,7 +1,7 @@
 # Comparable: MTN MoMo & Airtel Money — operator-led mobile money at continental scale
 
 - **Topic / entity:** MTN Mobile Money (MoMo) and Airtel Money / Airtel Mobile Commerce — the two largest pan-African telco-led mobile money platforms
-- **Question it addresses:** How do operator-led mobile money businesses structure their product (USSD → app → merchant → open API), monetise, and sequence rollout — and what does that mean for a consumer cross-network pass-through app that *consumes* aggregator APIs and serves feature-phone users?
+- **Question it addresses:** How do operator-led mobile money businesses structure their product (USSD → app → merchant → open API), monetise, and sequence rollout — and what does that mean for a **merchant-acquiring** cross-network pass-through app that *consumes* aggregator APIs and serves feature-phone customers over USSD?
 - **Date researched:** 2026-06-09
 - **Confidence:** Medium–High (corporate financials High; API UX/pricing detail Medium; DRC-specific Medium)
 - **Claim type:** mix — labelled inline per claim
@@ -90,7 +90,7 @@ Operator mobile money monetises across (verified fact / self-reported, Medium–
 
 3. **Operators are both our rails and our competitors (High).** Airtel Money (a DRC rail we'd depend on via pawaPay) is simultaneously building its *own* app, MoMoPay-style merchant acceptance, and cross-network ambitions. Our cross-network differentiator (pay *any* network from one app) is exactly what a single operator structurally *cannot* offer well — that's our wedge. But they can squeeze the economics of the legs we rent, and could undercut us within their own footprint.
 
-4. **The money is in advances/lending and merchant fees, not P2P (Medium→High).** MTN's growth story is **BankTech (lending) + MoMoPay merchant + airtime advances**, not transfer fees (P2P is being competed toward zero; MoMoPay is just 0.5%). For us, **pure pass-through P2P is thin-margin by industry trajectory.** Durable value capture lives in adjacent services (merchant acceptance, credit, bill/airtime commissions) — all explicitly out of scope for v1, but this is where the operators show the margin is, so it should shape our post-MVP roadmap.
+4. **The money is in advances/lending and merchant fees, not P2P (Medium→High).** MTN's growth story is **BankTech (lending) + MoMoPay merchant + airtime advances**, not transfer fees (P2P is being competed toward zero; MoMoPay is just 0.5%). For us, **pure pass-through P2P is thin-margin by industry trajectory.** Durable value capture lives in adjacent services (**merchant acceptance - now our v1 core**; plus credit and bill/airtime commissions that remain post-MVP). This is where the operators show the margin is, so it should shape our roadmap. *(Pre-2026-06-11 this listed merchant acceptance as "out of scope for v1"; the pivot made it the MVP core.)*
 
 5. **The open-API model is our template for what pawaPay abstracts (High).** MoMo/Airtel expose collections + disbursements + remittance with free sandbox and **per-transaction fees deducted from a collections account**. This is precisely the cost structure to expect underneath our aggregator: a percentage/flat fee on each leg, deducted at settlement. Confirms our two-leg cost model (collect fee + payout fee per payment).
 

@@ -16,7 +16,7 @@ They are the two poles of the African digital-payments design space, and our MVP
 - **Chipper Cash** — a **consumer app**. Free peer-to-peer transfers are the hook; money is made *elsewhere* (FX, crypto, stocks, card interchange, a B2B side-line). The **consumer is the user; the consumer does not pay the headline fee.**
 - **Flutterwave** — **B2B payment infrastructure / rails**. Merchants and businesses integrate it to *accept* payments; Flutterwave takes a cut of every transaction. The **merchant is the customer and the merchant pays.**
 
-Our DRC product is a **consumer app** (like Chipper) but with a **payer-pays-fee, pure pass-through** model — so neither pole maps cleanly, and the contrast is exactly the lesson.
+Our DRC product is a **merchant-acquiring** app (the *merchant* is the customer, closer to Flutterwave's side) but a **pure pass-through** that never holds funds, with the **merchant absorbing the fee (MDR)** so the customer pays the sticker price - so neither pole maps cleanly, and the contrast is exactly the lesson. *(Pre-2026-06-11 this read "a consumer app … payer-pays-fee"; corrected by the pivot - see [`README.md`](README.md).)*
 
 ---
 
@@ -107,7 +107,7 @@ The consumer pays **no headline fee** on P2P; revenue comes from adjacencies whe
 
 **The central lesson — two ways to answer "who pays," and we've chosen the hard one:**
 
-1. **Chipper = free-P2P-as-wedge, monetise adjacencies.** Make the core transfer free (or near-free) to win consumers, then earn on FX, investing, cards, and a B2B layer. **This maps to one side of our "wedge then value-added layer" debate.** If we ever feel pressure to drop or hide the payer fee to drive adoption, Chipper is the template — but note its monetisation engine (crypto, stocks, held balance) **requires a custodial wallet and discretionary investing demand we are explicitly *not* building** (pure pass-through, MSISDN payee, no merchant onboarding). So the *wedge logic* transfers; the *specific money-makers mostly do not*. **The honest read: our pass-through model has no obvious Chipper-style adjacency to fall back on yet — FX spread on cross-network DRC transfers (mostly same-currency CDF) is thin, and we've ruled out the investing products.** This is a strategic gap to confront, not paper over.
+1. **Chipper = free-P2P-as-wedge, monetise adjacencies.** Make the core transfer free (or near-free) to win consumers, then earn on FX, investing, cards, and a B2B layer. **This maps to one side of our "wedge then value-added layer" debate.** If we ever feel pressure to drop or hide the payer fee to drive adoption, Chipper is the template — but note its monetisation engine (crypto, stocks, held balance) **requires a custodial wallet and discretionary investing demand we are explicitly *not* building** (pure pass-through, no held balance). So the *wedge logic* transfers; the *specific money-makers mostly do not*. **The honest read: our pass-through model has no obvious Chipper-style adjacency to fall back on yet — FX spread on cross-network DRC transfers (mostly same-currency CDF) is thin, and we've ruled out the investing products.** This is a strategic gap to confront, not paper over.
 
 2. **Flutterwave = charge the merchant, then go deep on enterprise.** The transaction take-rate (~1.4–2%, merchant-borne by default) is the *commodity wedge*; the real margin is **enterprise depth** (custom APIs, treasury, settlement) and **remittance**. This maps to the *other* side of our debate: a future **merchant-acceptance / value-added layer** (the deliberate later expansion already noted in our architecture comparison). Flutterwave's arc is the evidence for *why* you'd add it — pure commodity processing is low-margin; durable value capture came from going deeper with businesses, not from the retail transaction fee.
 
@@ -117,7 +117,7 @@ The consumer pays **no headline fee** on P2P; revenue comes from adjacencies whe
 
 **Non-transferable / flagged bits:**
 - Chipper's **crypto & stock trading** revenue is tied to a held balance, a regulatory regime, and discretionary-investing demand we are **not** pursuing; treat its 55%-FX / 1%-trade figures as **self-reported and out of our scope**, not a model to copy.
-- Flutterwave's **enterprise** margin presupposes large business clients and a merchant base — **we have no merchant onboarding in v1**, so its biggest profit pool is unavailable to us until/unless we build the merchant layer.
+- Flutterwave's **enterprise** margin presupposes large business clients and a merchant base - and since the MVP **now onboards merchants**, that merchant-fee pool is **open to us from v1** (the 40-gas-station wedge is exactly this), though the *enterprise* tier still presupposes scale we won't have early. *(This originally read "we have no merchant onboarding in v1, so its biggest profit pool is unavailable to us" - reversed by the 2026-06-11 pivot.)*
 - Chipper's near-collapse risk came partly from **dependence on a single anchor investor (FTX)** and a frothy funding cycle — a governance/financing caution, not a product lesson.
 - Flutterwave's **2022 AML/fraud account-freeze episode** (later cleared) is a concrete reminder that **cross-network/cross-border money movement draws regulator and bank scrutiny** — reinforces our standing flag to investigate **licensing/AML** early, even on rented rails.
 

@@ -10,7 +10,7 @@
 
 ## Why these two are relevant to us
 
-OPay and PalmPay are the clearest modern example of fintechs that **won a mass market fast on incentives + agent distribution**, then **accreted a super-app** on top. They are useful contrast cases to our deliberately *focused* pass-through wallet (one job: pay any number across networks). They also illustrate how a "free transfer" wedge gets funded — and what happens when the subsidy era ends and regulators tighten. Two important differences up front: both are **licensed deposit-taking institutions** (CBN Mobile Money Operator / microfinance-bank licences), not pure pass-through aggregators like our model on pawaPay; and both rely on a **bank-failure tailwind** that may not have a DRC analog.
+OPay and PalmPay are the clearest modern example of fintechs that **won a mass market fast on incentives + agent distribution**, then **accreted a super-app** on top. They are useful contrast cases to our deliberately *focused* pass-through model (one job: let a merchant accept payment from a customer on any network). They also illustrate how a "free transfer" wedge gets funded — and what happens when the subsidy era ends and regulators tighten. Two important differences up front: both are **licensed deposit-taking institutions** (CBN Mobile Money Operator / microfinance-bank licences), not pure pass-through aggregators like our model on pawaPay; and both rely on a **bank-failure tailwind** that may not have a DRC analog.
 
 ---
 

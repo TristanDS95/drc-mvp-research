@@ -1,6 +1,8 @@
 # Payee identification (cross-cutting)
 
-- **Topic / entity:** how a payer designates the merchant/person to pay when there is no merchant onboarding in v1
+> **⚠️ Pre-pivot framing (2026-06-11 correction applies).** This file was written for the *earlier* model with **no merchant onboarding**, so it treats the payee as a personal mobile-money number (MSISDN). The MVP has since pivoted to **merchant-acquiring**: merchants onboard and are addressed by a **till / short code or the merchant's QR**, not a personal number. Read the MSISDN routing below as the **fallback / historical** path; till-and-QR addressing is now primary. Current direction: [`00-overview/product-summary.md`](../../00-overview/product-summary.md) and [`05-product-spec/README.md`](../../05-product-spec/README.md).
+
+- **Topic / entity:** how a payer designates the merchant to pay (originally scoped for no merchant onboarding; post-pivot the MVP onboards merchants and addresses them by till/QR - see the notice above)
 - **Question it addresses:** Can payments be addressed by mobile-money number? Are there merchant or QR codes? Is there a national/regional QR standard?
 - **Date researched:** 2026-06-04
 - **Overall confidence:** Medium — primary addressing is by mobile-money number, with operator-specific merchant short codes layered on top; **no DRC national QR standard located**; QR exists only as operator/PSP-specific implementations.
@@ -58,7 +60,7 @@ These could each be evaluated as alternative aggregator paths if the four shortl
 ## What this means for the MVP's payee UX
 
 1. **The payer keys the merchant's mobile money number.** The app infers the operator from the MSISDN prefix; on ambiguity, the payer selects from a dropdown ("Vodacom / Airtel / Orange / Africell").
-2. **The chosen aggregator routes the payout** to that number on that network. The payee is treated as a P2P recipient on their existing operator wallet — no merchant-side action required, matching the "no merchant onboarding in v1" decision.
+2. **The chosen aggregator routes the payout** to that number on that network. The payee is treated as a P2P recipient on their existing operator wallet, no merchant-side action required. *(This describes the earlier no-onboarding path; post-pivot the payee is a registered merchant addressed by till/QR - see the pivot notice at the top.)*
 3. **QR is a v2 conversation, not v1**, unless we adopt one PSP's proprietary QR (e.g., mVISA via DPO, MOKO QR) and accept it works only for *that PSP's* merchants, which fights the cross-network proposition.
 4. **The MVP wallet selector should default to the inferred operator and let the payer confirm**, since a wrong selection routes to the wrong network and either fails or sends to an unintended recipient on a different network.
 
