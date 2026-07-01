@@ -27,6 +27,7 @@ Every profile ends with **"What it means for us"** — concrete, transferable im
 | `mtn-airtel-momo.md` | MTN MoMo, Airtel Money | Operator-led MoMo at continental scale; USSD-first; open API platforms |
 | `chipper-flutterwave.md` | Chipper Cash, Flutterwave | Consumer P2P/remittance vs B2B payment rails — monetisation contrast |
 | `onafriq-strategy.md` | Onafriq (MFS Africa) | Our closest **structural** analog: a cross-network/cross-border hub (strategy lens; coverage already in `../aggregators/onafriq.md`) |
+| `illicocash.md` | IllicoCash (Rawbank, DRC) | **In-market DRC competitor-adjacent** product - the local name most likely to be *called* our competitor; bank-backed closed-loop wallet with merchant QR. Read for the "how it differs from us" competitive lens, not just monetisation. |
 | `bkash.md` | bKash (Bangladesh) | Feature-phone/USSD + app at massive scale; directly informs our phased USSD channel |
 | `global-superapps.md` | GCash (PH), Paytm (India), Mercado Pago (LatAm), WeChat Pay (China) | How payments → super-app → monetisation; sequencing lessons |
 

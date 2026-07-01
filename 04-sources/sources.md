@@ -196,3 +196,15 @@ Every source used in this repo, referenced by ID. Add a row whenever you cite so
 | `cm-on-` | comparables/onafriq-strategy.md | 12 | onafriq.com, FT Partners, acquisition press (Beyonic/Baxi/GTP) |
 | `cm-bk-` | comparables/bkash.md | 26 | CGAP/World Bank, City Bank, Bangladesh press, bkash.com extracts |
 | `cm-gs-` | comparables/global-superapps.md | 20 | Tencent annual report, GCash Help Center, Wikipedia (GCash/WeChat Pay) |
+
+### IllicoCash (Rawbank) — DRC in-market competitor (added 2026-07-01)
+
+Added later than the 2026-06-09 batch, so listed in full here. IllicoCash official site read directly; the rest are search-indexed. Used in: `comparables/illicocash.md`.
+
+| ID | Title | URL | Type | Date accessed | Reliability | Used in |
+|----|-------|-----|------|---------------|-------------|---------|
+| ic-001 | IllicoCash official site (EN) | https://illicocash.com/en/ | primary | 2026-07-01 | med (marketing copy; direct read) | illicocash.md |
+| ic-002 | Rawbank — illicocash product page | https://rawbank.com/en/banque-a-distance/illicocash/ | primary | 2026-07-01 | med-low (via search index, not re-fetched) | illicocash.md |
+| ic-003 | IllicoCash on Google Play | https://play.google.com/store/apps/details?id=com.s2m.rawbank.views | primary/self-reported | 2026-07-01 | med-low | illicocash.md |
+| ic-004 | IllicoCash on the App Store | https://apps.apple.com/cd/app/illicocash/id1245099231 | primary/self-reported | 2026-07-01 | med-low | illicocash.md |
+| ic-005 | Thunes × Rawbank partnership (international transfers via IllicoCash) | https://www.thunes.com/news/thunes-rawbank-partner-to-power-international-mobile-money-transfers-with-illicocash/ | self-reported | 2026-07-01 | low (HTTP 403, not fetched; search summary only) | illicocash.md |
