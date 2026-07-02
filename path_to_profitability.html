@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC Payment App — Path to Profitability</title>
+<style>
+  :root{--bg:#fff;--bg-alt:#f7f7f5;--text:#1a1a1a;--soft:#555;--border:#e0e0dc;--accent:#1d3557;--accent-soft:#457b9d;--link:#0a4f8c;--coral:#FF6B5B;--cream:#FFFCF8;--good:#166534;--mid:#92400e;--low:#991b1b;--warn:#b45309;--code:#f1ede2;}
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);margin:0;line-height:1.55;font-size:15px;}
+  .layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+  nav.side{background:var(--bg-alt);border-right:1px solid var(--border);padding:28px 22px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:13.5px;}
+  nav.side .t{font-weight:700;font-size:15px;color:var(--accent);}
+  nav.side .s{font-size:12px;color:var(--soft);margin-bottom:16px;}
+  nav.side h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:18px 0 6px;font-weight:600;}
+  nav.side a{display:block;padding:4px 0;color:var(--accent);text-decoration:none;}
+  nav.side a:hover{text-decoration:underline;}
+  main{padding:38px 56px 90px;max-width:1000px;}
+  h1{font-size:28px;margin:0 0 6px;color:var(--accent);}
+  h2{font-size:21px;color:var(--accent);margin:40px 0 8px;padding-top:12px;border-top:2px solid var(--border);}
+  h3{font-size:16px;color:var(--accent);margin:22px 0 6px;}
+  p{margin:6px 0 12px;}
+  a{color:var(--link);text-decoration:none;border-bottom:1px solid #b3cce6;} a:hover{background:#eef4fa;}
+  code,.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 5px;border-radius:3px;}
+  ul{margin:4px 0 10px;padding-left:20px;} li{margin:5px 0;}
+  ol{margin:4px 0 10px;padding-left:22px;} ol li{margin:7px 0;}
+  table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border:1px solid var(--border);vertical-align:top;} th{background:var(--bg-alt);font-weight:600;} tr:nth-child(even) td{background:#fafaf7;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .meta{font-size:13px;color:var(--soft);margin:4px 0 16px;}
+  .lead{font-size:16px;background:#eef4fa;border-left:4px solid var(--accent-soft);padding:14px 18px;margin:14px 0 20px;border-radius:0 4px 4px 0;}
+  .note{background:#fff8e6;border-left:4px solid var(--warn);padding:11px 15px;margin:14px 0;font-size:14px;border-radius:0 4px 4px 0;}
+  .us{background:#fff2f0;border-left:4px solid var(--coral);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0;}
+  .card{border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:14px 0;background:#fff;}
+  .card h3{margin-top:0;}
+  .card .what{font-size:13.5px;color:var(--soft);margin:-2px 0 10px;}
+  .stage{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:2px 9px;border-radius:10px;white-space:nowrap;background:#e6edf5;color:var(--accent);}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .src{font-size:12.5px;color:var(--soft);margin-top:8px;}
+  .tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;}
+  .t-stance{background:#fde7e3;color:var(--low);} .t-research{background:#dcfce7;color:var(--good);} .t-open{background:#fef3c7;color:var(--warn);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin:10px 0 6px;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}main{padding:24px;}}
+  @media print{nav.side{display:none;}main{padding:0;max-width:100%;}.layout{grid-template-columns:1fr;}a{border-bottom:none;color:var(--text);}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side">
+    <div class="t">DRC Payment App</div>
+    <div class="s">Path to profitability</div>
+    <h2>Start</h2>
+    <a href="#top">The short answer</a>
+    <a href="#framing">How to read this</a>
+    <h2>Today</h2>
+    <a href="#design">Unprofitable by design</a>
+    <a href="#money">Where the money goes</a>
+    <h2>The path</h2>
+    <a href="#avenues">Two avenues, one path</a>
+    <a href="#avenue1">1 · Deal directly with the MNOs</a>
+    <a href="#avenue2">2 · The treasury / float model</a>
+    <a href="#staged">Why they're one staged path</a>
+    <h2>The hard parts</h2>
+    <a href="#gate">The real gate: custody = licence</a>
+    <a href="#onnet">The on-net tension</a>
+    <a href="#wtp">The make-or-break number</a>
+    <h2>Next</h2>
+    <a href="#beta">What the beta must prove</a>
+    <a href="#confidence">Confidence &amp; open questions</a>
+  </nav>
+  <main>
+    <h1 id="top">The path to profitability</h1>
+    <div class="meta">Created 2026-07-01 · A plain-language map of how this venture goes from losing money on every transaction (on purpose) to making it. Captures the product owner's stated strategy and grounds each cost/regulatory claim in the existing research. <strong>Update (2026-07-01):</strong> primary-source regulatory research now revises this path's regulatory premises - see <a href="regulatory-landscape.html">Regulatory landscape &amp; the revised path</a>.</div>
+
+    <div class="lead">
+      <strong>The short answer:</strong> the MVP is <strong>not meant to be profitable</strong>. With no leverage yet, we rent interoperability rails (pawaPay, and the mobile networks underneath) and lose a little on every transaction. That's deliberate - the MVP buys us the one thing we can't rent: <strong>proof that merchants will adopt cross-network acceptance.</strong> Profit comes later, from cutting the fees we currently pay, along <strong>two avenues that are really one staged path</strong>: first negotiate directly with the mobile networks, and - the bigger lever - move from paying per transaction to <strong>holding float and net-settling</strong>. The second one unlocks margin, but it crosses a regulatory line the whole product has so far been built to avoid.
+    </div>
+
+    <div class="note"><strong>What this document is - and isn't.</strong> This is a <em>strategy and logic</em> note, not a research finding. Where it states a cost, a market share, or a licensing fact, that traces to a recorded finding and is tagged <span class="tag t-research">research</span>. Where it states what we <em>intend to do</em>, it's the product owner's call, tagged <span class="tag t-stance">stance</span>. Where the answer isn't known yet, it's tagged <span class="tag t-open">open</span>. Nothing here is a demand forecast - that track hasn't been run (see <a href="#wtp">the make-or-break number</a>).</div>
+
+    <!-- FRAMING -->
+    <h2 id="framing">How to read this</h2>
+    <p>It's tempting to treat "how do we make money" as a pricing switch we flip when we feel ready. It isn't. The costs we pay are set by our suppliers, and the only ways to lower them change <em>what kind of company we are</em> - in one case, changing it enough to need a licence. So the real question isn't "when do we add a margin," it's "which fee structure do we move to, and what does that structure require of us." This note walks that logic in plain language.</p>
+
+    <!-- UNPROFITABLE BY DESIGN -->
+    <h2 id="design">Where we are: unprofitable by design</h2>
+    <p>Right now the app is a <strong>pure pass-through</strong>: a customer pays, we route the money over rented rails, the merchant is paid, and we <strong>never hold the funds</strong>. We take <strong>no margin</strong> - the merchant's fee (the MDR) is set to exactly our cost, so we keep nothing, and on same-network ("on-net") payments we charge <strong>zero</strong>. <span class="tag t-research">research</span> (product model per <a href="../drc-pay/docs/adr/0003-pass-through-no-custody.md">ADR 0003</a>, <a href="../drc-pay/docs/adr/0007-pawapay-cost-is-an-expense.md">ADR 0007</a>, <a href="../drc-pay/docs/adr/0009-on-net-facilitate-and-record.md">ADR 0009</a>).</p>
+    <p>That is a choice, not an accident. The MVP is a <strong>proof of concept</strong> whose job is to prove merchants will use cross-network acceptance at all. We can't out-subsidise venture-funded players, so we don't try to buy growth; we run lean, sign up real vendors, and gather adoption and momentum. <span class="tag t-stance">stance</span> Only once that volume exists do we have anything to negotiate with, or anything to net.</p>
+
+    <!-- WHERE THE MONEY GOES -->
+    <h2 id="money">Where the money goes today</h2>
+    <p>Every cross-network payment is really <em>two</em> mobile-money operations behind the scenes: we collect from the customer's network, then pay out to the merchant's. We pay a fee on <strong>both</strong> legs, and those fees are the mobile networks' cut plus the rail's markup.</p>
+    <table>
+      <tr><th>What happens</th><th>Who we pay</th><th class="num">Rough cost</th></tr>
+      <tr><td>Collect from the customer's wallet</td><td>Customer's network (via pawaPay)</td><td class="num">~2.5–3.0%</td></tr>
+      <tr><td>Pay out to the merchant's wallet</td><td>Merchant's network (via pawaPay)</td><td class="num">~1.0–2.0%</td></tr>
+      <tr><td><strong>Round-trip, cross-network</strong></td><td><strong>pawaPay + networks</strong></td><td class="num"><strong>~3.5–5.0%</strong></td></tr>
+      <tr><td>Same-network (on-net)</td><td>No rail - customer pays merchant direct</td><td class="num">0% to us</td></tr>
+    </table>
+    <p class="src"><span class="tag t-research">research</span> Round-trip cost and per-network rates from <a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a>; the pass-through-no-margin booking from <a href="../drc-pay/docs/adr/0007-pawapay-cost-is-an-expense.md">ADR 0007</a>. A refunded payment is worse: it costs the collect fee <em>and</em> a refund fee (~4.5% dead loss) and earns nothing.</p>
+    <div class="note"><strong>The number that makes this hard:</strong> a comparable acquirer elsewhere (Flutterwave-style) charges merchants around <strong>2%</strong>, and cash charges <strong>0%</strong>. Our <em>cost floor</em> is 3.5–5%. So we cannot simply "add a margin on top" and stay competitive - we'd be pricing above rivals before we earn a cent. Profit has to come from <strong>lowering the 3.5–5%</strong>, not from stacking a fee on it. <span class="tag t-research">research</span> (<a href="03-reports/comparables-synthesis.md">comparables-synthesis.md</a>).</div>
+
+    <!-- TWO AVENUES -->
+    <h2 id="avenues">The path: two avenues, one destination</h2>
+    <p>There are two ways to cut that 3.5–5%. They look like alternatives but are better understood as <strong>two stages of the same climb</strong>. <span class="tag t-stance">stance</span></p>
+
+    <div class="card">
+      <div class="row"><h3 id="avenue1">Avenue 1 — Deal directly with the mobile networks</h3><span class="stage">Stage · progressive</span></div>
+      <div class="what">Cut out the rail's markup by negotiating interoperability straight with each MNO.</div>
+      <ul>
+        <li><strong>The idea:</strong> instead of paying pawaPay to reach Vodacom, Airtel, and Orange, we strike our own deal with each network for better terms. This can be <strong>progressive</strong> - bring one or two networks on directly while the others stay on pawaPay as a fallback, so we never have to boil the ocean.</li>
+        <li><strong>Why it lowers cost:</strong> we stop paying the rail's per-transaction margin on the legs we've taken direct, and a direct commercial relationship can beat the published rail rate at volume.</li>
+        <li><strong>What it requires:</strong> volume worth their attention, and a commercial/technical integration per network. An MNO gives better terms to someone already routing meaningful traffic - which is exactly why this can't be stage one from a standing start.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="row"><h3 id="avenue2">Avenue 2 — The treasury / float model</h3><span class="stage">Stage · bigger lever</span></div>
+      <div class="what">Hold a wallet per network, settle most payments internally, and use the rail only to rebalance.</div>
+      <ul>
+        <li><strong>The idea:</strong> keep a float (a working balance) in a wallet on <em>each</em> network. When a customer on Airtel pays a merchant on Orange, we credit the merchant out of our <em>Orange</em> float and take the customer's money into our <em>Airtel</em> float - no cross-network rail trip at all. We only call pawaPay occasionally to <strong>rebalance</strong> the floats when one runs low. Most transactions never touch the expensive round-trip. <span class="tag t-stance">stance</span> This is the <a href="../drc-pay/docs/DEVLOG.md">float-netting</a> idea.</li>
+        <li><strong>Why it lowers cost dramatically:</strong> we'd eat roughly the <strong>~1% single-network fee</strong> instead of the 3.5–5% round-trip, because netting cancels most of the cross-network movement. That gap is where a margin can finally live.</li>
+        <li><strong>What it requires:</strong> we would be <strong>holding customer and merchant funds</strong> in those float wallets - and that is custody. Custody needs regulatory approval (see the next section). It also needs real treasury operations: keeping every float funded, reconciled, and never overdrawn.</li>
+      </ul>
+    </div>
+
+    <!-- STAGED -->
+    <h2 id="staged">Why they're one staged path, not a fork</h2>
+    <p>The tempting reading is "pick Avenue 1 or Avenue 2." The more useful reading is that <strong>Avenue 2 is the leverage that makes Avenue 1 possible</strong>, and both sit downstream of the MVP's job. <span class="tag t-stance">stance</span></p>
+    <ol>
+      <li><strong>MVP (now):</strong> prove adoption. Lose a little per transaction, on purpose. No margin.</li>
+      <li><strong>Accumulate netted volume:</strong> as merchants adopt, the flow through the app grows. A treasury model <em>concentrates and nets</em> that flow, which both cuts fees and makes us visibly important to each network.</li>
+      <li><strong>Now Avenue 1 is real:</strong> a network negotiates better terms with a partner already moving serious, netted volume through it. The float model is the thing that earns us that seat at the table.</li>
+    </ol>
+    <p>So the honest sequence is: adoption first, then the treasury model as the fee-cutting engine, with direct MNO deals falling out of the leverage it creates - not two separate bets.</p>
+
+    <!-- THE GATE -->
+    <h2 id="gate">The real decision gate: the moment we hold money, we need a licence</h2>
+    <div class="note"><strong>This is the single most important line in the document.</strong> The whole current design - pass-through, never hold funds, on-net "facilitate &amp; record" - exists specifically to <em>avoid</em> being a custodian, because custody in the DRC triggers an <strong>Electronic Money Institution (EMI) licence</strong>: on the order of <strong>~$2.5M in paid-up capital</strong> and a <strong>6–18 month</strong> process, under the central bank (BCC). <span class="tag t-research">research</span> (<a href="02-findings/cross-cutting/kyc-and-onboarding.md">kyc-and-onboarding.md</a>; EMI capital/timeline via <a href="_status/progress.md">progress.md</a> / own-aggregator notes; the no-custody rationale in <a href="../drc-pay/docs/adr/0003-pass-through-no-custody.md">ADR 0003</a> and <a href="../drc-pay/docs/adr/0009-on-net-facilitate-and-record.md">ADR 0009</a>.)</div>
+    <p>The treasury model in Avenue 2 <em>is</em> holding money. So it doesn't just "need more regulatory approval" as a footnote - it turns us into a <strong>different company</strong>: licensed, capitalised, custodial, with the compliance load (KYC, AML reporting, PEP/sanctions screening, records retention) that comes with it. <span class="tag t-research">research</span> (AML obligations in <a href="02-findings/cross-cutting/kyc-and-onboarding.md">kyc-and-onboarding.md</a>.)</p>
+    <p>That is <em>not</em> an argument against Avenue 2. It may be the only route to durable margin. But it reframes the decision: the question is not "when do we turn on profit," it's <strong>"when do we commit to becoming a licensed EMI"</strong> - a capital-raising, legal, and operational milestone that should be named and planned as such, not stumbled into. <span class="tag t-stance">stance</span></p>
+    <div class="note"><strong>Before either avenue: engage DRC counsel.</strong> Even the <em>current</em> pass-through position rests on an <em>inference</em> that a thin wrapper inherits the licensed rail's regulatory posture - the best available (secondary) source actually says unlicensed foreign operators must partner with a licensed local entity. No BCC primary document has been read and no counsel engaged. This is the corpus's own #1 open flag. <span class="tag t-open">open</span> (<a href="03-reports/recommendation.md">recommendation.md</a>, <a href="03-reports/feasibility-summary.md">feasibility-summary.md</a>.)</div>
+
+    <!-- ON-NET TENSION -->
+    <h2 id="onnet">The on-net tension we have to resolve</h2>
+    <p>Today, same-network payments are <strong>free and non-custodial</strong>: the customer pays the merchant directly on the operator, and we just record and confirm it. That's the right call under a pass-through model. But it collides with the treasury model. <span class="tag t-research">research</span> (design per <a href="../drc-pay/docs/adr/0009-on-net-facilitate-and-record.md">ADR 0009</a>; on-net volume share reasoning in <a href="competitor-landscape.html">competitor-landscape.html</a> and the device/multi-SIM findings.)</p>
+    <ul>
+      <li><strong>On-net is a large slice of volume</strong> - roughly a third-plus of customer/merchant pairs are same-network, and higher in practice because DRC users carry multiple SIMs and can <em>choose</em> to pay on-net.</li>
+      <li><strong>Under pass-through, free on-net is fine</strong> - it's a feature, it costs us nothing, and it wins merchants.</li>
+      <li><strong>Under a treasury model, free on-net is a leak</strong> - that same volume is exactly what we'd want flowing through our float to net against cross-network payments. Giving it away for free forfeits the netting benefit and the margin.</li>
+    </ul>
+    <div class="us"><strong>The choice to make explicit:</strong> is on-net a <em>permanent free facilitation layer</em> (a loss-leader that drives adoption and, later, subscription value), or is it the <em>wedge that eventually moves into our wallet</em> once we're a licensed treasury operator? Both are defensible. But the two candidate futures pull the on-net flow in opposite directions, so the answer cascades into the whole product - and it should be decided on purpose, not left to drift.</div>
+
+    <!-- WTP -->
+    <h2 id="wtp">The make-or-break number: will merchants pay?</h2>
+    <p>Everything above assumes that once our fees drop, there's a spread merchants will bear - whether as a per-transaction margin or a flat monthly subscription. <strong>We have no evidence for that number.</strong> Merchant willingness-to-pay in the DRC was never researched; quantitative demand and market sizing were deliberately out of scope for the research track. <span class="tag t-open">open</span> (scope note in <a href="README.md">the research README</a>; the corpus is supply-side by design.)</p>
+    <p>This is the hinge the whole plan turns on, and it's the one thing the beta can actually measure. Two sub-questions:</p>
+    <ul>
+      <li><strong>Margin model:</strong> will a merchant absorb, say, a 5–7% MDR when a rival benchmark is ~2% and cash is free - and when the customer has a documented ~1% direct off-net transfer they could use to bypass us entirely? <span class="tag t-open">open</span></li>
+      <li><strong>Subscription model:</strong> will an informal DRC merchant pay a flat monthly fee (the Paytm-Soundbox pattern) instead of a per-transaction cut? There's no DRC precedent recorded either way; it may only work for the formal/gas-station segment, which caps the reachable market. <span class="tag t-open">open</span> (comparable in <a href="03-reports/comparables-synthesis.md">comparables-synthesis.md</a>.)</li>
+    </ul>
+
+    <!-- BETA -->
+    <h2 id="beta">What the beta must prove (so this plan can proceed)</h2>
+    <p>The MVP isn't just a demo - it's the instrument that turns the open questions above into data. To be worth the regulatory climb, the beta should come back with: <span class="tag t-stance">stance</span></p>
+    <ol>
+      <li><strong>Adoption is real</strong> - merchants keep using cross-network acceptance after the novelty wears off.</li>
+      <li><strong>The on-net vs cross-network mix</strong>, measured from day one - this quantifies both the cannibalisation risk and the future netting opportunity. (The app already tags each payment as on-net or routed.)</li>
+      <li><strong>A real willingness-to-pay signal</strong> - put an actual price (an MDR and/or a subscription) in front of the beta merchants and watch what they do, before building anything more.</li>
+      <li><strong>A legal read</strong>, in parallel - DRC counsel on the pass-through position now and the EMI path for Avenue 2, so the treasury decision is made with facts, not inference.</li>
+    </ol>
+    <div class="us"><strong>Bottom line.</strong> Profitability isn't a switch; it's a climb. Stay unprofitable and lean through the MVP to earn adoption. Use the treasury/float model as the engine that cuts fees and, in doing so, earns the leverage to negotiate directly with the networks. Treat the jump to holding money as what it really is - becoming a licensed EMI - and gate it on two things the beta and a lawyer can tell us: <strong>that merchants will pay</strong>, and <strong>that the licence path is real and affordable.</strong></div>
+
+    <!-- CONFIDENCE -->
+    <h2 id="confidence">Confidence &amp; open questions</h2>
+    <ul>
+      <li><strong>Cost structure (3.5–5% round-trip; ~1% single-network)</strong> - <strong>High/Medium.</strong> From <a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a> (pawaPay published rates; some network specifics Medium). The treasury model's "~1% eaten" is an <em>estimate</em> contingent on how much netting actually cancels - unmodelled. <span class="tag t-open">open</span></li>
+      <li><strong>EMI licence (~$2.5M capital, 6–18 months)</strong> - <strong>Medium.</strong> Secondary sources; no BCC primary document read. Whether a pass-through wrapper avoids it, and whether a foreign operator may run without a local licensed partner, are <strong>unresolved and existential.</strong> <span class="tag t-open">open</span></li>
+      <li><strong>Merchant willingness to pay</strong> - <strong>None.</strong> Not researched; explicitly out of the research scope. The single biggest gap under this whole plan. <span class="tag t-open">open</span></li>
+      <li><strong>On-net share of volume</strong> - <strong>Medium (reasoned, not measured).</strong> Inferred from network shares and multi-SIM behaviour; the beta should measure it directly. <span class="tag t-open">open</span></li>
+      <li><strong>Direct-MNO terms (Avenue 1)</strong> - <strong>None.</strong> We have no quotes or signals on what a network would actually offer; it depends on volume we don't yet have. <span class="tag t-open">open</span></li>
+      <li><strong>Supplier risk</strong> - the rail (pawaPay) sets our cost floor, sees our volume, and could offer the merchant product itself; that pressure is the strongest reason to pursue Avenue 2. <span class="tag t-research">research</span> (<a href="competitor-landscape.html">competitor-landscape.html</a>.)</li>
+    </ul>
+    <p class="src">This note synthesises the product owner's stated monetisation strategy (2026-07-01) with existing findings. Strategy claims are the owner's decision; cost/regulatory claims trace to the cited findings; nothing here is a demand forecast. Related: <a href="03-reports/recommendation.md">recommendation.md</a> · <a href="03-reports/comparables-synthesis.md">comparables-synthesis.md</a> · <a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a> · <a href="02-findings/cross-cutting/kyc-and-onboarding.md">kyc-and-onboarding.md</a> · <a href="competitor-landscape.html">competitor-landscape.html</a>.</p>
+
+  </main>
+</div>
+</body>
+</html>

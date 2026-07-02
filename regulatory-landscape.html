@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRC Payment App - Regulatory Landscape &amp; the Revised Path</title>
+<style>
+  :root{--bg:#fff;--bg-alt:#f7f7f5;--text:#1a1a1a;--soft:#555;--border:#e0e0dc;--accent:#1d3557;--accent-soft:#457b9d;--link:#0a4f8c;--coral:#FF6B5B;--cream:#FFFCF8;--good:#166534;--mid:#92400e;--low:#991b1b;--warn:#b45309;--code:#f1ede2;}
+  *{box-sizing:border-box;} html{scroll-behavior:smooth;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;color:var(--text);background:var(--bg);margin:0;line-height:1.55;font-size:15px;}
+  .layout{display:grid;grid-template-columns:250px 1fr;min-height:100vh;}
+  nav.side{background:var(--bg-alt);border-right:1px solid var(--border);padding:28px 22px;position:sticky;top:0;height:100vh;overflow-y:auto;font-size:13.5px;}
+  nav.side .t{font-weight:700;font-size:15px;color:var(--accent);}
+  nav.side .s{font-size:12px;color:var(--soft);margin-bottom:16px;}
+  nav.side h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);margin:18px 0 6px;font-weight:600;}
+  nav.side a{display:block;padding:4px 0;color:var(--accent);text-decoration:none;}
+  nav.side a:hover{text-decoration:underline;}
+  main{padding:38px 56px 90px;max-width:1000px;}
+  h1{font-size:28px;margin:0 0 6px;color:var(--accent);}
+  h2{font-size:21px;color:var(--accent);margin:40px 0 8px;padding-top:12px;border-top:2px solid var(--border);}
+  h3{font-size:16px;color:var(--accent);margin:22px 0 6px;}
+  p{margin:6px 0 12px;}
+  a{color:var(--link);text-decoration:none;border-bottom:1px solid #b3cce6;} a:hover{background:#eef4fa;}
+  code,.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;background:var(--code);padding:1px 5px;border-radius:3px;}
+  ul{margin:4px 0 10px;padding-left:20px;} li{margin:5px 0;}
+  ol{margin:4px 0 10px;padding-left:22px;} ol li{margin:7px 0;}
+  table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border:1px solid var(--border);vertical-align:top;} th{background:var(--bg-alt);font-weight:600;} tr:nth-child(even) td{background:#fafaf7;}
+  .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .meta{font-size:13px;color:var(--soft);margin:4px 0 16px;}
+  .lead{font-size:16px;background:#eef4fa;border-left:4px solid var(--accent-soft);padding:14px 18px;margin:14px 0 20px;border-radius:0 4px 4px 0;}
+  .note{background:#fff8e6;border-left:4px solid var(--warn);padding:11px 15px;margin:14px 0;font-size:14px;border-radius:0 4px 4px 0;}
+  .us{background:#fff2f0;border-left:4px solid var(--coral);padding:14px 18px;margin:16px 0;border-radius:0 4px 4px 0;}
+  .card{border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:14px 0;background:#fff;}
+  .card h3{margin-top:0;}
+  .card .what{font-size:13.5px;color:var(--soft);margin:-2px 0 10px;}
+  .stage{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:2px 9px;border-radius:10px;white-space:nowrap;background:#e6edf5;color:var(--accent);}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .src{font-size:12.5px;color:var(--soft);margin-top:8px;}
+  .tag{font-size:11px;font-weight:600;padding:1px 7px;border-radius:4px;}
+  .t-stance{background:#fde7e3;color:var(--low);} .t-research{background:#dcfce7;color:var(--good);} .t-open{background:#fef3c7;color:var(--warn);}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin:10px 0 6px;}
+  @media(max-width:900px){.layout{grid-template-columns:1fr;}nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--border);}main{padding:24px;}}
+  @media print{nav.side{display:none;}main{padding:0;max-width:100%;}.layout{grid-template-columns:1fr;}a{border-bottom:none;color:var(--text);}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side">
+    <div class="t">DRC Payment App</div>
+    <div class="s">Regulatory landscape &amp; the revised path</div>
+    <h2>Start</h2>
+    <a href="#top">The short answer</a>
+    <a href="#framing">How to read this</a>
+    <h2>What changed</h2>
+    <a href="#mandate">The interoperability mandate</a>
+    <a href="#mosolo">Mosolo &amp; GMIC</a>
+    <a href="#implications">Why this matters to us</a>
+    <h2>The ladder</h2>
+    <a href="#ladder">Three rungs of authorization</a>
+    <a href="#rung1">1 &middot; Aggregator authorization</a>
+    <a href="#rung2">2 &middot; Payment institution</a>
+    <a href="#rung3">3 &middot; EMI licence</a>
+    <h2>The revised path</h2>
+    <a href="#avenues">What happens to the two avenues</a>
+    <a href="#plan">The staged plan, updated</a>
+    <a href="#hoops">The hoops, compared</a>
+    <h2>Next</h2>
+    <a href="#next">What to do next</a>
+    <a href="#confidence">Confidence &amp; open questions</a>
+  </nav>
+  <main>
+    <h1 id="top">Regulatory landscape &amp; the revised path</h1>
+    <div class="meta">Created 2026-07-01 &middot; A companion to <a href="path_to_profitability.html">the path to profitability</a>. That note asked "which fee structure do we move to, and what does that structure require of us?" This note answers the "what does it require" half from primary sources - the actual central-bank instructions - and revises the path accordingly.</div>
+
+    <div class="lead">
+      <strong>The short answer:</strong> the regulatory ground shifted in 2024-2025 and the research corpus missed it. The central bank (BCC) has made cross-network interoperability <strong>mandatory</strong>, routed through a state-run national switch (<strong>"Mosolo"</strong>, launched May 2025) that clears transactions on a <strong>multilateral net basis</strong> - i.e. the netting our treasury/float idea wanted to build privately is being delivered centrally, to everyone, without custody. Meanwhile the licence we feared (the $2.5M EMI) turns out to be the <em>top</em> rung of a ladder that has two lighter rungs below it - and the bottom rung, the <strong>BCC "payment aggregator" authorization</strong>, is a document dossier with a 60-day statutory clock and <strong>no stated capital minimum</strong>. pawaPay itself operates in the DRC on exactly that authorization. <strong>The fewest-hoops path is therefore: aggregator authorization + direct MNO deals + ride the national switch</strong> - and the EMI licence moves from "the bigger lever" to "probably never."
+    </div>
+
+    <div class="note"><strong>What this document is - and isn't.</strong> Like its companion, this is a strategy and logic note. Claims traced to a recorded finding are tagged <span class="tag t-research">research</span> (here, most trace to two new findings files built from BCC primary documents: <a href="02-findings/cross-cutting/national-switch-interoperability.md">national-switch-interoperability.md</a> and <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>). Product-owner calls are tagged <span class="tag t-stance">stance</span>. Unknowns are tagged <span class="tag t-open">open</span>. Nothing here is legal advice - the explicit next step is DRC counsel.</div>
+
+    <!-- FRAMING -->
+    <h2 id="framing">How to read this</h2>
+    <p>The path-to-profitability note reasoned from the world as the June-2026 research corpus described it: a fragmented market where interoperability is scarce (that scarcity being our product), and where the only way to hold and net funds is to become a $2.5M-capitalised Electronic Money Institution. Both premises were true when the underlying sources were written. Neither is quite true now. This note walks what changed, then re-derives the path with the fewest and most minor regulatory hoops.</p>
+
+    <!-- MANDATE -->
+    <h2 id="mandate">What changed, part 1: interoperability became the law</h2>
+    <p><strong>BCC Instruction n&deg;58</strong> (signed 4 Sep 2024, in force 4 Mar 2025) is the document that changes the game. It was read in full for this note. What it says: <span class="tag t-research">research</span> (<a href="02-findings/cross-cutting/national-switch-interoperability.md">national-switch-interoperability.md</a>, rg-001)</p>
+    <ul>
+      <li><strong>Every electronic payment instrument must be accepted by every covered institution</strong> (art. 4) - and the covered institutions explicitly include banks, e-money issuers (the MNO wallets), monétique operators, <strong>and "les agrégateurs"</strong> (art. 2).</li>
+      <li><strong>Everyone must connect to the Switch Monétique National</strong> (art. 6). Not "may" - must.</li>
+      <li><strong>Transactions routed by the switch are cleared on a multilateral net basis</strong> and settled at the central bank (arts. 11-12). Participants without a central-bank settlement account participate <em>indirectly</em> through one that has it.</li>
+      <li><strong>Fees are negotiated</strong> between the switch manager and participants (arts. 14-15) - nothing is published yet. Art. 16 sets who pays: on merchant transactions, the acquirer pays and charges the merchant; on transfers between institutions, the sender's institution pays.</li>
+    </ul>
+    <div class="us"><strong>Read that middle bullet again.</strong> Multilateral net clearing of cross-network flows is <em>exactly</em> what the treasury/float model in <a href="path_to_profitability.html#avenue2">Avenue 2</a> was designed to do privately - hold a balance per network, cancel offsetting flows, move only the net. The regulator is building that as shared national infrastructure, for all participants, with settlement at the central bank. The netting benefit no longer requires us to hold anyone's money.</div>
+
+    <!-- MOSOLO -->
+    <h2 id="mosolo">What changed, part 2: Mosolo and GMIC</h2>
+    <p>The switch is not a paper plan. <span class="tag t-research">research</span> (news sources rg-004 to rg-008; see the finding for caveats)</p>
+    <ul>
+      <li>The Prime Minister announced the launch of the switch, named <strong>"Mosolo"</strong>, on 2 May 2025 - with press coverage explicitly promising that <strong>an M-Pesa user can transfer to an Orange Money subscriber and vice versa</strong>, for roughly 30 million mobile money users.</li>
+      <li>The interbank body that will run it - the <strong>GMIC</strong> (Groupement Monétique Interbancaire du Congo), a co-owned economic-interest group with <strong>IFC (World Bank Group) backing</strong> - was reported in January 2026 as launching by <strong>end-March 2026</strong>, covering instant transfers across banks, microfinance institutions, and mobile money.</li>
+      <li>Card-side integrations are already live (Multipay connected to the switch for Mosolo card transactions), so this is operating infrastructure, not vapourware.</li>
+    </ul>
+    <div class="note"><strong>Two honest caveats.</strong> First, whether GMIC actually launched on its end-March-2026 target could not be confirmed from public sources - everything after January 2026 is a plan, not an observed fact. <span class="tag t-open">open</span> Second, the switch's <em>transaction pricing</em> is the load-bearing unknown: Instruction 58 leaves it to negotiation and nothing is published. A regional analogy (GIM-UEMOA caps interoperable withdrawals at a flat ~500 FCFA) suggests switches price flat and low - but that is an analogy, not a DRC fact. <span class="tag t-open">open</span></div>
+
+    <!-- IMPLICATIONS -->
+    <h2 id="implications">Why this matters to us: one threat, one gift</h2>
+    <p><strong>The threat.</strong> The MVP's core wedge is cross-network acceptance. Mosolo's explicit purpose is to make cross-network transfers native for every mobile money user. If a customer on Airtel can pay a merchant on Orange frictionlessly through the operators' own menus, "we bridge the networks" stops being a differentiator. The app's durable value has to live in what the switch will <em>not</em> do: the merchant layer - a till that works across networks, instant confirmation, records, reconciliation, refunds, and eventually credit-readiness data. The web-first merchant console direction is already aligned with this; the strategy should now say it out loud: <strong>the moat is merchant tooling, not routing</strong>. <span class="tag t-stance">stance</span></p>
+    <p><strong>The gift.</strong> Our 3.5-5% cost floor exists because a cross-network payment today is two full aggregator legs (<a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a>). Once mobile money flows route through the national switch, the cross-network leg should cost an MNO fee plus a switch commission instead - and as an explicitly covered institution, an authorized aggregator is both <em>obliged and entitled</em> to connect. The structure of a much lower cost floor is being built for us; what's unknown is the price of admission. <span class="tag t-research">research</span> / <span class="tag t-open">open</span></p>
+
+    <!-- LADDER -->
+    <h2 id="ladder">What changed, part 3: the licence is a ladder, not a wall</h2>
+    <p>The path-to-profitability note treated regulation as binary: pass-through (no licence) or custody (EMI, $2.5M, 6-18 months). Reading the primary texts shows <strong>three rungs</strong>, and the corpus only knew about the top one. <span class="tag t-research">research</span> (<a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>)</p>
+
+    <div class="card">
+      <div class="row"><h3 id="rung1">Rung 1 - Payment aggregator authorization</h3><span class="stage">Light &middot; the one we need</span></div>
+      <div class="what">An <em>autorisation</em> as a "connected services provider" under BCC Instruction n&deg;42 (2020), art. 9.</div>
+      <ul>
+        <li><strong>What it takes:</strong> a locally incorporated company (OHADA SARL) and a document dossier - statutes, shareholders and directors (with good-character evidence), certified or projected financials, business plan, technical certificates, standard SLA, technical specs, settlement and risk procedures. <strong>No minimum capital appears in the connected-services provisions.</strong> The law behind it (Loi 18/019, arts. 108-110) gives the BCC a <strong>60-day decision clock</strong> from a complete dossier.</li>
+        <li><strong>Who has it:</strong> the BCC publishes the registry. <strong>pawaPay operates in the DRC as "Kerry Payments SARLU" on this exact authorization</strong> - not an EMI licence - alongside MFS Africa, Maxicash, FreshPay, CinetPay, Multipay and dozens more. Paymetrust got the same approval in <strong>July 2025</strong>, so the route is being actively granted.</li>
+        <li><strong>What it proves:</strong> this authorization is sufficient to run multi-MNO collect/payout rails commercially in the DRC. It is the gateway to direct MNO deals, and it is the category Instruction 58 names for switch connection.</li>
+      </ul>
+      <div class="src"><span class="tag t-research">research</span> Instruction n&deg;42 arts. 1, 7, 9 (read page-by-page); BCC aggregator registry; Loi 18/019 arts. 108-110; Paymetrust approval coverage. All in <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>.</div>
+    </div>
+
+    <div class="card">
+      <div class="row"><h3 id="rung2">Rung 2 - Payment institution (établissement de paiement)</h3><span class="stage">Middle &middot; the bridge, if needed</span></div>
+      <div class="what">An <em>agrément</em> as a société financière under the 2022 banking law (Loi 22/069, art. 168) and BCC Instruction n&deg;53.</div>
+      <ul>
+        <li><strong>What it is:</strong> the 2022 law created "payment institutions" as a category of financial company, <strong>with EMIs as a subset</strong> - a European-style ladder the corpus never saw. This is the plausible home for holding funds <em>in transit</em> (acquiring-style custody, merchant settlement) without issuing stored value.</li>
+        <li><strong>What it takes:</strong> a locally incorporated Congolese company, a notarized dossier, paid-up capital deposited at a local bank "at least equal to the minimum fixed by the BCC," and a <strong>90-day decision clock</strong>.</li>
+        <li><strong>The missing number:</strong> the instruction fixing the capital minimum for non-EMI payment institutions was <strong>not found</strong> (bank capital is $50M, microfinance $50k-$300k, EMI $2.5M; nothing located in between). <strong>If this figure is modest, the treasury decision stops being a $2.5M decision.</strong> This is the #1 question for counsel. <span class="tag t-open">open</span></li>
+      </ul>
+      <div class="src"><span class="tag t-research">research</span> Instruction n&deg;53 arts. 1-11 (read page-by-page); Loi 22/069 category structure. See <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>.</div>
+    </div>
+
+    <div class="card">
+      <div class="row"><h3 id="rung3">Rung 3 - EMI licence</h3><span class="stage">Heavy &middot; probably never</span></div>
+      <div class="what">The custody licence the path-to-profitability note treated as Avenue 2's price of admission.</div>
+      <ul>
+        <li><strong>The $2.5M paid-up capital figure is confirmed</strong> by a second independent source, upgrading the corpus's confidence in it.</li>
+        <li><strong>The sobering detail:</strong> the only four licensed EMIs in the DRC are Vodacash, Airtel Money RDC, Orange Money RDC, and Afrimobile Money - <strong>all MNO subsidiaries</strong>. There is no independent-startup-EMI precedent. The route is heavier in practice than on paper.</li>
+        <li><strong>And its payoff shrank:</strong> the main thing the licence bought us (private netting of cross-network flows) is now delivered by the national switch without custody. What remains unique to the EMI is float income and FX spread - real, but a different, later business.</li>
+      </ul>
+      <div class="src"><span class="tag t-research">research</span> rg-012 corroborating mp-010/xo-005; see <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>.</div>
+    </div>
+
+    <div class="note"><strong>An uncomfortable implication for today, not just tomorrow.</strong> The current design rests on the inference that a thin pass-through wrapper inherits pawaPay's regulatory posture. But the BCC authorizes aggregators and even "e-commerce platform managers" <em>by name</em>, Instruction 42 requires operators to verify their local partners hold BCC authorization, and our merchant-facing app plausibly fits the aggregator definition itself. The corpus's #1 legal flag was right to worry - but the answer it feared (EMI-or-partner) turns out to be a small hoop instead: <strong>the authorization we may already need is the light one, and it's the same one every path forward needs anyway</strong>. Whether the beta needs it <em>before</em> commercial launch is a counsel question. <span class="tag t-open">open</span></div>
+
+    <!-- AVENUES -->
+    <h2 id="avenues">What happens to the two avenues</h2>
+    <p>The path-to-profitability note argued the two avenues were one staged path, with the treasury model (Avenue 2) as the leverage that makes direct MNO deals (Avenue 1) possible. The primary sources flip that logic twice over. <span class="tag t-stance">stance</span></p>
+    <ul>
+      <li><strong>On hoops, the order was backwards.</strong> Avenue 1 needs only the Rung-1 authorization pawaPay itself holds. Avenue 2 (as originally conceived) needs the heaviest licence in the market, one no independent player has ever obtained.</li>
+      <li><strong>On incentives, the leverage story was shaky.</strong> Private float-netting removes cross-network transaction revenue from the MNOs. From their side it looks like fee circumvention - and the float-netting brainstorm itself noted that MNO anti-money-laundering systems flag and freeze wallets behaving like processors. A player netting at scale without a licence is not a partner they court; it's an account they freeze. Now that the regulator runs official netting infrastructure, tolerance for a private workaround will be lower, not higher.</li>
+      <li><strong>The on-net tension mostly dissolves.</strong> The companion note framed free on-net facilitation as a future "leak" from the treasury model. If switch participation replaces the treasury model, free on-net facilitation stays what it is today - a cheap merchant-acquisition feature that never touches custody - and can stay free permanently.</li>
+      <li><strong>The supplier-risk counterweight changes.</strong> The strongest argument for Avenue 2 was that pawaPay sets our cost floor, sees our volume, and could compete with us. That risk is real and remains - but the counterweight is now the public switch (a neutral, mandated alternative route), not a private treasury.</li>
+    </ul>
+
+    <!-- PLAN -->
+    <h2 id="plan">The staged plan, updated</h2>
+    <ol>
+      <li><strong>MVP (unchanged):</strong> prove adoption on rented rails, unprofitable on purpose. Everything the beta was going to measure - adoption, the on-net/cross-net mix, willingness to pay - it should still measure. <span class="tag t-stance">stance</span></li>
+      <li><strong>Stage 1 - become a real DRC player (light hoops):</strong> incorporate the DRC subsidiary, obtain the <strong>aggregator authorization</strong> (60-day clock), and open direct merchant/disbursement integrations with M-Pesa and Airtel (82% of the market) with pawaPay as fallback. This kills pawaPay's ~2% round-trip margin - the only part of the fee stack the old Avenue 1 could ever remove. <span class="tag t-research">research</span> (fee decomposition per <a href="02-findings/cross-cutting/own-aggregator.md">own-aggregator.md</a>)</li>
+      <li><strong>Stage 2 - ride the switch:</strong> connect to Mosolo/GMIC (mandatory for an authorized aggregator anyway), settling indirectly through a partner bank. The cross-network leg drops from two full legs to an MNO fee plus a switch commission, and the netting happens centrally. The economics hinge on switch pricing - the new make-or-break number alongside merchant willingness to pay. <span class="tag t-open">open</span></li>
+      <li><strong>Stage 3 - custody, only if the data demands it:</strong> if float income / FX spread / instant settlement become the business, take the <strong>payment-institution agrément</strong> (if counsel confirms its capital is modest) - not the EMI licence, unless issuing stored value ever becomes the product. This remains the "different company" decision the companion note described, but with a potentially much lower price tag. <span class="tag t-open">open</span></li>
+    </ol>
+
+    <!-- HOOPS -->
+    <h2 id="hoops">The hoops, compared</h2>
+    <table>
+      <tr><th>Path</th><th>What it lets us do</th><th>The hoops</th><th>Verdict</th></tr>
+      <tr>
+        <td><strong>A. Aggregator authorization + direct MNO deals + switch</strong></td>
+        <td>Kill pawaPay's ~2% margin; acquire for merchants; route cross-net legs via Mosolo at switch pricing</td>
+        <td>DRC subsidiary; document dossier; <strong>60-day</strong> BCC clock; <strong>no stated capital minimum</strong>; then per-MNO commercial onboarding; GMIC connection (mandatory anyway)</td>
+        <td><strong>The path.</strong> Light, proven (pawaPay, Paymetrust), and required regardless</td>
+      </tr>
+      <tr>
+        <td><strong>B. Payment-institution agrément</strong></td>
+        <td>Potentially hold funds in transit / settle merchants ourselves without being an EMI</td>
+        <td>Local company; notarized dossier; <strong>90-day</strong> clock; capital fixed by BCC (<strong>amount unknown</strong>); full AML/compliance load</td>
+        <td><strong>The bridge, if counsel confirms the capital is modest.</strong> Only needed to touch funds</td>
+      </tr>
+      <tr>
+        <td><strong>C. EMI licence</strong></td>
+        <td>Issue stored value; hold float; earn float income and FX spread</td>
+        <td><strong>~$2.5M paid-up capital</strong>; 6-18 months; no independent precedent (all 4 EMIs are MNO subsidiaries); custodial compliance</td>
+        <td><strong>Defer indefinitely.</strong> Its main payoff (private netting) is now provided by the switch</td>
+      </tr>
+    </table>
+    <p class="src"><span class="tag t-research">research</span> Rungs and hoops from <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a>; switch mechanics from <a href="02-findings/cross-cutting/national-switch-interoperability.md">national-switch-interoperability.md</a>.</p>
+
+    <!-- NEXT -->
+    <h2 id="next">What to do next, in order</h2>
+    <ol>
+      <li><strong>Verify GMIC/Mosolo status and pricing.</strong> Did GMIC launch on its end-March-2026 target? What are the participation categories and fees for an aggregator? This is now the single highest-value research question, ahead of MNO rate quotes. The BCC's payment-systems surveillance division is the named contact point. <span class="tag t-open">open</span></li>
+      <li><strong>Engage DRC counsel with three specific questions</strong>, not a general review: (a) does the current merchant-facing app on pawaPay rails already require the aggregator authorization; (b) what minimum capital has the BCC fixed for non-EMI payment institutions; (c) what are GMIC participation requirements for a non-bank. <span class="tag t-open">open</span></li>
+      <li><strong>Plan the DRC subsidiary now.</strong> Every path, including the current one, points at a locally incorporated company. It is a knowable, bounded cost, and it starts every clock. <span class="tag t-stance">stance</span></li>
+      <li><strong>Keep the beta's measurement goals exactly as written.</strong> Adoption, the on-net/cross-net mix, and a real willingness-to-pay signal survive all of this unchanged - and willingness to pay remains the biggest unknown under the whole plan. <span class="tag t-open">open</span></li>
+      <li><strong>Update the strategy's language:</strong> the moat is merchant tooling, not routing; the two avenues become the three stages above; and the EMI moves from "the bigger lever" to "probably never." <span class="tag t-stance">stance</span></li>
+    </ol>
+
+    <!-- CONFIDENCE -->
+    <h2 id="confidence">Confidence &amp; open questions</h2>
+    <ul>
+      <li><strong>Instruction n&deg;58's text (mandate, covered institutions incl. aggregators, multilateral clearing, fee incidence)</strong> - High. Primary document, read in full. <span class="tag t-research">research</span></li>
+      <li><strong>Aggregator authorization regime (dossier, 60-day clock, no stated capital; pawaPay = Kerry Payments SARLU)</strong> - High. Primary instruction + regulator registry. <span class="tag t-research">research</span></li>
+      <li><strong>Payment-institution tier exists; local incorporation required; 90-day clock</strong> - High. Primary instruction. <strong>Its minimum capital</strong> - not found; the #1 counsel question. <span class="tag t-open">open</span></li>
+      <li><strong>EMI $2.5M</strong> - Medium-High (two independent sources; BCC's own Instruction 24 text still not directly read). <span class="tag t-research">research</span></li>
+      <li><strong>Mosolo launched May 2025; GMIC targeted end-March 2026</strong> - Medium (consistent multi-outlet news). <strong>GMIC's actual go-live status</strong> - unknown as of this writing. <span class="tag t-open">open</span></li>
+      <li><strong>Switch transaction pricing</strong> - None. Negotiated per Instruction 58, nothing public. The claim that switch routing beats the 3.5-5% two-leg cost is a strong structural inference, not a verified number. <span class="tag t-open">open</span></li>
+      <li><strong>Merchant willingness to pay</strong> - None. Unchanged from the companion note; still the hinge the whole plan turns on. <span class="tag t-open">open</span></li>
+    </ul>
+
+    <p class="src">This note synthesises primary-source regulatory research (2026-07-01) with the product owner's monetisation strategy. Every research claim traces to <a href="02-findings/cross-cutting/national-switch-interoperability.md">national-switch-interoperability.md</a> or <a href="02-findings/cross-cutting/licensing-categories.md">licensing-categories.md</a> (sources rg-001 to rg-014 in <a href="04-sources/sources.md">04-sources/sources.md</a>). Related: <a href="path_to_profitability.html">path_to_profitability.html</a> &middot; <a href="02-findings/cross-cutting/fees-and-costs.md">fees-and-costs.md</a> &middot; <a href="02-findings/cross-cutting/float-netting-model.md">float-netting-model.md</a> &middot; <a href="02-findings/cross-cutting/own-aggregator.md">own-aggregator.md</a> &middot; <a href="02-findings/cross-cutting/kyc-and-onboarding.md">kyc-and-onboarding.md</a>.</p>
+  </main>
+</div>
+</body>
+</html>
