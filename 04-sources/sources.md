@@ -256,3 +256,15 @@ Three parallel fact-checking agents re-verified the claims in the three HTML doc
 | vp-016 | BCC — live register of EMIs (exactly 4: Vodacash D.03/01111 30-Jul-2012; Airtel Money RDC D.03/0200 6-Feb-2012; Orange Money RDC D.03/0438 26-Mar-2012; Afrimobile Money D.03/1061 21-Sep-2015) | https://www.bcc.cd/surveillance-des-intermediaires-financiers/intermediaires-financiers-assujettis/etablissements-de-credit/societes-financieres/ee | primary (regulator register) | 2026-07-01 | high | regulatory-landscape.html, licensing-categories.md, path_to_profitability.html |
 | vp-017 | GIM-UEMOA — FAQ (interoperable ATM withdrawal max 500 FCFA TTC — a cap, applied as standard price) | https://www.gim-uemoa.org/fr/faq | primary | 2026-07-01 | high | national-switch-interoperability.md (regional proxy) |
 | vp-018 | Flutterwave — Ghana pricing page (local wallets/mobile money 2.0%; Kenya local ~2.9% via support pages → benchmark "2-3%") | https://flutterwave.com/gh/pricing | primary | 2026-07-01 | high | path_to_profitability.html |
+
+### FlexPay / FlexPaie (INFOSET) — closest DRC rival deep-dive (added 2026-07-03)
+
+Used in: `02-findings/comparables/flexpay.md`, competitor-landscape.html. Note: flexpay.cd 302-redirects to flexpaie.com since the Oct-2025 relaunch.
+
+| ID | Title | URL | Type | Date accessed | Reliability | Used in |
+|----|-------|-----|------|---------------|-------------|---------|
+| fp-001 | FlexPay — terms & conditions (INFOSET Sarl RCCM 14-B-2220; BCC autorisation GOUV/D25/00362 of 6 Apr 2020 under Instruction 42; "ne possède pas son propre portemonnaie électronique"; merchant code/QR; per-operator negotiated fees) | https://www.flexpay.cd/accueil/tc/ | primary | 2026-07-03 | high | flexpay.md |
+| fp-002 | FlexPaie — product site (payment pages 24/7, dashboard + mini-accounting, e-commerce API; targets e-commerce/churches/events/rent; M-Pesa/Airtel/Orange/Afrimoney + Visa/MC/Amex; 13 partners incl. Kin-Marché, Regideso, Monishop) | https://flexpaie.com/ | primary (self-reported) | 2026-07-03 | med-high | flexpay.md |
+| fp-003 | 7sur7.cd — FlexPaie launch, Kinshasa 30 Oct 2025 (Gabriel Zema, DG INFOSET GROUP; unified virtual terminal; instant transfer to chosen account) | https://7sur7.cd/2025/10/30/rdc-securisation-des-transactions-financieres-lancement-de-flexpaie-une-solution | secondary (news) | 2026-07-03 | med | flexpay.md |
+| fp-004 | David Kathoh (Medium) — FlexPay API integration guide (payer gets USSD push and enters operator PIN — no app; 4 networks; npm package + webhooks) | https://davidkathoh.medium.com/int%C3%A9grez-le-paiement-en-une-minute-dans-votre-application-avec-flexpay-649891d6448d | secondary (third-party developer) | 2026-07-03 | med | flexpay.md |
+| fp-005 | FlexPaie on Google Play (cd.infoset.flexpaie — 1K+ downloads, updated 2026-05-12, "virtual TPE", PCI-DSS, "powered by VISA") | https://play.google.com/store/apps/details?id=cd.infoset.flexpaie | primary (store listing) | 2026-07-03 | med-high | flexpay.md |

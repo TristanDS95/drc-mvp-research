@@ -3,7 +3,7 @@
 - **Topic / entity:** the three rungs of BCC authorization relevant to us - payment **aggregator** authorization, **payment institution** (établissement de paiement) agrément, and the **EMI** licence - with the hoops (capital, timeline, local entity) for each.
 - **Question it addresses:** What authorization does our app need at each stage of the cost-reduction path, and which path has the fewest / most minor regulatory hoops?
 - **Date researched:** 2026-07-01
-- **Overall confidence:** High for the aggregator authorization regime (primary instructions read); Medium for the payment-institution tier (primary read but capital amount not found); Medium-High for EMI capital (two independent sources).
+- **Overall confidence:** High for the aggregator authorization regime (primary instructions read); Medium for the payment-institution tier (primary read but capital amount not found); High for the four licensed EMIs (BCC's own register fetched directly, vp-016) but Medium-High for the EMI *capital* figure (secondary sources; Instruction n°24 text itself not read).
 
 ## Bottom line
 There is a **live, lightweight BCC authorization category that fits our app exactly**: the "agrégateur des systèmes de paiement," an **autorisation** (not a full agrément) under Instruction n°42, requiring a locally incorporated company and a document dossier but **no stated minimum capital**, with a **60-day statutory decision clock** under Loi 18/019.
@@ -43,7 +43,7 @@ Source: rg-011 (scanned BCC PDF; arts. 1-11 read page-by-page 2026-07-01). Instr
 ## Rung 3 - EMI licence (the custody licence)
 
 - **US$2.5M minimum paid-up capital** under BCC Instruction n°24, previously sourced from findevgateway/PayAtlas in [[kyc-and-onboarding]] and [[own-aggregator]], now **confirmed by an additional independent source** (rg-012: "un capital social minimum libéré en numéraire équivalent en CDF à 2.500.000 USD"). **Confidence upgraded to Medium-High.**
-- **The only four approved EMIs are the MNO subsidiaries:** Vodacash SA, Airtel Money RDC SA, Orange Money RDC SA, Afrimobile Money SA (rg-012). **No independent startup EMI precedent** - the route is even heavier in practice than on paper.
+- **The only four approved EMIs are the MNO subsidiaries:** Vodacash SA, Airtel Money RDC SA, Orange Money RDC SA, Afrimobile Money SA - now **confirmed directly against the BCC's own live EMI register** (vp-016, fetched 2026-07-01, with each entity's registration decision + date: Vodacash D.03/01111 2012-07-30; Airtel Money RDC D.03/0200 2012-02-06; Orange Money RDC D.03/0438 2012-03-26; Afrimobile Money D.03/1061 2015-09-21), not just the secondary source (rg-012). **No independent startup EMI precedent** - the route is even heavier in practice than on paper. **Confidence: High (primary regulator register).**
 - Under Loi 22/069 the EMI now sits inside the société financière/payment-institution framework (Instruction 53 applies to its agrément process).
 
 ## What this changes in our standing assessments
@@ -53,9 +53,9 @@ Source: rg-011 (scanned BCC PDF; arts. 1-11 read page-by-page 2026-07-01). Instr
 3. **Our current model may already need the autorisation.** Instruction 42 requires operators of monétique systems to verify that local connected-services providers hold BCC authorization before contracting them; a merchant-facing app aggregating MNO payments plausibly **is** an aggregator (or e-commerce platform manager) in the BCC's taxonomy. Treat "do we need it for the beta?" as a counsel question, and the authorization itself as table stakes rather than a future decision. **Inference from primary texts; not legal advice.**
 
 ## Confidence summary
-- **High:** Instruction 42's aggregator definition, autorisation dossier, 60-day clock; Loi 18/019 arts. 108-110; the BCC aggregator registry contents (pawaPay = Kerry Payments SARLU); Instruction 53's scope, local-incorporation requirement, dossier, 90-day clock.
+- **High:** Instruction 42's aggregator definition, autorisation dossier, 60-day clock; Loi 18/019 arts. 108-110; the BCC aggregator registry contents (pawaPay = Kerry Payments SARLU); Instruction 53's scope, local-incorporation requirement, dossier, 90-day clock; **the four licensed EMIs and their registration decisions (BCC's own EMI register fetched directly, vp-016).**
 - **Medium-High:** EMI capital US$2.5M (two independent secondary sources quoting Instruction 24; BCC primary text of Instr. 24 itself still not directly read - bcc.cd TLS issues).
-- **Medium:** Paymetrust approval details (single news outlet).
+- **Medium:** Paymetrust approval details (two news outlets, rg-010 + vp-015; not yet on the BCC's published aggregator register).
 - **Not found / open:** minimum capital for non-EMI établissements de paiement; whether the current pawaPay-fronted merchant app requires the autorisation pre-beta; aggregator economic-participation terms in GMIC.
 
 ## Sources
@@ -67,5 +67,7 @@ Source: rg-011 (scanned BCC PDF; arts. 1-11 read page-by-page 2026-07-01). Instr
 - rg-012: Me Maxence Kiyana - "La monnaie électronique en RDC" (EMI capital $2.5M; the 4 approved EMIs) - `https://maxencekiyana.com/la-monnaie-electronique-en-rdc/`
 - rg-013: avocats.cd - "Les agrégateurs des systèmes de paiement en RDC" (secondary overview of Instruction 42 aggregator regime) - `https://avocats.cd/blog/les-agregateurs-des-systemes-de-paiement-en-rdc`
 - rg-014: village-justice - "Le cadre légal et règlementaire des activités financières en RDC" (Loi 22/069 category structure) - `https://www.village-justice.com/articles/cadre-legal-reglementaire-des-activites-financieres-rdc,46461.html`
+- vp-015: Financial Afrik - Paymetrust BCC agrément as prestataire de services connexes/agrégateur (4 Jul 2025; second independent outlet) - `https://www.financialafrik.com/2025/09/22/paymetrust-consolide-sa-presence-en-afrique-avec-un-agrement-dagregateur-en-republique-democratique-du-congo/`
+- vp-016: BCC - live register of EMIs (exactly 4: Vodacash D.03/01111 2012-07-30; Airtel Money RDC D.03/0200 2012-02-06; Orange Money RDC D.03/0438 2012-03-26; Afrimobile Money D.03/1061 2015-09-21) - `https://www.bcc.cd/surveillance-des-intermediaires-financiers/intermediaires-financiers-assujettis/etablissements-de-credit/societes-financieres/ee`
 
 [[national-switch-interoperability]] · [[kyc-and-onboarding]] · [[own-aggregator]] · [[float-netting-model]] · [[fees-and-costs]]
